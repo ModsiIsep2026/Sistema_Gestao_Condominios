@@ -12,4 +12,4 @@ class Quota(Base):
     mes_referencia = Column(Date, nullable=False)
     status = Column(Integer, nullable=False, default=1)
 
-    fracao = relationship("Fracao")
+    fracao = relationship("Fracao") # Tabela Fracao, para obter o código da fração associada à quota

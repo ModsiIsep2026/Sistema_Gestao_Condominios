@@ -1,11 +1,11 @@
 import io
 from datetime import datetime, date
 from typing import Optional
-import openpyxl
+import openpyxl # Esta biblioteca permite criar e editar ficheiros Excel
 from fastapi import HTTPException
 from openpyxl.styles import Alignment, Font, PatternFill
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
+from reportlab.pdfgen import canvas # Esta biblioteca permite criar e editar ficheiros PDF
 from sqlalchemy.orm import Session
 
 from app.models.categoria_despesa import CategoriaDespesa
@@ -21,6 +21,7 @@ COR_CABECALHO = "1A2B6B"
 
 def validar_gestor(db: Session, gestor_id: int) -> Utilizador:
     gestor = (db.query(Utilizador).join(Perfil, Utilizador.perfil_id == Perfil.id_perfil)
+        
         .filter(
             Utilizador.id_utilizador == gestor_id,
             Utilizador.status == 1,
@@ -53,7 +54,7 @@ def obter_despesas(db: Session,gestor_id: int,data_inicio: Optional[date],data_f
 
     return query.all()
 
-#
+
 def formatar_dados_export(db: Session, despesa: Despesa) -> dict:
     edificio = db.query(Edificio).filter(Edificio.id_edificio == despesa.edificio_id).first()
     categoria = db.query(CategoriaDespesa).filter(CategoriaDespesa.id_categoria == despesa.categoria_id).first()
@@ -76,9 +77,9 @@ def exportar_excel(db: Session,gestor_id: int,data_inicio: Optional[date],data_f
     validar_gestor(db, gestor_id) # Apenas gestores têm permissão Para exportar dados
     despesas = obter_despesas(db, gestor_id, data_inicio, data_fim)
 
-    wb = openpyxl.Workbook() # Folha de excel
+    wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Despesas" # Título
+    ws.title = "Despesas"
 
     cabecalhos = ["Edificio", "Categoria", "Fornecedor", "Valor", "Data"] # colunas
     ws.append(cabecalhos)
@@ -107,7 +108,7 @@ def exportar_pdf(db: Session,gestor_id: int,data_inicio: Optional[date],data_fim
     gestor = validar_gestor(db, gestor_id)
     despesas = obter_despesas(db, gestor_id, data_inicio, data_fim, limit=PDF_LIMITE)
     total_bd = (db.query(Despesa).filter(Despesa.status == 1, Despesa.gestor_id == gestor_id).count())
-    total_valor = sum(float(despesa.valor) for despesa in despesas)
+    despesas_total = sum(float(despesa.valor) for despesa in despesas)
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)
@@ -125,7 +126,7 @@ def exportar_pdf(db: Session,gestor_id: int,data_inicio: Optional[date],data_fim
     y -= 14
     pdf.drawString(40, y, f"Registos exportados: {len(despesas)} de {total_bd} disponiveis")
     y -= 14
-    pdf.drawString(40, y, f"Montante total: {total_valor:.2f} EUR")
+    pdf.drawString(40, y, f"Montante total: {despesas_total:.2f} EUR")
 
     if total_bd > PDF_LIMITE:
         pdf.setFillColorRGB(0.8, 0.2, 0.2)

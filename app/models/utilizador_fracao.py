@@ -13,5 +13,5 @@ class UtilizadorFracao(Base):
     data_fim = Column(Date)
     status = Column(Integer, nullable=False, default=1)
 
-    utilizador = relationship("Utilizador")
-    fracao = relationship("Fracao")
+    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador associado à fração
+    fracao = relationship("Fracao") # Tabela Fracao, para obter o código da fração associada ao utilizador

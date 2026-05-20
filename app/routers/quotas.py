@@ -7,11 +7,15 @@ from app.services import quota as servico
 
 router = APIRouter(prefix="/quotas", tags=["Quotas"])
 
+# (GET)  /quotas       - Lista todas as quotas
+# (GET)  /quotas/{id}  - Obtém os detalhes de uma quota específica
+# (POST) /quotas       - Cria uma nova quota
+# (PUT)  /quotas/{id}  - Atualiza uma quota existente
+
 
 @router.get("", response_model=List[LerQuota])
 def listar_quotas(db: Session = Depends(get_db)):
     return servico.listar(db)
-
 
 
 @router.get("/{id}", response_model=LerQuota)
@@ -19,11 +23,9 @@ def obter_quota(id: int, db: Session = Depends(get_db)):
     return servico.obter(db, id)
 
 
-
 @router.post("", response_model=LerQuota, status_code=201)
 def criar_quota(dados: CriarQuota, db: Session = Depends(get_db)):
     return servico.criar(db, dados)
-
 
 
 @router.put("/{id}", response_model=LerQuota)

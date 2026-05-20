@@ -7,17 +7,18 @@ from app.services import utilizador_fracao as servico
 
 router = APIRouter(prefix="/utilizador-fracao", tags=["Utilizador Fração"])
 
+# (GET)    /utilizador-fracao       - Lista associações utilizador-fração
+# (POST)   /utilizador-fracao       - Cria associação entre utilizador e fração
+# (DELETE) /utilizador-fracao/{id}  - Remove associação utilizador-fração 
 
 @router.get("", response_model=List[LerUtilizadorFracao])
 def listar_utilizador_fracao(db: Session = Depends(get_db)):
     return servico.listar(db)
 
 
-
 @router.post("", response_model=LerUtilizadorFracao, status_code=201)
 def associar_utilizador_fracao(dados: CriarUtilizadorFracao, db: Session = Depends(get_db)):
     return servico.associar(db, dados)
-
 
 
 @router.delete("/{id}")

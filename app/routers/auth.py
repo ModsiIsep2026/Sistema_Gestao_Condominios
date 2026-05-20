@@ -8,6 +8,10 @@ from app.core.seguranca import criar_token
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
+
+# (POST) /auth/login   - Autentica o utilizador e devolve um token JWT
+# (POST) /auth/logout  - Termina a sessão do utilizador
+
 @router.post("/login", response_model=Token)
 def login(dados: Login, db: Session = Depends(get_db)):
     utilizador = servico.autenticar(db, dados.email, dados.password)

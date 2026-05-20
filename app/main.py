@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware # Middleware para permitir que o frontend (webapp) aceda à API
 
 from app.core.seguranca import utilizador_atual
 from app.routers import (
@@ -16,10 +16,10 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)
+)   
 
 
-_auth_required = [Depends(utilizador_atual)] # Todas as rotas exigem a autenticação prévida do utilizador, exceto a de autenticação
+_auth_required = [Depends(utilizador_atual)] # Todas os endpoints exigem a autenticação prévida do utilizador, exceto a de autenticação
 
 app.include_router(auth.router)
 app.include_router(utilizadores.router, dependencies=_auth_required)

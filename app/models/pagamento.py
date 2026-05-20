@@ -13,5 +13,5 @@ class Pagamento(Base):
     data_pagamento = Column(Date, nullable=False)
     status = Column(Integer, nullable=False, default=1)
 
-    quota = relationship("Quota")
-    utilizador = relationship("Utilizador")
+    quota = relationship("Quota") # Tabela Quota, para obter o mês e ano da quota associada ao pagamento
+    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador que realizou o pagamento

@@ -12,4 +12,4 @@ class LogAcesso(Base):
     acao = Column(String(50), nullable=False)
     timestamp = Column(DateTime, nullable=False)
 
-    utilizador = relationship("Utilizador")
+    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador associado à log de acesso

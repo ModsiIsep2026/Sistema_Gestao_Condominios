@@ -7,11 +7,13 @@ from app.services import pagamento as servico
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 
+# (GET)  /pagamentos - Lista todos os pagamentos
+# (POST) /pagamentos - Regista um novo pagamento
+
 
 @router.get("", response_model=List[LerPagamento])
 def listar_pagamentos(db: Session = Depends(get_db)):
     return servico.listar(db)
-
 
 
 @router.post("", response_model=LerPagamento, status_code=201)

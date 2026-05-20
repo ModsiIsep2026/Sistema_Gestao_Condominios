@@ -8,10 +8,13 @@ from app.services import notificacao as servico
 router = APIRouter(prefix="/notificacoes", tags=["Notificações"])
 
 
+# (GET)  /notificacoes          - Lista todas as notificações
+# (PUT)  /notificacoes/{id}/lida - Marca uma notificação como lida
+
+
 @router.get("", response_model=List[LerNotificacao])
 def listar_notificacoes(db: Session = Depends(get_db)):
     return servico.listar(db)
-
 
 
 @router.put("/{id}/lida", response_model=LerNotificacao)

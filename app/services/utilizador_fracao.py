@@ -22,6 +22,7 @@ def remover(db: Session, id: int):
     
     if not utilizador_fracao:
         raise HTTPException(404, "Associação não encontrada")
+    
     utilizador_fracao.status = 0 # Softdelete , o registo fica sempre no sistema , só não está ativo
     db.commit()
     return {"detalhe": "Associação removida"}

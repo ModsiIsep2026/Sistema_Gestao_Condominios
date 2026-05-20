@@ -13,4 +13,4 @@ class Notificacao(Base):
     lida = Column(Integer, nullable=False, default=0)
     status = Column(Integer, nullable=False, default=1)
 
-    utilizador = relationship("Utilizador")
+    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador associado à notificação

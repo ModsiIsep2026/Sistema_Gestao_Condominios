@@ -2,8 +2,6 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
 
-
-
 class Utilizador(Base):
     __tablename__ = "utilizador"
 
@@ -17,4 +15,4 @@ class Utilizador(Base):
     lingua = Column(String(5), nullable=False, default="pt")
     status = Column(Integer, nullable=False, default=1)
 
-    perfil = relationship("Perfil")
+    perfil = relationship("Perfil") # Tabela Perfil, para obter o nome do perfil associado ao utilizador

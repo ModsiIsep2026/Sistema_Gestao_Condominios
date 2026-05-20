@@ -12,4 +12,4 @@ class EspacoComum(Base):
     capacidade = Column(Integer)
     status = Column(Integer, nullable=False, default=1)
 
-    edificio = relationship("Edificio")
+    edificio = relationship("Edificio") # Tabela Edificio, para obter o nome do edificio onde se encontra o espaço comum

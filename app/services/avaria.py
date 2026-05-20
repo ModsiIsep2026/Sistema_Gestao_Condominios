@@ -18,15 +18,15 @@ def obter(db: Session, id: int):
 
 def criar(db: Session, dados: CriarAvaria):
     avaria = Avaria(**dados.model_dump())
-    db.add(avaria) 
-    db.commit() # Cada avaria tem um ticket atribuido automaticamente
-    db.refresh(avaria) # Atualiza a db com esse novo ticket
+    db.add(avaria)                               # Cada avaria tem um ticket atribuido automaticamente
+    db.commit()                                  # Regista a avaria na base de dados
+    db.refresh(avaria)                           
     return avaria
 
 
 def atualizar(db: Session, id: int, dados: AtualizarAvaria):
     avaria = obter(db, id)
-    for k, v in dados.model_dump(exclude_unset=True).items():
+    for k, v in dados.model_dump(exclude_unset=True).items(): # Apenas atualiza os dados que foram enviados no pedido
         setattr(avaria, k, v)
     db.commit()
     db.refresh(avaria)

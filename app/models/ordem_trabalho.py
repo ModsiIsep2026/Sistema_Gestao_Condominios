@@ -16,8 +16,8 @@ class OrdemTrabalho(Base):
     data_fim = Column(DateTime)
     status = Column(Integer, nullable=False, default=1)
 
-    avaria = relationship("Avaria")
-    tecnico = relationship("Utilizador", foreign_keys=[tecnico_id])
-    gestor = relationship("Utilizador", foreign_keys=[gestor_id])
-    fornecedor = relationship("Fornecedor")
-    estado = relationship("EstadoOrdemTrabalho")
+    avaria = relationship("Avaria") # Tabela Avaria, para obter a descrição da avaria associada à ordem de trabalho
+    tecnico = relationship("Utilizador", foreign_keys=[tecnico_id]) # Tabela Utilizador, para obter o nome do técnico associado à ordem de trabalho
+    gestor = relationship("Utilizador", foreign_keys=[gestor_id]) # Tabela Utilizador, para obter o nome do gestor associado à ordem de trabalho
+    fornecedor = relationship("Fornecedor") # Tabela Fornecedor, para obter o nome do fornecedor associado à ordem de trabalho
+    estado = relationship("EstadoOrdemTrabalho") # Tabela EstadoOrdemTrabalho, para obter o nome do estado da ordem de trabalho

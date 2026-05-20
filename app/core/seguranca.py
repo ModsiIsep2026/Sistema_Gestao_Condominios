@@ -1,15 +1,14 @@
-from passlib.context import CryptContext
-from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from passlib.context import CryptContext                            # Configurar hash de passwords para gerar strings de 60 caracteres.
+from jose import jwt, JWTError                                      # Json Web Token (JWT) para autenticação
+from datetime import datetime, timedelta  
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer                   # Extrair o token do header Authorization
 from sqlalchemy.orm import Session
-from app.core.config import get_settings
+from app.core.config import get_configs
 from app.core.db_connect import get_db
-
+from app.models.utilizador import Utilizador
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")       # deprecated está a auto porque o sistema atualiza-se sozinho perante novas versões
 
 
 def hash_password(password: str) -> str:
@@ -17,23 +16,25 @@ def hash_password(password: str) -> str:
 
 
 def verificar_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    return pwd_context.verify(password, password_hash)                  # Verifica se a password e o hash ficam iguais
 
 
 
 def criar_token(dados: dict) -> str:
-    settings = get_settings()
-    payload = dados.copy()
-    payload["exp"] = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return jwt.encode(payload, settings.APP_SECRET_KEY, algorithm=settings.ALGORITHM)
+
+    configs = get_configs()
+    payload = dados.copy() 
+    payload["exp"] = datetime.utcnow() + timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES) # O token expira após 30minutos
+    return jwt.encode(payload, configs.APP_SECRET_KEY, algorithm=configs.ALGORITHM)
+
+
 
 def utilizador_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    from app.models.utilizador import Utilizador
-    settings = get_settings()
+    configs = get_configs()
     
     try:
-        payload = jwt.decode(token, settings.APP_SECRET_KEY, algorithms=[settings.ALGORITHM])
-        user_id: int = payload.get("sub")
+        payload = jwt.decode(token, configs.APP_SECRET_KEY, algorithms=[configs.ALGORITHM])
+        user_id: int = payload.get("sub") #  No "sub" vamos guardar o id do utilizador
 
         if user_id is None:
             raise HTTPException(401, "Token inválido")

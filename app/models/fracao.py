@@ -13,4 +13,4 @@ class Fracao(Base):
     area_m2 = Column(DECIMAL(8, 2))
     status = Column(Integer, nullable=False, default=1)
 
-    edificio = relationship("Edificio")
+    edificio = relationship("Edificio") # Tabela Edificio, para obter o nome do edificio onde se encontra a fração

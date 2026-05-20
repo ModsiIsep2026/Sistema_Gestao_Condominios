@@ -5,6 +5,6 @@ from app.core.db_connect import Base
 class CategoriaAvaria(Base):
     __tablename__ = "categoria_avaria"
 
-    id_categoria = Column(Integer, primary_key=True, autoincrement=True)
-    nome_pt = Column(String(50), nullable=False)
-    nome_en = Column(String(50), nullable=False)
+    id_categoria = Column(Integer, primary_key=True, autoincrement=True) #
+    nome_pt = Column(String(50), nullable=False) 
+    nome_en = Column(String(50), nullable=False) 

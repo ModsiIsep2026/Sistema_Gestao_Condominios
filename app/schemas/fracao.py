@@ -27,4 +27,4 @@ class LerFracao(FracaoBase):
     status: int
 
     class Config:
-        from_attributes = True
+        from_attributes = True 

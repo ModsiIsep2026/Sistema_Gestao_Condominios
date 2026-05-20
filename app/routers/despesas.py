@@ -8,10 +8,15 @@ from app.services import despesa as servico
 router = APIRouter(prefix="/despesas", tags=["Despesas"])
 
 
+# (GET)  /despesas       - Lista todas as despesas registadas
+# (GET)  /despesas/{id}  - Obtém os detalhes de uma despesa específica
+# (POST) /despesas       - Regista uma nova despesa
+# (PUT)  /despesas/{id}  - Atualiza os dados de uma despesa existente
+
+
 @router.get("", response_model=List[LerDespesa])
 def listar_despesas(db: Session = Depends(get_db)):
     return servico.listar(db)
-
 
 
 @router.get("/{id}", response_model=LerDespesa)
@@ -19,11 +24,9 @@ def obter_despesa(id: int, db: Session = Depends(get_db)):
     return servico.obter(db, id)
 
 
-
 @router.post("", response_model=LerDespesa, status_code=201)
 def criar_despesa(dados: CriarDespesa, db: Session = Depends(get_db)):
     return servico.criar(db, dados)
-
 
 
 @router.put("/{id}", response_model=LerDespesa)

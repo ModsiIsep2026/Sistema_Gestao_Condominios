@@ -15,7 +15,7 @@ class Reserva(Base):
     data_fim = Column(DateTime, nullable=False)
     status = Column(Integer, nullable=False, default=1)
 
-    utilizador = relationship("Utilizador", foreign_keys=[utilizador_id])
-    aprovador = relationship("Utilizador", foreign_keys=[aprovador_id])
-    espaco = relationship("EspacoComum")
-    estado = relationship("EstadoReserva")
+    utilizador = relationship("Utilizador", foreign_keys=[utilizador_id]) # Tabela Utilizador, para obter o nome do utilizador que fez a reserva
+    aprovador = relationship("Utilizador", foreign_keys=[aprovador_id]) # Tabela Utilizador, para obter o nome do aprovador da reserva
+    espaco = relationship("EspacoComum") # Tabela EspacoComum, para obter o nome do espaço comum reservado
+    estado = relationship("EstadoReserva") # Tabela EstadoReserva, para obter o nome do estado da reserva (Pendente,Aprovada,Rejeitada)

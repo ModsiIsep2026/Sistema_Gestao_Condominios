@@ -14,7 +14,7 @@ def marcar_como_lida(db: Session, id: int):
     if not notificacao:
         raise HTTPException(404, "Notificação não encontrada")
     
-    notificacao.lida = 1 # Marca a notificação como lida, ou seja, lida = 1
+    notificacao.lida = 1 # Marca a notificação como lida, ou seja, lida == 1
     db.commit()
     db.refresh(notificacao)
     return notificacao

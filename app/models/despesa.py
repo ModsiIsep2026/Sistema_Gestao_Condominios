@@ -15,7 +15,7 @@ class Despesa(Base):
     data_despesa = Column(Date, nullable=False)
     status = Column(Integer, nullable=False, default=1)
 
-    edificio = relationship("Edificio")
-    gestor = relationship("Utilizador")
-    fornecedor = relationship("Fornecedor")
-    categoria = relationship("CategoriaDespesa")
+    edificio = relationship("Edificio") # Tabela Edificio, para obter o nome do edificio onde ocorreu a despesa
+    gestor = relationship("Utilizador") # Tabela Utilizador, para obter o nome do gestor que registou a despesa
+    fornecedor = relationship("Fornecedor") # Tabela Fornecedor, para obter o nome do fornecedor associado à despesa
+    categoria = relationship("CategoriaDespesa") # Tabela CategoriaDespesa, para obter o nome da categoria da despesa

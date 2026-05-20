@@ -26,9 +26,9 @@ def criar(db: Session, dados: CriarUtilizador):
 
         raise HTTPException(400, "Email já registado")
     
-    payload = dados.model_dump(exclude={"password"}) # Payload é o conteúdo exceto a password
-    payload["password_hash"] = hash_password(dados.password)
-    utilizador = Utilizador(**payload)
+    dados_utilizador = dados.model_dump(exclude={"password"})           # Exceto a password
+    dados_utilizador["password_hash"] = hash_password(dados.password)
+    utilizador = Utilizador(**dados_utilizador)
     db.add(utilizador)
     db.commit()
     db.refresh(utilizador)

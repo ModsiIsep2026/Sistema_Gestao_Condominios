@@ -14,7 +14,8 @@ class Avaria(Base):
     descricao = Column(Text, nullable=False)
     status = Column(Integer, nullable=False, default=1)
 
-    utilizador = relationship("Utilizador")
-    edificio = relationship("Edificio")
-    fracao = relationship("Fracao")
-    categoria = relationship("CategoriaAvaria")
+    
+    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador que reportou a avaria
+    edificio = relationship("Edificio") # Tabela Edificio, para obter o nome do edificio onde ocorreu a avaria
+    fracao = relationship("Fracao") # Tabela Fracao, para obter o número da fração onde ocorreu a avaria
+    categoria = relationship("CategoriaAvaria") # Tabela CategoriaAvaria, para obter o nome da categoria da avaria
