@@ -27,7 +27,7 @@ def criar_token(dados: dict) -> str:
     payload["exp"] = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     return jwt.encode(payload, settings.APP_SECRET_KEY, algorithm=settings.ALGORITHM)
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def utilizador_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     from app.models.utilizador import Utilizador
     settings = get_settings()
     

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.seguranca import get_current_user
+from app.core.seguranca import utilizador_atual
 from app.routers import (
     auth, utilizadores, edificios, fracoes, utilizador_fracao,
     quotas, pagamentos, espacos, reservas, avarias,
@@ -12,14 +12,14 @@ app = FastAPI(title="Sistema de Gestão de Condomínios")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],  
+    allow_origins=["http://localhost:5000"],  # Webapp e depois outro para website, vamos ter 2
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-_auth_required = [Depends(get_current_user)]
+_auth_required = [Depends(utilizador_atual)] # Todas as rotas exigem a autenticação prévida do utilizador, exceto a de autenticação
 
 app.include_router(auth.router)
 app.include_router(utilizadores.router, dependencies=_auth_required)
