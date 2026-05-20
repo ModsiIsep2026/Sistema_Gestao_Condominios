@@ -1,0 +1,136 @@
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--fonte-base);
+    font-size: var(--tam-base);
+    line-height: 1.6;
+    color: var(--cor-texto);
+    background-color: var(--cor-fundo);
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--cor-primaria);
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: var(--tam-hero); }
+h2 { font-size: var(--tam-xxl); }
+h3 { font-size: var(--tam-xl); }
+h4 { font-size: var(--tam-lg); }
+h5 { font-size: var(--tam-md); }
+h6 { font-size: var(--tam-base); }
+
+p {
+    color: var(--cor-texto);
+    font-size: var(--tam-base);
+}
+
+a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover {
+    color: var(--cor-acento);
+}
+
+img, svg {
+    display: block;
+    max-width: 100%;
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+ul, ol {
+    list-style: none;
+}
+
+/* Container central */
+.container {
+    width: 100%;
+    max-width: var(--largura-max);
+    margin: 0 auto;
+    padding: 0 var(--esp-5);
+}
+
+/* Secções com respiração */
+.seccao {
+    padding: var(--esp-9) 0;
+}
+
+.seccao--alt {
+    background-color: var(--cor-fundo-alt);
+}
+
+.seccao--escura {
+    background-color: var(--cor-primaria);
+    color: #FFFFFF;
+}
+
+.seccao--escura h1,
+.seccao--escura h2,
+.seccao--escura h3,
+.seccao--escura h4 {
+    color: #FFFFFF;
+}
+
+/* Utilidades */
+.texto-centro { text-align: center; }
+.texto-acento { color: var(--cor-acento); }
+.texto-suave { color: var(--cor-texto-suave); }
+
+.mt-1 { margin-top: var(--esp-1); }
+.mt-2 { margin-top: var(--esp-2); }
+.mt-3 { margin-top: var(--esp-3); }
+.mt-4 { margin-top: var(--esp-4); }
+.mt-5 { margin-top: var(--esp-5); }
+.mt-6 { margin-top: var(--esp-6); }
+.mt-7 { margin-top: var(--esp-7); }
+
+.mb-4 { margin-bottom: var(--esp-4); }
+.mb-5 { margin-bottom: var(--esp-5); }
+.mb-6 { margin-bottom: var(--esp-6); }
+.mb-7 { margin-bottom: var(--esp-7); }
+
+/* Responsivo base */
+@media (max-width: 768px) {
+    :root {
+        --tam-hero: 36px;
+        --tam-xxl: 28px;
+        --tam-xl: 22px;
+    }
+
+    .seccao {
+        padding: var(--esp-7) 0;
+    }
+
+    .container {
+        padding: 0 var(--esp-4);
+    }
+}

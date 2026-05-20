@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistema de gestão de condomínios. Consulta de quotas, reserva de espaços comuns, reporte de avarias e acompanhamento de reparações.">
+    <title>Sistema de Gestão de Condomínios</title>
+
+    <link rel="stylesheet" href="../shared/css/tokens.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="css/website.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    
+    <nav class="navbar">
+        <div class="container navbar__container">
+            <a href="index.html" class="navbar__logo">
+                <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios" class="navbar__logo-img">
+                <span class="navbar__logo-texto">Sistema de Gestão de Condomínios</span>
+            </a>
+
+            <ul class="navbar__links">
+                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#funcionalidades">Funcionalidades</a></li>
+                <li><a href="#perfis">Perfis</a></li>
+                <li><a href="#contactos">Contactos</a></li>
+            </ul>
+
+            <div class="navbar__acoes">
+                <a href="login.html" class="btn btn--primario">Entrar</a>
+            </div>
+        </div>
+    </nav>
+
+    
+    <header class="hero">
+        <div class="hero__imagem">
+            <img src="../shared/img/predios.jpg" alt="">
+        </div>
+        <div class="hero__overlay"></div>
+        <div class="container hero__container">
+            <div class="hero__texto">
+                <h1>Gestão profissional<br>do seu condomínio.</h1>
+                <p class="hero__subtitulo">
+                    Quotas, reservas de espaços comuns, reporte de avarias e acompanhamento
+                    das reparações, num só sítio.
+                </p>
+                <div class="hero__acoes">
+                    <a href="login.html" class="btn btn--primario">Entrar na minha área</a>
+                    <a href="#funcionalidades" class="btn btn--outline-claro">Ver funcionalidades</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+   
+    <section class="seccao" id="sobre">
+        <div class="container">
+            <div class="bloco-sobre">
+                <div class="bloco-sobre__imagem">
+                    <img src="../shared/img/contrato.jpg" alt="Reunião de gestão de condomínio">
+                </div>
+                <div class="bloco-sobre__texto">
+                    <span class="etiqueta">Sobre</span>
+                    <h2>Pensado para quem vive no edifício e para quem o gere.</h2>
+                    <p>
+                        Os condóminos consultam quotas, reservam espaços comuns e reportam
+                        o que está partido. O gestor trata da parte financeira, aprova as
+                        reservas e atribui as reparações a um técnico, que vai ao local e
+                        marca como concluído quando termina.
+                    </p>
+                    <p class="mt-4">
+                        Em vez de telefonemas e emails perdidos, fica tudo registado e
+                        cada pessoa vê apenas o que lhe diz respeito.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+   
+    <section class="seccao seccao--alt" id="funcionalidades">
+        <div class="container">
+            <div class="cabecalho-seccao">
+                <span class="etiqueta">Funcionalidades</span>
+                <h2>O que faz.</h2>
+            </div>
+
+            <div class="grelha grelha--3 mt-7">
+                <article class="card">
+                    <h3 class="card__titulo">Quotas e despesas</h3>
+                    <p class="card__texto">
+                        Histórico organizado por edifício. O condómino vê sempre o que
+                        pagou e o que está em falta.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h3 class="card__titulo">Reservas de espaços</h3>
+                    <p class="card__texto">
+                        Salão, ginásio, churrasqueira. Reserva-se online, o gestor aprova
+                        e fica no calendário do edifício.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h3 class="card__titulo">Reporte de avarias</h3>
+                    <p class="card__texto">
+                        Quando algo se avaria, o condómino reporta a partir da sua área
+                        pessoal. Chega diretamente ao gestor.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h3 class="card__titulo">Ordens de trabalho</h3>
+                    <p class="card__texto">
+                        Cada avaria gera uma ordem para um técnico. Quem reportou consegue
+                        ver o estado até a reparação estar feita.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h3 class="card__titulo">Notificações</h3>
+                    <p class="card__texto">
+                        Aviso quando a reserva é aprovada, quando há uma nova quota ou
+                        quando o estado de uma reparação muda.
+                    </p>
+                </article>
+
+                <article class="card">
+                    <h3 class="card__titulo">Histórico</h3>
+                    <p class="card__texto">
+                        Pagamentos, reservas e avarias ficam guardados na sua área.
+                        Pode consultar a qualquer momento.
+                    </p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="seccao" id="perfis">
+        <div class="container">
+            <div class="cabecalho-seccao">
+                <span class="etiqueta">Quem entra</span>
+                <h2>Cada pessoa vê apenas o que lhe diz respeito.</h2>
+                <p class="texto-suave">
+                    Um condómino não tem acesso aos dados dos vizinhos.
+                    Um técnico não vê a parte financeira.
+                </p>
+            </div>
+
+            <div class="grupos-perfis mt-7">
+
+                <div class="grupo-perfis">
+                    <div class="grupo-perfis__cabecalho">
+                        <span class="etiqueta">Para os condóminos</span>
+                        <h3>Quem vive no edifício</h3>
+                    </div>
+
+                    <div class="grupo-perfis__cards">
+                        <div class="passo">
+                            <h4>Visitante</h4>
+                            <p>Vê a informação pública do condomínio. Não precisa de conta.</p>
+                        </div>
+                        <div class="passo">
+                            <h4>Condómino</h4>
+                            <p>Vê quotas, paga online, reserva espaços, reporta avarias e segue as reparações.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grupo-perfis">
+                    <div class="grupo-perfis__cabecalho">
+                        <span class="etiqueta">Para os profissionais</span>
+                        <h3>Quem trata do edifício</h3>
+                    </div>
+
+                    <div class="grupo-perfis__cards">
+                        <div class="passo">
+                            <h4>Gestor</h4>
+                            <p>Cuida da parte financeira, aprova reservas e acompanha a manutenção. Pode gerir mais do que um edifício.</p>
+                        </div>
+                        <div class="passo">
+                            <h4>Técnico</h4>
+                            <p>Recebe as ordens de trabalho que lhe são atribuídas e vai marcando o estado à medida que avança.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    
+    <section class="faixa-cta">
+        <div class="faixa-cta__imagem">
+            <img src="../shared/img/banner.jpg" alt="">
+        </div>
+        <div class="faixa-cta__overlay"></div>
+        <div class="container faixa-cta__container">
+            <div>
+                <h3>Já tem conta?</h3>
+                <p>Entre na sua área para ver quotas, reservas e reparações.</p>
+            </div>
+            <a href="login.html" class="btn btn--primario">Entrar</a>
+        </div>
+    </section>
+
+    <!-- Contactos -->
+    <section class="seccao seccao--alt" id="contactos">
+        <div class="container">
+            <div class="grelha grelha--2">
+                <div>
+                    <span class="etiqueta">Contactos</span>
+                    <h2>Alguma dúvida?</h2>
+                    <p class="texto-suave mt-4">
+                        Para questões de acesso ou de como usar a plataforma,
+                        fale com a administração do seu condomínio.
+                    </p>
+                </div>
+
+                <form class="form-contacto" onsubmit="event.preventDefault(); alert('Mensagem enviada (mock).');">
+                    <div class="campo">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" required>
+                    </div>
+                    <div class="campo">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="campo">
+                        <label for="mensagem">Mensagem</label>
+                        <textarea id="mensagem" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn--primario btn--bloco">Enviar mensagem</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__grelha">
+                <div class="footer__col">
+                    <div class="navbar__logo navbar__logo--claro">
+                        <img src="../shared/img/logo.png" alt="" class="navbar__logo-img">
+                        <span class="navbar__logo-texto">Sistema de Gestão de Condomínios</span>
+                    </div>
+                    <p class="mt-4">
+                        Plataforma de gestão de condomínios.
+                    </p>
+                </div>
+                <div class="footer__col">
+                    <h5>Navegação</h5>
+                    <ul>
+                        <li><a href="#sobre">Sobre</a></li>
+                        <li><a href="#funcionalidades">Funcionalidades</a></li>
+                        <li><a href="#perfis">Perfis</a></li>
+                        <li><a href="#contactos">Contactos</a></li>
+                    </ul>
+                </div>
+                <div class="footer__col">
+                    <h5>Acesso</h5>
+                    <ul>
+                        <li><a href="login.html">Entrar</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer__copyright">
+                © 2026 Sistema de Gestão de Condomínios
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

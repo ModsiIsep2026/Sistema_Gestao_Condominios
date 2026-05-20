@@ -1,7 +1,9 @@
 from fastapi import FastAPI, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
+from pathlib import Path
 
 from app.core.config import get_configs
 from app.core.seguranca import utilizador_atual
@@ -71,3 +73,15 @@ app.include_router(fornecedores.router, dependencies=_auth_required)
 app.include_router(notificacoes.router, dependencies=_auth_required)
 app.include_router(refs.router, dependencies=_auth_required)
 app.include_router(relatorios.router, dependencies=_auth_required)
+
+
+_frontend = Path(__file__).resolve().parent.parent / "frontend"
+
+app.mount("/shared",    StaticFiles(directory=_frontend / "shared"),                  name="shared")
+app.mount("/website_C", StaticFiles(directory=_frontend / "website_C", html=True),    name="website_C")
+app.mount("/webapp_AG", StaticFiles(directory=_frontend / "webapp_AG", html=True),    name="webapp_AG")
+
+
+@app.get("/", include_in_schema=False)
+def raiz():
+    return RedirectResponse(url="/website_C/")

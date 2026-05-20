@@ -1,0 +1,52 @@
+
+
+:root {
+    
+    --cor-primaria: #0B2240;          
+    --cor-primaria-escura: #061528;   
+    --cor-primaria-clara: #1A3D6B;   
+
+    --cor-acento: #F08A24;          
+    --cor-acento-escura: #C26E15;   
+
+  
+    --cor-texto: #1A1A1A;
+    --cor-texto-suave: #5A5A5A;
+    --cor-borda: #D4D4D4;
+    --cor-fundo: #FFFFFF;
+    --cor-fundo-alt: #F5F5F5;
+    --cor-fundo-escuro: #0B2240;
+
+
+    --cor-sucesso: #2D7A4A;
+    --cor-aviso: #C28415;
+    --cor-erro: #B83227;
+
+
+    --fonte-base: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+    --fonte-titulo: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+
+    --tam-xs: 12px;
+    --tam-sm: 14px;
+    --tam-base: 16px;
+    --tam-md: 18px;
+    --tam-lg: 22px;
+    --tam-xl: 28px;
+    --tam-xxl: 40px;
+    --tam-hero: 56px;
+
+    --esp-1: 4px;
+    --esp-2: 8px;
+    --esp-3: 12px;
+    --esp-4: 16px;
+    --esp-5: 24px;
+    --esp-6: 32px;
+    --esp-7: 48px;
+    --esp-8: 64px;
+    --esp-9: 96px;
+    --largura-max: 1240px;
+    --altura-navbar: 72px;
+    --raio: 0;
+    --sombra-suave: 0 2px 6px rgba(11, 34, 64, 0.08);
+    --sombra-media: 0 4px 12px rgba(11, 34, 64, 0.12);
+}
