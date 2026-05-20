@@ -35,9 +35,11 @@ CREATE TABLE fornecedor
 CREATE TABLE log_acesso
 (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
-    utilizador_id INT NOT NULL,
+    utilizador_id INT NULL,                
     acao VARCHAR(50) NOT NULL,
     timestamp DATETIME NOT NULL,
+    ip_address VARCHAR(45) NULL,           -- IPv4 ou IPv6
+    resultado VARCHAR(20) NULL,            -- 'sucesso' | 'falhou'
     CONSTRAINT fk_log_acesso_utilizador
         FOREIGN KEY (utilizador_id) REFERENCES utilizador(id_utilizador)
 );

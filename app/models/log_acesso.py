@@ -6,10 +6,11 @@ from app.core.db_connect import Base
 class LogAcesso(Base):
     __tablename__ = "log_acesso"
 
-
     id_log = Column(Integer, primary_key=True, autoincrement=True)
-    utilizador_id = Column(Integer, ForeignKey("utilizador.id_utilizador"), nullable=False)
+    utilizador_id = Column(Integer, ForeignKey("utilizador.id_utilizador"), nullable=True)
     acao = Column(String(50), nullable=False)
     timestamp = Column(DateTime, nullable=False)
+    ip_address = Column(String(45), nullable=True)
+    resultado = Column(String(20), nullable=True)    # (sucesso ou falhou) 
 
-    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador associado à log de acesso
+    utilizador = relationship("Utilizador") 

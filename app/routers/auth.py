@@ -1,26 +1,54 @@
-from fastapi import APIRouter, Depends
+from collections import defaultdict
+from datetime import datetime, timedelta
+import threading
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
+
 from app.core.db_connect import get_db
+from app.core.seguranca import criar_token, utilizador_atual
 from app.schemas.auth import Login, Token
 from app.services import auth as servico
-from app.core.seguranca import criar_token
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
+# A07: rate limiting  — máximo 5 tentativas por IP em 5 minutos
+_tentativas: dict = defaultdict(list)
+_lock = threading.Lock()
+_MAX_TENTATIVAS = 5
+_JANELA_SEGUNDOS = 300
 
 
-# (POST) /auth/login   - Autentica o utilizador e devolve um token JWT
-# (POST) /auth/logout  - Termina a sessão do utilizador
+def _verificar_rt(ip: str):
+    agora = datetime.utcnow()
+    limite = agora - timedelta(seconds=_JANELA_SEGUNDOS)
+    with _lock:
+        _tentativas[ip] = [t for t in _tentativas[ip] if t > limite]
+        if len(_tentativas[ip]) >= _MAX_TENTATIVAS:
+            raise HTTPException(429, "Demasiadas tentativas de login. Aguarde alguns minutos.")
+        _tentativas[ip].append(agora)
+
+
+def _obter_ip(request: Request) -> str:
+    
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "desconhecido"
+
 
 @router.post("/login", response_model=Token)
-def login(dados: Login, db: Session = Depends(get_db)):
-    utilizador = servico.autenticar(db, dados.email, dados.password)
+def login(dados: Login, request: Request, db: Session = Depends(get_db)):
+    ip = _obter_ip(request)
+    _verificar_rt(ip)
 
+    utilizador = servico.autenticar(db, dados.email, dados.password, ip=ip)
     token = criar_token({"sub": str(utilizador.id_utilizador), "perfil": utilizador.perfil_id})
-    return {"access_token": token, 
-            "token_type": "bearer"}
+    return {"access_token": token, "token_type": "bearer"}
 
 
 @router.post("/logout")
-def logout():
+def logout(request: Request, db: Session = Depends(get_db), utilizador=Depends(utilizador_atual)):
+    ip = _obter_ip(request)
+    servico.registar_logout(db, utilizador.id_utilizador, ip=ip)
     return {"detalhe": "Sessão terminada"}
