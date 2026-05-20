@@ -26,7 +26,8 @@ def criar(db: Session, dados: CriarAvaria):
 
 def atualizar(db: Session, id: int, dados: AtualizarAvaria):
     avaria = obter(db, id)
-    for k, v in dados.model_dump(exclude_unset=True).items():setattr(avaria, k, v) # Atualiza os campos da avaria com os dados fornecidos, mas apenas os que foram efetivamente enviados (exclude_unset=True), os outros deixa ficar
+    for k, v in dados.model_dump(exclude_unset=True).items():
+        setattr(avaria, k, v)
     db.commit()
     db.refresh(avaria)
     return avaria

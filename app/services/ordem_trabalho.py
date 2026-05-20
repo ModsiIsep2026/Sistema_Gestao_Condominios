@@ -27,7 +27,8 @@ def criar(db: Session, dados: CriarOrdemTrabalho):
 
 def atualizar(db: Session, id: int, dados: AtualizarOrdemTrabalho):
     ordens_trabalho = obter(db, id)
-    for k, v in dados.model_dump(exclude_unset=True).items():setattr(ordens_trabalho, k, v) # Atualiza os campos da ordem de trabalho com os dados fornecidos, mas apenas os que foram efetivamente enviados (exclude_unset=True), os outros deixa ficar
+    for k, v in dados.model_dump(exclude_unset=True).items():
+        setattr(ordens_trabalho, k, v)
     db.commit()
     db.refresh(ordens_trabalho)
     return ordens_trabalho

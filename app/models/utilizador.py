@@ -10,7 +10,7 @@ class Utilizador(Base):
     id_utilizador = Column(Integer, primary_key=True, autoincrement=True)
     perfil_id = Column(Integer, ForeignKey("perfil.id_perfil"), nullable=False)
     nome = Column(String(200), nullable=False)
-    email = Column(String(100), nullable=False)
+    email = Column(String(100), nullable=False, unique=True)
     password_hash = Column(String(255), nullable=False)
     telemovel = Column(String(20))
     nif = Column(String(20))

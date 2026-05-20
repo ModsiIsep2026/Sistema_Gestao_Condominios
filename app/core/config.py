@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     DB_PASSWORD: str
     DB_NAME: str
 
-    # Aplicação
+   
     APP_SECRET_KEY: str
     APP_ENV: str = "development"
     APP_DEBUG: bool = True
