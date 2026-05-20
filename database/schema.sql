@@ -19,6 +19,8 @@ CREATE TABLE utilizador
     nif VARCHAR(20),
     lingua VARCHAR(5) NOT NULL DEFAULT 'pt',
     status INT NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_utilizador_email UNIQUE (email),
     CONSTRAINT fk_utilizador_perfil
         FOREIGN KEY (perfil_id) REFERENCES perfil(id_perfil)
 );
@@ -35,13 +37,14 @@ CREATE TABLE fornecedor
 CREATE TABLE log_acesso
 (
     id_log INT AUTO_INCREMENT PRIMARY KEY,
-    utilizador_id INT NULL,                
+    utilizador_id INT NULL,
     acao VARCHAR(50) NOT NULL,
     timestamp DATETIME NOT NULL,
     ip_address VARCHAR(45) NULL,           -- IPv4 ou IPv6
     resultado VARCHAR(20) NULL,            -- 'sucesso' | 'falhou'
     CONSTRAINT fk_log_acesso_utilizador
         FOREIGN KEY (utilizador_id) REFERENCES utilizador(id_utilizador)
+        ON DELETE SET NULL
 );
 
 CREATE TABLE edificio
@@ -99,6 +102,7 @@ CREATE TABLE pagamento
     valor_pago DECIMAL(10,2) NOT NULL,
     data_pagamento DATE NOT NULL,
     status INT NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_pagamento_quota
         FOREIGN KEY (quota_id) REFERENCES quota(id_quota),
     CONSTRAINT fk_pagamento_utilizador
@@ -132,7 +136,9 @@ CREATE TABLE reserva
     estado_id INT NOT NULL,
     data_inicio DATETIME NOT NULL,
     data_fim DATETIME NOT NULL,
+    data_aprovacao DATETIME,
     status INT NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_reserva_utilizador
         FOREIGN KEY (utilizador_id) REFERENCES utilizador(id_utilizador),
     CONSTRAINT fk_reserva_espaco
@@ -159,6 +165,7 @@ CREATE TABLE avaria
     categoria_id INT NOT NULL,
     descricao TEXT NOT NULL,
     status INT NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_avaria_utilizador
         FOREIGN KEY (utilizador_id) REFERENCES utilizador(id_utilizador),
     CONSTRAINT fk_avaria_edificio
