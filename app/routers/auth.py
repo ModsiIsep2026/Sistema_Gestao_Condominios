@@ -7,21 +7,26 @@ from sqlalchemy.orm import Session
 
 from app.core.db_connect import get_db
 from app.core.seguranca import criar_token, utilizador_atual
-from app.schemas.auth import Login, Token
+from app.schemas.auth import Login, Token, Registo
 from app.services import auth as servico
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
+
+# (POST) /auth/login   - Autentica o utilizador
+# (POST) /auth/logout  - Regista logout do utilizador 
+# (POST) /auth/registo - Regista novo utilizador (condómino)
+
 
 # A07: rate limiting  — máximo 5 tentativas por IP em 5 minutos
 _tentativas: dict = defaultdict(list)
 _lock = threading.Lock()
 _MAX_TENTATIVAS = 5
-_JANELA_SEGUNDOS = 300
+SEP_SEGUNDOS = 300
 
 
 def _verificar_rt(ip: str):
     agora = datetime.utcnow()
-    limite = agora - timedelta(seconds=_JANELA_SEGUNDOS)
+    limite = agora - timedelta(seconds=SEP_SEGUNDOS)
     with _lock:
         _tentativas[ip] = [t for t in _tentativas[ip] if t > limite]
         if len(_tentativas[ip]) >= _MAX_TENTATIVAS:
@@ -52,3 +57,18 @@ def logout(request: Request, db: Session = Depends(get_db), utilizador=Depends(u
     ip = _obter_ip(request)
     servico.registar_logout(db, utilizador.id_utilizador, ip=ip)
     return {"detalhe": "Sessão terminada"}
+
+
+@router.post("/registo", response_model=Token, status_code=201)
+def registo(dados: Registo, request: Request, db: Session = Depends(get_db)):
+    ip = _obter_ip(request)
+
+    _verificar_rt(ip)  # mesma proteção rate-limit do login
+
+
+    utilizador = servico.registar_condomino(db, dados, ip=ip)
+
+    token = criar_token({"sub": str(utilizador.id_utilizador), "perfil": utilizador.perfil_id})
+
+
+    return {"access_token": token, "token_type": "bearer"}

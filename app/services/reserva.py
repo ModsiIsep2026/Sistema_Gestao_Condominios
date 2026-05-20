@@ -8,6 +8,10 @@ def listar(db: Session):
     return db.query(Reserva).filter(Reserva.status == 1).all() # Reservas com status 1 são as ativas, ou seja, as que não foram eliminadas (soft delete)
 
 
+def listar_por_utilizador(db: Session, utilizador_id: int):
+    return db.query(Reserva).filter(Reserva.status == 1, Reserva.utilizador_id == utilizador_id).all()
+
+
 def obter(db: Session, id: int):
     reserva = db.query(Reserva).filter(Reserva.id_reserva == id, Reserva.status == 1).first()
     

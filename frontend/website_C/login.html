@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar — Sistema de Gestão de Condomínios</title>
+
+    <link rel="stylesheet" href="../shared/css/tokens.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="css/login.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+
+    <div class="login-fundo">
+        <img src="../shared/img/predios.jpg" alt="">
+        <div class="login-fundo__overlay"></div>
+    </div>
+
+    <main class="login-conteudo">
+        <a href="index.html" class="login-voltar">&larr; Voltar ao início</a>
+
+        <div class="login-card">
+
+            <div class="login-card__topo">
+                <a href="index.html" class="login-logo">
+                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                </a>
+                <h1>Bem-vindo de volta</h1>
+                <p>Insira as suas credenciais para aceder à plataforma.</p>
+            </div>
+
+            <div id="login-erro" class="login-erro" hidden></div>
+
+            <form id="login-form" class="login-form" novalidate>
+
+                <div class="campo">
+                    <label for="email">Email</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           autocomplete="username"
+                           placeholder="nome@exemplo.pt"
+                           required>
+                </div>
+
+                <div class="campo">
+                    <div class="campo__cabecalho">
+                        <label for="password">Password</label>
+                        <a href="#" class="campo__link">Esqueceu-se?</a>
+                    </div>
+                    <div class="password-wrapper">
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               autocomplete="current-password"
+                               placeholder="••••••••"
+                               required>
+                        <button type="button"
+                                class="toggle-pass"
+                                aria-label="Mostrar password"
+                                data-target="password">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn--primario btn--bloco">Entrar</button>
+
+            </form>
+
+            <div class="login-separador"><span>ou</span></div>
+
+            <div class="login-social">
+
+  <button type="button" class="btn-social" data-provider="google" aria-label="Continuar com Google">
+    <svg class="btn-social__icone" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8a12 12 0 1 1 0-24c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 24 4a20 20 0 1 0 19.6 16.1z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 6.3 14.7z"/>
+      <path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.4-5.2l-6.2-5.2a12 12 0 0 1-7.2 2.4c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5A20 20 0 0 0 24 44z"/>
+      <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.6-.4-3.9z"/>
+    </svg>
+    <span>Continuar com Google (BREVEMENTE)</span>
+  </button>
+
+  <button type="button" class="btn-social" data-provider="github" aria-label="Continuar com GitHub">
+    <svg class="btn-social__icone" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1A1A1A">
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.8 1.3 3.5 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 0z"/>
+    </svg>
+    <span>Continuar com GitHub (BREVEMENTE)</span>
+  </button>
+
+
+  <button type="button" class="btn-social" data-provider="microsoft" aria-label="Continuar com Microsoft">
+    <svg class="btn-social__icone" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#f25022" d="M1 1h10v10H1z"/>
+      <path fill="#00a4ef" d="M12 1h10v10H12z"/>
+      <path fill="#7fba00" d="M1 12h10v10H1z"/>
+      <path fill="#ffb900" d="M12 12h10v10H12z"/>
+    </svg>
+    <span>Continuar com Microsoft (BREVEMENTE)</span>
+  </button>
+
+</div>
+            <p class="login-rodape">
+                Não tem conta? <a href="registo.html">Criar conta</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="../shared/js/api.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
+from app.core.seguranca import gestor_ou_administrador
 from app.schemas.fracao import CriarFracao, AtualizarFracao, LerFracao
 from app.services import fracao as servico
 
@@ -26,15 +27,28 @@ def obter_fracao(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerFracao, status_code=201)
-def criar_fracao(dados: CriarFracao, db: Session = Depends(get_db)):
+def criar_fracao(
+    dados: CriarFracao,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerFracao)
-def atualizar_fracao(id: int, dados: AtualizarFracao, db: Session = Depends(get_db)):
+def atualizar_fracao(
+    id: int,
+    dados: AtualizarFracao,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover_fracao(id: int, db: Session = Depends(get_db)):
+def remover_fracao(
+    id: int,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.remover(db, id)

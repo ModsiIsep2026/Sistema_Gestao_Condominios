@@ -8,14 +8,15 @@ from pathlib import Path
 from app.core.config import get_configs
 from app.core.seguranca import utilizador_atual
 from app.routers import (
-    auth, utilizadores, edificios, fracoes, utilizador_fracao,
+    auth, oauth, utilizadores, edificios, fracoes, utilizador_fracao,
     quotas, pagamentos, espacos, reservas, avarias,
     ordens_trabalho, despesas, fornecedores, notificacoes, refs, relatorios
 )
+from starlette.middleware.sessions import SessionMiddleware
 
 _configs = get_configs()
 
-#  Docs da API apenas em desenvolvimento — em produção não devem estar acessíveis
+#  Docs da API apenas em desenvolvimento — em prod vamos eliminar 
 app = FastAPI(
     title="Sistema de Gestão de Condomínios",
     docs_url="/docs" if _configs.APP_ENV == "development" else None,
@@ -39,6 +40,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(SessionMiddleware, secret_key=_configs.APP_SECRET_KEY, same_site="lax", https_only=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -58,6 +60,7 @@ async def handler_erro_generico(request: Request, exc: Exception):
 _auth_required = [Depends(utilizador_atual)]
 
 app.include_router(auth.router)
+app.include_router(oauth.router)
 app.include_router(utilizadores.router, dependencies=_auth_required)
 app.include_router(edificios.router, dependencies=_auth_required)
 app.include_router(fracoes.router, dependencies=_auth_required)

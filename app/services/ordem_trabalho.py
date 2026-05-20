@@ -1,11 +1,21 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.models.ordem_trabalho import OrdemTrabalho
+from app.models.avaria import Avaria
 from app.schemas.ordem_trabalho import CriarOrdemTrabalho, AtualizarOrdemTrabalho
 
 
 def listar(db: Session):
     return db.query(OrdemTrabalho).filter(OrdemTrabalho.status == 1).all() # Ordens de trabalho com status 1 são as ativas, ou seja, as que não foram eliminadas (soft delete)
+
+
+def listar_por_utilizador(db: Session, utilizador_id: int):
+    return (
+        db.query(OrdemTrabalho)
+        .join(Avaria, OrdemTrabalho.avaria)
+        .filter(OrdemTrabalho.status == 1, Avaria.utilizador_id == utilizador_id)
+        .all()
+    )
 
 
 def obter(db: Session, id: int):
@@ -18,11 +28,11 @@ def obter(db: Session, id: int):
 
 
 def criar(db: Session, dados: CriarOrdemTrabalho):
-    ot = OrdemTrabalho(**dados.model_dump())
-    db.add(ot)
+    ordens_trabalho = OrdemTrabalho(**dados.model_dump())
+    db.add(ordens_trabalho)
     db.commit()
-    db.refresh(ot)
-    return ot
+    db.refresh(ordens_trabalho)
+    return ordens_trabalho
 
 
 def atualizar(db: Session, id: int, dados: AtualizarOrdemTrabalho):

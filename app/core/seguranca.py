@@ -11,6 +11,12 @@ from app.models.utilizador import Utilizador
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+PERFIL_VISITANTE = 1
+PERFIL_CONDOMINO = 2
+PERFIL_GESTOR = 3
+PERFIL_TECNICO = 4
+PERFIL_ADMINISTRADOR = 5
+
 
 _credenciais_invalidas = HTTPException(status_code=401,detail="Token inválido ou expirado",headers={"WWW-Authenticate": "Bearer"},)
 
@@ -48,3 +54,41 @@ def utilizador_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise _credenciais_invalidas
 
     return utilizador
+
+
+def autorizar(perfis: list[int], utilizador: Utilizador = Depends(utilizador_atual)):
+    if utilizador.perfil_id not in perfis:
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    return utilizador
+
+
+def administrador(utilizador: Utilizador = Depends(utilizador_atual)):
+    return autorizar([PERFIL_ADMINISTRADOR], utilizador)
+
+
+def gestor_ou_administrador(utilizador: Utilizador = Depends(utilizador_atual)):
+    return autorizar([PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
+
+
+def tecnico_ou_superior(utilizador: Utilizador = Depends(utilizador_atual)):
+    return autorizar([PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
+
+
+def condomino_ou_superior(utilizador: Utilizador = Depends(utilizador_atual)):
+    return autorizar([PERFIL_CONDOMINO, PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
+
+
+def verificar_perfil(perfis: list[int], utilizador: Utilizador = Depends(utilizador_atual)):
+
+    if utilizador.perfil_id not in perfis: # Perfis válidos
+        raise HTTPException(status_code=403, detail="Acesso negado")
+    return utilizador
+
+
+def administrador(utilizador: Utilizador = Depends(utilizador_atual)):
+    return verificar_perfil([PERFIL_ADMINISTRADOR], utilizador) # Apenas administradores (5)
+
+
+def gestor_ou_administrador(utilizador: Utilizador = Depends(utilizador_atual)):
+
+    return verificar_perfil([PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador) # Gestores (3) ou administradores (5)

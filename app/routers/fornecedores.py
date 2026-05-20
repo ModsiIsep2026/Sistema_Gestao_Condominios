@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
+from app.core.seguranca import gestor_ou_administrador
 from app.schemas.fornecedor import CriarFornecedor, AtualizarFornecedor, LerFornecedor
 from app.services import fornecedor as servico
 
@@ -25,10 +26,19 @@ def obter_fornecedor(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerFornecedor, status_code=201)
-def criar_fornecedor(dados: CriarFornecedor, db: Session = Depends(get_db)):
+def criar_fornecedor(
+    dados: CriarFornecedor,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerFornecedor)
-def atualizar_fornecedor(id: int, dados: AtualizarFornecedor, db: Session = Depends(get_db)):
+def atualizar_fornecedor(
+    id: int,
+    dados: AtualizarFornecedor,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.atualizar(db, id, dados)

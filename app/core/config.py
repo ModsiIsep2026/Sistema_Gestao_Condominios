@@ -13,9 +13,17 @@ class Settings(BaseSettings):
 
     APP_SECRET_KEY: str
     APP_ENV: str = "development"
-    APP_DEBUG: bool = False  
+    APP_DEBUG: bool = False
     APP_PORT: int = 8000
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # Token expira em 30 minutos por segurança
+
+    GOOGLE_CLIENT_ID: str = "" # Trabalho futuro quando tivermos em prod
+    GOOGLE_CLIENT_SECRET: str = "" # --
+    GITHUB_CLIENT_ID: str = "" # --
+    GITHUB_CLIENT_SECRET: str = "" # --
+    MICROSOFT_CLIENT_ID: str = "" # --
+    MICROSOFT_CLIENT_SECRET: str = "" # --
+    OAUTH_REDIRECT_BASE: str = "http://localhost:8000" # --
 
     @property
     def DB_connect(self) -> str:

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
+from app.core.seguranca import gestor_ou_administrador
 from app.schemas.despesa import CriarDespesa, AtualizarDespesa, LerDespesa
 from app.services import despesa as servico
 
@@ -20,15 +21,28 @@ def listar_despesas(db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=LerDespesa)
-def obter_despesa(id: int, db: Session = Depends(get_db)):
+def obter_despesa(
+    id: int,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.obter(db, id)
 
 
 @router.post("", response_model=LerDespesa, status_code=201)
-def criar_despesa(dados: CriarDespesa, db: Session = Depends(get_db)):
+def criar_despesa(
+    dados: CriarDespesa,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerDespesa)
-def atualizar_despesa(id: int, dados: AtualizarDespesa, db: Session = Depends(get_db)):
+def atualizar_despesa(
+    id: int,
+    dados: AtualizarDespesa,
+    db: Session = Depends(get_db),
+    _=Depends(gestor_ou_administrador),
+):
     return servico.atualizar(db, id, dados)

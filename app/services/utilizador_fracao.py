@@ -7,6 +7,12 @@ from app.schemas.utilizador_fracao import CriarUtilizadorFracao
 def listar(db: Session):
     return db.query(UtilizadorFracao).filter(UtilizadorFracao.status == 1).all() # Associação de um perfil com uma fração deve ter status 1 (ativas)
 
+def listar_por_utilizador(db: Session, utilizador_id: int):
+    return (
+        db.query(UtilizadorFracao)
+        .filter(UtilizadorFracao.status == 1, UtilizadorFracao.utilizador_id == utilizador_id)
+        .all()
+    )
 
 def associar(db: Session, dados: CriarUtilizadorFracao):
     utilizador_fracao = UtilizadorFracao(**dados.model_dump())

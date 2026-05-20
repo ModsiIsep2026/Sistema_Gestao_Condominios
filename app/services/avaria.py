@@ -8,6 +8,10 @@ def listar(db: Session):
     return db.query(Avaria).filter(Avaria.status == 1).all()
 
 
+def listar_por_utilizador(db: Session, utilizador_id: int):
+    return db.query(Avaria).filter(Avaria.status == 1, Avaria.utilizador_id == utilizador_id).all()
+
+
 def obter(db: Session, id: int):
     avaria = db.query(Avaria).filter(Avaria.id_avaria == id, Avaria.status == 1).first() #o Status tem de ser 1 para garantir que a avaria não foi eliminada (soft delete)
 

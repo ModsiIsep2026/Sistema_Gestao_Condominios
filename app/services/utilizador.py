@@ -5,8 +5,12 @@ from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador
 from app.core.seguranca import hash_password
 
 
-def listar(db: Session):
-    return db.query(Utilizador).filter(Utilizador.status == 1).all() # Utilizadores com status 1 são os ativos, ou seja, os que não foram eliminados (soft delete)
+def listar(db: Session, perfil_ids: list[int] | None = None):
+    query = db.query(Utilizador).filter(Utilizador.status == 1)
+
+    if perfil_ids is not None:
+        query = query.filter(Utilizador.perfil_id.in_(perfil_ids))
+    return query.all() 
 
 
 def obter(db: Session, id: int):

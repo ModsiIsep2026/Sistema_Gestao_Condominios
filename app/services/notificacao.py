@@ -7,6 +7,10 @@ def listar(db: Session):
     return db.query(Notificacao).filter(Notificacao.status == 1).all() # Notificações com status 1 são as ativas, ou seja, as que não foram eliminadas (soft delete)
 
 
+def listar_por_utilizador(db: Session, utilizador_id: int):
+    return db.query(Notificacao).filter(Notificacao.status == 1, Notificacao.utilizador_id == utilizador_id).all()
+
+
 def marcar_como_lida(db: Session, id: int):
     notificacao = db.query(Notificacao).filter(Notificacao.id_notificacao == id, Notificacao.status == 1).first() # Queremos as notificações ativas
 
