@@ -18,12 +18,15 @@ class Settings(BaseSettings):
     APP_URL: str = "http://localhost:8000"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # Token expira em 30 minutos por segurança
 
-    SMTP_HOST: str = "1211405@isep.ipp.pt"
-    SMTP_PORT: int = 587 
+    
+    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
-    SMTP_FROM_EMAIL: str = "1211405@isep.ipp.pt"
+    SMTP_FROM_EMAIL: str = ""
     SMTP_FROM_NAME: str = "Sistema de Gestão de Condomínios"
+
+    
     PASSWORD_RESET_PATH: str = "/website_C/resetar-password.html"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60
 

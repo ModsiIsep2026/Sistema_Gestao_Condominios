@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edifícios — Sistema de Gestão de Condomínios</title>
+<link rel="stylesheet" href="../shared/css/tokens.css">
+<link rel="stylesheet" href="../shared/css/base.css">
+<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Edifícios</h1>
+                </div>
+                <div class="app-cabecalho__acoes">
+                    <button type="button" class="btn btn--primario" id="btn-novo">Novo edifício</button>
+                </div>
+            </div>
+
+            <div class="app-filtros">
+                <input type="search" placeholder="Procurar por nome ou cidade..." data-pesquisa>
+            </div>
+
+            <div class="painel">
+                <table class="app-tabela">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Morada</th>
+                            <th>Cidade</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-tabela="edificios">
+                        <tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal: criar/editar edifício -->
+<div class="modal-overlay" id="modal-edificio" hidden>
+    <div class="modal">
+        <div class="modal__cabecalho">
+            <h3 id="modal-titulo">Novo edifício</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-edificio" class="login-erro" hidden></div>
+            <form id="form-edificio">
+                <input type="hidden" id="e-id">
+                <div class="campo">
+                    <label for="e-nome">Nome do edifício</label>
+                    <input type="text" id="e-nome" placeholder="Ex: Edifício Avenida 1" required>
+                </div>
+                <div class="campo">
+                    <label for="e-morada">Morada</label>
+                    <input type="text" id="e-morada" placeholder="Ex: Rua de Santa Catarina, 100" required>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 2fr;gap:var(--esp-3);">
+                    <div class="campo">
+                        <label for="e-codigo-postal">Código postal</label>
+                        <input type="text" id="e-codigo-postal" placeholder="4000-447">
+                    </div>
+                    <div class="campo">
+                        <label for="e-cidade">Cidade</label>
+                        <input type="text" id="e-cidade" placeholder="Porto">
+                    </div>
+                </div>
+                <div class="campo">
+                    <small class="texto-suave">As coordenadas geográficas são obtidas automaticamente a partir da morada quando guardar.</small>
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-guardar">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script src="../shared/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/geocoding.js"></script>
+<script src="js/edificios.js"></script>
+</body>
+</html>

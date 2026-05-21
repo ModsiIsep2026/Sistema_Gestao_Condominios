@@ -151,6 +151,17 @@
     font-weight: 600;
 }
 
+/* Sucesso inline */
+.login-sucesso {
+    background-color: #E6F4EA;
+    border-left: 4px solid var(--cor-sucesso);
+    color: var(--cor-sucesso);
+    padding: var(--esp-3) var(--esp-4);
+    margin-bottom: var(--esp-4);
+    font-size: var(--tam-sm);
+    font-weight: 600;
+}
+
 /* Form */
 .login-form {
     display: flex;

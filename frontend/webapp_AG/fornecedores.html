@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fornecedores — Sistema de Gestão de Condomínios</title>
+<link rel="stylesheet" href="../shared/css/tokens.css">
+<link rel="stylesheet" href="../shared/css/base.css">
+<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Fornecedores</h1>
+                    <p>Empresas externas contratadas pelos técnicos quando o serviço não existe no edifício.</p>
+                </div>
+                <div class="app-cabecalho__acoes">
+                    <button type="button" class="btn btn--primario" id="btn-novo">Adicionar fornecedor</button>
+                </div>
+            </div>
+
+            <div class="app-filtros">
+                <input type="search" placeholder="Procurar por nome ou serviço..." data-pesquisa>
+            </div>
+
+            <div class="painel">
+                <table class="app-tabela">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Serviço</th>
+                            <th>Site</th>
+                            <th>Preço/hora</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-tabela="fornecedores">
+                        <tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal de criar/editar fornecedor -->
+<div class="modal-overlay" id="modal-fornecedor" hidden>
+    <div class="modal">
+        <div class="modal__cabecalho">
+            <h3 id="modal-titulo">Adicionar fornecedor</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-fornecedor" class="login-erro" hidden></div>
+            <form id="form-fornecedor">
+                <input type="hidden" id="f-id">
+                <div class="campo">
+                    <label for="f-nome">Nome da empresa</label>
+                    <input type="text" id="f-nome" placeholder="Ex: Otis Portugal" required>
+                </div>
+                <div class="campo">
+                    <label for="f-servico">Serviço</label>
+                    <input type="text" id="f-servico" placeholder="Ex: Elevadores, Canalização, Eletricidade...">
+                </div>
+                <div class="campo">
+                    <label for="f-site">Site</label>
+                    <input type="url" id="f-site" placeholder="https://www.exemplo.pt">
+                </div>
+                <div class="campo">
+                    <label for="f-preco-hora">Preço por hora (€)</label>
+                    <input type="number" id="f-preco-hora" placeholder="45.00" step="0.01" min="0">
+                    <small>Indique o valor que consta no site do fornecedor.</small>
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-guardar">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<script src="../shared/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/fornecedores.js"></script>
+</body>
+</html>

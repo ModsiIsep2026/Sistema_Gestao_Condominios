@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ordens de trabalho — Gestão de Condomínios</title>
+<link rel="stylesheet" href="../shared/css/tokens.css">
+<link rel="stylesheet" href="../shared/css/base.css">
+<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Ordens de trabalho</h1>
+                    <p>OTs atribuídas a técnicos e seu estado.</p>
+                </div>
+            </div>
+            <div class="app-filtros">
+                <input type="search" placeholder="Procurar..." data-pesquisa>
+            </div>
+            <div class="painel">
+                <table class="app-tabela">
+                    <thead>
+                        <tr>
+                            <th>Avaria</th>
+                            <th>Técnico</th>
+                            <th>Fornecedor</th>
+                            <th>Início</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-tabela="ots"><tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+<script src="../shared/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/listagem.js"></script>
+<script src="js/ordens-trabalho.js"></script>
+</body>
+</html>

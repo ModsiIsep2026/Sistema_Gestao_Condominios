@@ -7,6 +7,8 @@ class EdificioBase(BaseModel):
     morada: str
     codigo_postal: Optional[str] = None
     cidade: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
 
 class CriarEdificio(EdificioBase):
@@ -18,6 +20,8 @@ class AtualizarEdificio(BaseModel):
     morada: Optional[str] = None
     codigo_postal: Optional[str] = None
     cidade: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
     status: Optional[int] = None
 
 

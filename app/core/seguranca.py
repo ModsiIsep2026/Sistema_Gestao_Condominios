@@ -1,3 +1,5 @@
+import secrets
+import string
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 from jose import jwt, JWTError
@@ -24,6 +26,22 @@ _credenciais_invalidas = HTTPException(status_code=401,detail="Token inválido o
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def gerar_password_aleatoria(tamanho: int = 12) -> str:
+    # nao implementei
+    abc_maiusc = string.ascii_uppercase
+    abc_minusc = string.ascii_lowercase
+    digitos = string.digits
+    todos = abc_maiusc + abc_minusc + digitos
+
+    # Garante pelo menos uma de cada categoria
+    while True:
+        pw = "".join(secrets.choice(todos) for _ in range(tamanho))
+        if (any(c.isupper() for c in pw)
+                and any(c.islower() for c in pw)
+                and any(c.isdigit() for c in pw)):
+            return pw
 
 
 def verificar_password(password: str, password_hash: str) -> bool:

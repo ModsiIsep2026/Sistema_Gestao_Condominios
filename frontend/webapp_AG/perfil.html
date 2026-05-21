@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A minha conta — Gestão de Condomínios</title>
+<link rel="stylesheet" href="../shared/css/tokens.css">
+<link rel="stylesheet" href="../shared/css/base.css">
+<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>A minha conta</h1>
+                    <p>Dados pessoais e definições da conta.</p>
+                </div>
+            </div>
+
+            <div class="painel" style="max-width:640px;">
+                <div class="painel__cabecalho"><h2>Dados pessoais</h2></div>
+                <div class="painel__corpo">
+                    <form id="form-perfil">
+                        <div id="msg-perfil" hidden style="margin-bottom:var(--esp-3);"></div>
+                        <div class="campo"><label>Nome</label><input type="text" id="perfil-nome"></div>
+                        <div class="campo"><label>Email</label><input type="email" id="perfil-email" disabled></div>
+                        <div class="campo"><label>Telemóvel</label><input type="tel" id="perfil-telemovel"></div>
+                        <div class="campo"><label>NIF</label><input type="text" id="perfil-nif" maxlength="9"></div>
+                        <div style="display:flex;gap:var(--esp-2);margin-top:var(--esp-4);">
+                            <button type="submit" class="btn btn--primario">Guardar alterações</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="painel" style="max-width:640px;">
+                <div class="painel__cabecalho"><h2>Alterar Password</h2></div>
+                <div class="painel__corpo">
+                    <p class="texto-suave">
+                    Peça um link de recuperação.
+                    </p>
+                    <div id="msg-pw" hidden style="margin-top:var(--esp-3);"></div>
+                    <button type="button" class="btn btn--outline" id="btn-pedir-pw" style="margin-top:var(--esp-3);">
+                        Enviar link
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+<script src="../shared/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/perfil.js"></script>
+</body>
+</html>

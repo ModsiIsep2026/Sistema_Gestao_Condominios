@@ -10,7 +10,7 @@ from app.core.seguranca import (
     PERFIL_CONDOMINO,
     PERFIL_TECNICO,
 )
-from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador, LerUtilizador
+from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador, LerUtilizador, CriarUtilizadorPorAdmin
 from app.services import utilizador as servico
 
 router = APIRouter(prefix="/utilizadores", tags=["Utilizadores"])
@@ -24,14 +24,16 @@ router = APIRouter(prefix="/utilizadores", tags=["Utilizadores"])
 
 @router.get("", response_model=List[LerUtilizador])
 def listar_utilizadores(
+    incluir_inativos: bool = False,
     db: Session = Depends(get_db),
     utilizador=Depends(utilizador_atual),
 ):
+
     if utilizador.perfil_id == PERFIL_ADMINISTRADOR:
-        return servico.listar(db)
+        return servico.listar(db, perfil_ids=[PERFIL_GESTOR], incluir_inativos=incluir_inativos)
 
     if utilizador.perfil_id == PERFIL_GESTOR:
-        return servico.listar(db, perfil_ids=[PERFIL_CONDOMINO, PERFIL_TECNICO])
+        return servico.listar(db, perfil_ids=[PERFIL_CONDOMINO, PERFIL_TECNICO], incluir_inativos=incluir_inativos)
 
     raise HTTPException(status_code=403, detail="Acesso negado")
 
@@ -71,6 +73,29 @@ def criar_utilizador(
         return servico.criar(db, dados)
 
     raise HTTPException(status_code=403, detail="Acesso negado")
+
+ # ainda nao implementei
+@router.post("/convidar", response_model=LerUtilizador, status_code=201)
+async def convidar_utilizador(
+    dados: CriarUtilizadorPorAdmin,
+    db: Session = Depends(get_db),
+    utilizador=Depends(utilizador_atual),
+):
+    """Cria conta gerando password aleatória e envia credenciais por email.
+    - Admin pode criar qualquer perfil (gestor/técnico/condómino).
+    - Gestor pode criar apenas condóminos e técnicos."""
+
+    if utilizador.perfil_id == PERFIL_ADMINISTRADOR:
+        if dados.perfil_id not in [PERFIL_GESTOR, PERFIL_TECNICO, PERFIL_CONDOMINO]:
+            raise HTTPException(403, "Não é possível criar contas de administrador por este endpoint.")
+        return await servico.criar_por_admin(db, dados)
+
+    if utilizador.perfil_id == PERFIL_GESTOR:
+        if dados.perfil_id not in [PERFIL_CONDOMINO, PERFIL_TECNICO]:
+            raise HTTPException(403, "Gestores só podem criar condóminos e técnicos.")
+        return await servico.criar_por_admin(db, dados)
+
+    raise HTTPException(403, "Acesso negado")
 
 
 @router.put("/{id}", response_model=LerUtilizador)

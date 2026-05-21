@@ -4,8 +4,9 @@ from typing import Optional
 
 class FornecedorBase(BaseModel):
     nome: str
-    nif: Optional[str] = None
     servico: Optional[str] = None
+    site: Optional[str] = None
+    preco_hora: Optional[float] = None
 
 
 class CriarFornecedor(FornecedorBase):
@@ -14,8 +15,9 @@ class CriarFornecedor(FornecedorBase):
 
 class AtualizarFornecedor(BaseModel):
     nome: Optional[str] = None
-    nif: Optional[str] = None
     servico: Optional[str] = None
+    site: Optional[str] = None
+    preco_hora: Optional[float] = None
     status: Optional[int] = None
 
 

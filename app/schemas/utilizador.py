@@ -15,6 +15,10 @@ class CriarUtilizador(UtilizadorBase):
     password: str
 
 
+class CriarUtilizadorPorAdmin(UtilizadorBase):
+    pass
+
+
 class AtualizarUtilizador(BaseModel):
     perfil_id: Optional[int] = None
     nome: Optional[str] = None
