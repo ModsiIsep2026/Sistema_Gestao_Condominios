@@ -10,7 +10,8 @@ from app.core.seguranca import utilizador_atual
 from app.routers import (
     auth, oauth, utilizadores, edificios, fracoes, utilizador_fracao,
     quotas, pagamentos, espacos, reservas, avarias,
-    ordens_trabalho, despesas, fornecedores, notificacoes, refs, relatorios
+    ordens_trabalho, despesas, fornecedores, notificacoes, refs, relatorios,
+    gestor_edificio,
 )
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -77,6 +78,7 @@ app.include_router(fornecedores.router, dependencies=_auth_required)
 app.include_router(notificacoes.router, dependencies=_auth_required)
 app.include_router(refs.router, dependencies=_auth_required)
 app.include_router(relatorios.router, dependencies=_auth_required)
+app.include_router(gestor_edificio.router, dependencies=_auth_required)
 
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"

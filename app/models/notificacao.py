@@ -12,5 +12,7 @@ class Notificacao(Base):
     mensagem = Column(Text, nullable=False)
     lida = Column(Integer, nullable=False, default=0)
     status = Column(Integer, nullable=False, default=1)
+    tipo = Column(String(50), nullable=True)
+    referencia_id = Column(Integer, nullable=True)
 
-    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador associado à notificação
+    utilizador = relationship("Utilizador")

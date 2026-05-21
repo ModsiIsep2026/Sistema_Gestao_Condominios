@@ -1,8 +1,7 @@
-from sqlalchemy import Column, Integer, Text, ForeignKey
+from datetime import datetime
+from sqlalchemy import Column, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
-
-# Isto é basicamente o que temos na bd
 
 
 class Avaria(Base):
@@ -15,9 +14,9 @@ class Avaria(Base):
     categoria_id = Column(Integer, ForeignKey("categoria_avaria.id_categoria"), nullable=False)
     descricao = Column(Text, nullable=False)
     status = Column(Integer, nullable=False, default=1)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    
-    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador que reportou a avaria
-    edificio = relationship("Edificio") # Tabela Edificio, para obter o nome do edificio onde ocorreu a avaria
-    fracao = relationship("Fracao") # Tabela Fracao, para obter o número da fração onde ocorreu a avaria
-    categoria = relationship("CategoriaAvaria") # Tabela CategoriaAvaria, para obter o nome da categoria da avaria
+    utilizador = relationship("Utilizador")
+    edificio = relationship("Edificio")
+    fracao = relationship("Fracao")
+    categoria = relationship("CategoriaAvaria")

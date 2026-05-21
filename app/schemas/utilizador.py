@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 
@@ -27,11 +28,14 @@ class AtualizarUtilizador(BaseModel):
     nif: Optional[str] = None
     lingua: Optional[str] = None
     status: Optional[int] = None
+    email_verificado: Optional[bool] = None
 
 
 class LerUtilizador(UtilizadorBase):
     id_utilizador: int
     status: int
+    created_at: Optional[datetime] = None
+    email_verificado: bool = False
 
     class Config:
         from_attributes = True

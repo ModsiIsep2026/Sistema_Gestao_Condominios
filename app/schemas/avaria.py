@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Optional
+from datetime import datetime
 
 
 class CriarAvaria(BaseModel):
@@ -24,6 +25,7 @@ class LerAvaria(BaseModel):
     categoria_id: int
     descricao: str
     status: int
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

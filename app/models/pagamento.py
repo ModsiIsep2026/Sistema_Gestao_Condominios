@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, DECIMAL, Date, ForeignKey
+from datetime import datetime
+from sqlalchemy import Column, Integer, DECIMAL, Date, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
 
@@ -12,6 +13,7 @@ class Pagamento(Base):
     valor_pago = Column(DECIMAL(10, 2), nullable=False)
     data_pagamento = Column(Date, nullable=False)
     status = Column(Integer, nullable=False, default=1)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    quota = relationship("Quota") # Tabela Quota, para obter o mês e ano da quota associada ao pagamento
-    utilizador = relationship("Utilizador") # Tabela Utilizador, para obter o nome do utilizador que realizou o pagamento
+    quota = relationship("Quota")
+    utilizador = relationship("Utilizador")

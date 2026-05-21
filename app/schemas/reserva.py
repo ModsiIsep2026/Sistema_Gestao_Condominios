@@ -16,6 +16,7 @@ class AtualizarReserva(BaseModel):
     estado_id: Optional[int] = None
     data_inicio: Optional[datetime] = None
     data_fim: Optional[datetime] = None
+    data_aprovacao: Optional[datetime] = None
     status: Optional[int] = None
 
 
@@ -28,6 +29,8 @@ class LerReserva(BaseModel):
     data_inicio: datetime
     data_fim: datetime
     status: int
+    data_aprovacao: Optional[datetime] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True

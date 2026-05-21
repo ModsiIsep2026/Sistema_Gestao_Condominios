@@ -1,3 +1,4 @@
+from datetime import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
@@ -14,8 +15,10 @@ class Reserva(Base):
     data_inicio = Column(DateTime, nullable=False)
     data_fim = Column(DateTime, nullable=False)
     status = Column(Integer, nullable=False, default=1)
+    data_aprovacao = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    utilizador = relationship("Utilizador", foreign_keys=[utilizador_id]) # Tabela Utilizador, para obter o nome do utilizador que fez a reserva
-    aprovador = relationship("Utilizador", foreign_keys=[aprovador_id]) # Tabela Utilizador, para obter o nome do aprovador da reserva
-    espaco = relationship("EspacoComum") # Tabela EspacoComum, para obter o nome do espaço comum reservado
-    estado = relationship("EstadoReserva") # Tabela EstadoReserva, para obter o nome do estado da reserva (Pendente,Aprovada,Rejeitada)
+    utilizador = relationship("Utilizador", foreign_keys=[utilizador_id])
+    aprovador = relationship("Utilizador", foreign_keys=[aprovador_id])
+    espaco = relationship("EspacoComum")
+    estado = relationship("EstadoReserva")
