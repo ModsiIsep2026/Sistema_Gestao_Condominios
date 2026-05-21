@@ -1,4 +1,5 @@
 from passlib.context import CryptContext
+from passlib.exc import UnknownHashError
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException
@@ -26,7 +27,11 @@ def hash_password(password: str) -> str:
 
 
 def verificar_password(password: str, password_hash: str) -> bool:
-    return pwd_context.verify(password, password_hash)
+    try:
+        return pwd_context.verify(password, password_hash)
+    
+    except UnknownHashError:
+        return False
 
 
 def criar_token(dados: dict) -> str:
@@ -74,7 +79,7 @@ def tecnico_ou_superior(utilizador: Utilizador = Depends(utilizador_atual)):
     return autorizar([PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
 
 
-def condomino_ou_superior(utilizador: Utilizador = Depends(utilizador_atual)):
+def perfis1_5(utilizador: Utilizador = Depends(utilizador_atual)):
     return autorizar([PERFIL_CONDOMINO, PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
 
 

@@ -38,3 +38,23 @@ class Registo(BaseModel):
         if len(v) < 2:
             raise ValueError("Indique o seu nome completo.")
         return v
+
+
+class EPassword(BaseModel):
+    email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    token: str
+    password: str
+
+    @field_validator("password")
+    @classmethod
+    def password_forte(cls, v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("A password tem de ter pelo menos 8 caracteres.")
+        if not any(c.isupper() for c in v):
+            raise ValueError("A password tem de ter pelo menos uma letra maiúscula.")
+        if not any(c.isdigit() for c in v):
+            raise ValueError("A password tem de ter pelo menos um número.")
+        return v

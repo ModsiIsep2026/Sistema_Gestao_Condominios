@@ -53,7 +53,8 @@ app.add_middleware(
 
 
 @app.exception_handler(Exception)
-async def handler_erro_generico(request: Request, exc: Exception):
+async def e_sv(request: Request, exc: Exception):
+    
     return JSONResponse(status_code=500, content={"detalhe": "Erro interno do servidor"})
 
 

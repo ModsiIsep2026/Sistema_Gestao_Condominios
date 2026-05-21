@@ -7,12 +7,12 @@ from sqlalchemy.orm import Session
 
 from app.core.db_connect import get_db
 from app.core.seguranca import criar_token, utilizador_atual
-from app.schemas.auth import Login, Token, Registo
+from app.schemas.auth import Login, Token, Registo, EPassword, ResetPassword
 from app.services import auth as servico
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-# (POST) /auth/login   - Autentica o utilizador
+# (POST) /auth/login   - Autentica o utilizador 
 # (POST) /auth/logout  - Regista logout do utilizador 
 # (POST) /auth/registo - Regista novo utilizador (condómino)
 
@@ -72,3 +72,25 @@ def registo(dados: Registo, request: Request, db: Session = Depends(get_db)):
 
 
     return {"access_token": token, "token_type": "bearer"}
+
+
+
+@router.post("/pass-err")
+async def pass_err(dados: EPassword, request: Request, db: Session = Depends(get_db)):
+    ip = _obter_ip(request)
+    _verificar_rt(ip)
+
+    await servico.pass_err(db, dados.email)
+    return {"detalhe": "Vai receber instruções para recuperar a sua password."}
+
+
+@router.post("/reset-password")
+def reset_password(dados: ResetPassword, request: Request, db: Session = Depends(get_db)):
+    
+    ip = _obter_ip(request)
+
+    _verificar_rt(ip)
+
+    servico.reset_password(db, dados.token, dados.password, ip=ip)
+
+    return {"detalhe": "Password alterada com sucesso."}

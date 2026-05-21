@@ -10,7 +10,6 @@
     const inputNif = document.getElementById("nif");
     const inputPassword = document.getElementById("password");
     const inputPassword2 = document.getElementById("password2");
-    const inputAceito = document.getElementById("aceito");
 
 
     document.querySelectorAll(".toggle-pass").forEach((botao) => {
@@ -70,15 +69,11 @@
             return;
         }
         if (password !== password2) {
-            mostrarErro("As duas passwords não coincidem.");
+            mostrarErro("As passwords não coincidem.");
             return;
         }
         if (nif && !/^\d{9}$/.test(nif)) {
-            mostrarErro("O NIF tem de ter 9 dígitos.");
-            return;
-        }
-        if (!inputAceito.checked) {
-            mostrarErro("É preciso aceitar os termos de utilização para criar conta.");
+            mostrarErro("O NIF está incompleto.");
             return;
         }
 
