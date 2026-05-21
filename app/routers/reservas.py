@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import gestor_ou_administrador, utilizador_atual
+from app.core.seguranca import gestor_ou_administrador, utilizador_atual, ACESSO_NEGADO
 from app.schemas.reserva import CriarReserva, AtualizarReserva, LerReserva
 from app.services import reserva as servico
 
@@ -33,7 +33,7 @@ def obter_reserva(
     reserva = servico.obter(db, id)
     if utilizador.perfil_id in [3, 5] or reserva.utilizador_id == utilizador.id_utilizador:
         return reserva
-    raise HTTPException(status_code=403, detail="Acesso negado")
+    raise ACESSO_NEGADO
 
 
 @router.post("", response_model=LerReserva, status_code=201)

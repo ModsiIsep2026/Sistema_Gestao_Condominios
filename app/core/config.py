@@ -16,21 +16,21 @@ class Settings(BaseSettings):
     APP_DEBUG: bool = False
     APP_PORT: int = 8000
     APP_URL: str = "http://localhost:8000"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30  # Token expira em 30 minutos por segurança
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30           # Token expira em 30 minutos por segurança
 
-    
+    # Envio de emails para recuperar a password
     SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587
+    SMTP_PORT: int = 587                             # 587 para TLS, se fosse SSL era 465 
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_FROM_EMAIL: str = ""
     SMTP_FROM_NAME: str = "Sistema de Gestão de Condomínios"
 
     
-    PASSWORD_RESET_PATH: str = "/website_C/resetar-password.html"
+    PASSWORD_RESET_PATH: str = "/website_C/reset_pw2.html"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60
 
-    GOOGLE_CLIENT_ID: str = "" # Trabalho futuro quando tivermos em prod
+    GOOGLE_CLIENT_ID: str = ""                       # Trabalho futuro quando tivermos em prod
     GOOGLE_CLIENT_SECRET: str = "" # --
     GITHUB_CLIENT_ID: str = "" # --
     GITHUB_CLIENT_SECRET: str = "" # --

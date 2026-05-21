@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import gestor_ou_administrador, tecnico_ou_superior, utilizador_atual
+from app.core.seguranca import gestor_ou_administrador, tecnico_ou_superior, utilizador_atual, ACESSO_NEGADO
 from app.schemas.ordem_trabalho import CriarOrdemTrabalho, AtualizarOrdemTrabalho, LerOrdemTrabalho
 from app.services import ordem_trabalho as servico
 
@@ -33,7 +33,7 @@ def obter_ordem(
     ordem = servico.obter(db, id)
     if utilizador.perfil_id in [3, 4, 5] or ordem.avaria.utilizador_id == utilizador.id_utilizador:
         return ordem
-    raise HTTPException(status_code=403, detail="Acesso negado")
+    raise ACESSO_NEGADO
 
 
 @router.post("", response_model=LerOrdemTrabalho, status_code=201)

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import utilizador_atual
+from app.core.seguranca import utilizador_atual, ACESSO_NEGADO
 from app.models.notificacao import Notificacao
 from app.schemas.notificacao import LerNotificacao
 from app.services import notificacao as servico
@@ -34,5 +34,5 @@ def marcar_como_lida(
     if not notificacao:
         raise HTTPException(status_code=404, detail="Notificação não encontrada")
     if notificacao.utilizador_id != utilizador.id_utilizador and utilizador.perfil_id != 5:
-        raise HTTPException(status_code=403, detail="Acesso negado")
+        raise ACESSO_NEGADO
     return servico.marcar_como_lida(db, id)

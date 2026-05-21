@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import gestor_ou_administrador, utilizador_atual
+from app.core.seguranca import gestor_ou_administrador, utilizador_atual, ACESSO_NEGADO
 from app.models.utilizador_fracao import UtilizadorFracao
 from app.schemas.quota import CriarQuota, AtualizarQuota, LerQuota
 from app.services import quota as servico
@@ -36,7 +36,7 @@ def obter_quota(
         return quota
     if quota.fracao_id in [f.fracao_id for f in db.query(UtilizadorFracao).filter(UtilizadorFracao.utilizador_id == utilizador.id_utilizador, UtilizadorFracao.status == 1).all()]:
         return quota
-    raise HTTPException(status_code=403, detail="Acesso negado")
+    raise ACESSO_NEGADO
 
 
 @router.post("", response_model=LerQuota, status_code=201)

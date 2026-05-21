@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.models.utilizador import Utilizador
 from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador, CriarUtilizadorPorAdmin
-from app.core.seguranca import hash_password, gerar_password_aleatoria
+from app.core.seguranca import hash_pw, random_pw
 from app.core.config import get_configs
 from app.services.email import enviar_email, template_credenciais
 
@@ -20,8 +20,6 @@ def listar(db: Session, perfil_ids: list[int] | None = None, incluir_inativos: b
 
 
 def obter(db: Session, id: int):
-    # Não filtramos por status — soft-delete é visual; o registo continua a existir
-    # e tem de ser acessível para poder ser reativado pelo admin.
     utilizador = db.query(Utilizador).filter(Utilizador.id_utilizador == id).first()
 
     if not utilizador:
@@ -39,7 +37,7 @@ def criar(db: Session, dados: CriarUtilizador):
         raise HTTPException(400, "Email já registado")
     
     dados_utilizador = dados.model_dump(exclude={"password"})           # Exceto a password
-    dados_utilizador["password_hash"] = hash_password(dados.password)
+    dados_utilizador["password_hash"] = hash_pw(dados.password)
     utilizador = Utilizador(**dados_utilizador)
     db.add(utilizador)
     db.commit()
@@ -68,13 +66,13 @@ async def criar_por_admin(db: Session, dados: CriarUtilizadorPorAdmin):
     if obter_por_email(db, dados.email):
         raise HTTPException(400, "Email já registado")
 
-    password_temporaria = gerar_password_aleatoria(12)
+    password_temporaria = random_pw(12)
 
     utilizador = Utilizador(
         perfil_id=dados.perfil_id,
         nome=dados.nome.strip(),
         email=dados.email,
-        password_hash=hash_password(password_temporaria),
+        password_hash=hash_pw(password_temporaria),
         telemovel=dados.telemovel,
         nif=dados.nif,
         lingua=dados.lingua,

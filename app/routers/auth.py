@@ -24,9 +24,10 @@ _MAX_TENTATIVAS = 5
 SEP_SEGUNDOS = 300
 
 
-def _verificar_rt(ip: str):
+def verificar_rt(ip: str):
     agora = datetime.utcnow()
     limite = agora - timedelta(seconds=SEP_SEGUNDOS)
+
     with _lock:
         _tentativas[ip] = [t for t in _tentativas[ip] if t > limite]
         if len(_tentativas[ip]) >= _MAX_TENTATIVAS:
@@ -34,7 +35,7 @@ def _verificar_rt(ip: str):
         _tentativas[ip].append(agora)
 
 
-def _obter_ip(request: Request) -> str:
+def obter_ip(request: Request) -> str:
     
     forwarded = request.headers.get("X-Forwarded-For")
     if forwarded:
@@ -44,8 +45,8 @@ def _obter_ip(request: Request) -> str:
 
 @router.post("/login", response_model=Token)
 def login(dados: Login, request: Request, db: Session = Depends(get_db)):
-    ip = _obter_ip(request)
-    _verificar_rt(ip)
+    ip = obter_ip(request)
+    verificar_rt(ip)
 
     utilizador = servico.autenticar(db, dados.email, dados.password, ip=ip)
     token = criar_token({"sub": str(utilizador.id_utilizador), "perfil": utilizador.perfil_id})
@@ -54,16 +55,16 @@ def login(dados: Login, request: Request, db: Session = Depends(get_db)):
 
 @router.post("/logout")
 def logout(request: Request, db: Session = Depends(get_db), utilizador=Depends(utilizador_atual)):
-    ip = _obter_ip(request)
+    ip = obter_ip(request)
     servico.registar_logout(db, utilizador.id_utilizador, ip=ip)
     return {"detalhe": "Sessão terminada"}
 
 
 @router.post("/registo", response_model=Token, status_code=201)
 def registo(dados: Registo, request: Request, db: Session = Depends(get_db)):
-    ip = _obter_ip(request)
+    ip = obter_ip(request)
 
-    _verificar_rt(ip)  # mesma proteção rate-limit do login
+    verificar_rt(ip)                                                                # mesma proteção rate-limit do login
 
 
     utilizador = servico.registar_condomino(db, dados, ip=ip)
@@ -77,20 +78,20 @@ def registo(dados: Registo, request: Request, db: Session = Depends(get_db)):
 
 @router.post("/pass-err")
 async def pass_err(dados: EPassword, request: Request, db: Session = Depends(get_db)):
-    ip = _obter_ip(request)
-    _verificar_rt(ip)
+    ip = obter_ip(request)
+    verificar_rt(ip)
 
     await servico.pass_err(db, dados.email)
     return {"detalhe": "Vai receber instruções para recuperar a sua password."}
 
 
 @router.post("/reset-password")
-def reset_password(dados: ResetPassword, request: Request, db: Session = Depends(get_db)):
+def reset_pw(dados: ResetPassword, request: Request, db: Session = Depends(get_db)):
     
-    ip = _obter_ip(request)
+    ip = obter_ip(request)
 
-    _verificar_rt(ip)
+    verificar_rt(ip)
 
-    servico.reset_password(db, dados.token, dados.password, ip=ip)
+    servico.reset_pw(db, dados.token, dados.password, ip=ip)
 
     return {"detalhe": "Password alterada com sucesso."}

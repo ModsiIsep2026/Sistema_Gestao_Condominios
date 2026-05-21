@@ -35,7 +35,7 @@ async def enviar_email(destinatario: str, assunto: str, corpo_texto: str, corpo_
 
 
 def template_credenciais(nome: str, email: str, password: str, perfil_nome: str, url_login: str) -> tuple[str, str]:
-    # isto aqui ainda tenho de validar
+   
 
     texto = (
         f"Olá {nome},\n\n"
@@ -95,4 +95,22 @@ def template_credenciais(nome: str, email: str, password: str, perfil_nome: str,
 </body>
 </html>"""
 
+    return texto, html
+
+
+def template_reset_pw(nome: str, link: str, minutos: int) -> tuple[str, str]:
+    texto = (
+        f"Olá {nome},\n\n"
+        "Recebemos um pedido de recuperação de password para a sua conta.\n"
+        f"Aceda ao link para escolher uma nova password:\n\n{link}\n\n"
+        f"Este link é válido durante {minutos} minutos.\n\n"
+        "Se não pediu a recuperação, ignore este email.\n"
+    )
+    html = (
+        f"<p>Olá <strong>{nome}</strong>,</p>"
+        "<p>Recebemos um pedido de recuperação de password para a sua conta.</p>"
+        f"<p><a href=\"{link}\" style=\"background:#F08A24;color:#fff;padding:12px 24px;text-decoration:none;\">Repor password</a></p>"
+        f"<p style=\"font-size:13px;color:#5A5A5A;\">Este link é válido durante {minutos} minutos.</p>"
+        "<p style=\"font-size:13px;color:#5A5A5A;\">Se não pediu a recuperação, ignore este email.</p>"
+    )
     return texto, html

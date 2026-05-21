@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import gestor_ou_administrador, utilizador_atual
+from app.core.seguranca import gestor_ou_administrador, utilizador_atual, ACESSO_NEGADO
 from app.schemas.avaria import CriarAvaria, AtualizarAvaria, LerAvaria
 from app.services import avaria as servico
 
@@ -34,7 +34,7 @@ def obter_avaria(
     avaria = servico.obter(db, id)
     if utilizador.perfil_id in [3, 4, 5] or avaria.utilizador_id == utilizador.id_utilizador:
         return avaria
-    raise HTTPException(status_code=403, detail="Acesso negado")
+    raise ACESSO_NEGADO
 
 
 @router.post("", response_model=LerAvaria, status_code=201)

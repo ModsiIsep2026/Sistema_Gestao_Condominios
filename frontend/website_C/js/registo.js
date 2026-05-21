@@ -86,7 +86,7 @@
             if (resposta && resposta.access_token) {
                 sessionStorage.setItem("condo_token", resposta.access_token);
             }
-            // Condómino — sem área dedicada ainda. Volta à landing com aviso.
+            
             alert("Conta criada. A sua área pessoal estará disponível em breve.");
             window.location.href = "index.html";
         } catch (e) {

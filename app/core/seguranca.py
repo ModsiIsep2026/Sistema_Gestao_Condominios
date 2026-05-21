@@ -13,38 +13,41 @@ from app.models.utilizador import Utilizador
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-PERFIL_VISITANTE = 1
+# pw= password
+PERFIL_VISITANTE = 1 
 PERFIL_CONDOMINO = 2
 PERFIL_GESTOR = 3
 PERFIL_TECNICO = 4
-PERFIL_ADMINISTRADOR = 5
+PERFIL_ADMINISTRADOR = 5 
 
 
-_credenciais_invalidas = HTTPException(status_code=401,detail="Token inválido ou expirado",headers={"WWW-Authenticate": "Bearer"},)
+_credenciais_invalidas = HTTPException(status_code=401, detail="Token inválido ou expirado", headers={"WWW-Authenticate": "Bearer"})
+ACESSO_NEGADO = HTTPException(status_code=403, detail="Acesso negado")
 
 
-def hash_password(password: str) -> str:
+def hash_pw(password: str) -> str:
+
     return pwd_context.hash(password)
 
 
-def gerar_password_aleatoria(tamanho: int = 12) -> str:
-    # nao implementei
-    abc_maiusc = string.ascii_uppercase
-    abc_minusc = string.ascii_lowercase
+def random_pw(tamanho: int = 12) -> str:
+    
+    pw_maiusc = string.ascii_uppercase # asci contém as letras do alfabeto em maiusculo
+    pw_minusc = string.ascii_lowercase # asci contém as letras do alfabeto em minusculo
     digitos = string.digits
-    todos = abc_maiusc + abc_minusc + digitos
+    pw_completa = pw_maiusc +  pw_minusc + digitos
 
-    # Garante pelo menos uma de cada categoria
+
     while True:
-        pw = "".join(secrets.choice(todos) for _ in range(tamanho))
+
+        pw = "".join(secrets.choice(pw_completa) for _ in range(tamanho))
         if (any(c.isupper() for c in pw)
                 and any(c.islower() for c in pw)
                 and any(c.isdigit() for c in pw)):
             return pw
 
 
-def verificar_password(password: str, password_hash: str) -> bool:
+def verificar_pw(password: str, password_hash: str) -> bool:
     try:
         return pwd_context.verify(password, password_hash)
     
@@ -79,39 +82,15 @@ def utilizador_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(
     return utilizador
 
 
-def autorizar(perfis: list[int], utilizador: Utilizador = Depends(utilizador_atual)):
-    if utilizador.perfil_id not in perfis:
-        raise HTTPException(status_code=403, detail="Acesso negado")
-    return utilizador
+def requer_perfis(*perfis: int):
+    def _check(utilizador: Utilizador = Depends(utilizador_atual)):
+        if utilizador.perfil_id not in perfis:
+            raise ACESSO_NEGADO
+        return utilizador
+    return _check
 
 
-def administrador(utilizador: Utilizador = Depends(utilizador_atual)):
-    return autorizar([PERFIL_ADMINISTRADOR], utilizador)
-
-
-def gestor_ou_administrador(utilizador: Utilizador = Depends(utilizador_atual)):
-    return autorizar([PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
-
-
-def tecnico_ou_superior(utilizador: Utilizador = Depends(utilizador_atual)):
-    return autorizar([PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
-
-
-def perfis1_5(utilizador: Utilizador = Depends(utilizador_atual)):
-    return autorizar([PERFIL_CONDOMINO, PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador)
-
-
-def verificar_perfil(perfis: list[int], utilizador: Utilizador = Depends(utilizador_atual)):
-
-    if utilizador.perfil_id not in perfis: # Perfis válidos
-        raise HTTPException(status_code=403, detail="Acesso negado")
-    return utilizador
-
-
-def administrador(utilizador: Utilizador = Depends(utilizador_atual)):
-    return verificar_perfil([PERFIL_ADMINISTRADOR], utilizador) # Apenas administradores (5)
-
-
-def gestor_ou_administrador(utilizador: Utilizador = Depends(utilizador_atual)):
-
-    return verificar_perfil([PERFIL_GESTOR, PERFIL_ADMINISTRADOR], utilizador) # Gestores (3) ou administradores (5)
+administrador           = requer_perfis(PERFIL_ADMINISTRADOR)
+gestor_ou_administrador = requer_perfis(PERFIL_GESTOR, PERFIL_ADMINISTRADOR)
+tecnico_ou_superior     = requer_perfis(PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR)
+perfis2_5               = requer_perfis(PERFIL_CONDOMINO, PERFIL_TECNICO, PERFIL_GESTOR, PERFIL_ADMINISTRADOR) 

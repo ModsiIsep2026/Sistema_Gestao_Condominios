@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
 
+# Isto é basicamente o que temos na bd
+
 
 class Avaria(Base):
     __tablename__ = "avaria"

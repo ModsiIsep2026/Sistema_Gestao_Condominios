@@ -2,6 +2,16 @@ from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 
 
+def _validar_pw_forte(v: str) -> str:
+    if len(v) < 8:
+        raise ValueError("A password tem de ter pelo menos 8 caracteres.")
+    if not any(c.isupper() for c in v):
+        raise ValueError("A password tem de ter pelo menos uma letra maiúscula.")
+    if not any(c.isdigit() for c in v):
+        raise ValueError("A password tem de ter pelo menos um número.")
+    return v
+
+
 class Login(BaseModel):
     email: EmailStr
     password: str
@@ -20,21 +30,12 @@ class Registo(BaseModel):
     nif: Optional[str] = None
     lingua: str = "pt"
 
-    @field_validator("password")
-    @classmethod
-    def password_forte(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("A password tem de ter pelo menos 8 caracteres.")
-        if not any(c.isupper() for c in v):
-            raise ValueError("A password tem de ter pelo menos uma letra maiúscula.")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("A password tem de ter pelo menos um número.")
-        return v
+    _v_pw = field_validator("password")(lambda cls, v: _validar_pw_forte(v))
 
     @field_validator("nome")
     @classmethod
     def nome_valido(cls, v: str) -> str:
-        v = v.strip() # remove todos os espaços no início e no fim do nome da mensagem
+        v = v.strip()
         if len(v) < 2:
             raise ValueError("Indique o seu nome completo.")
         return v
@@ -48,13 +49,4 @@ class ResetPassword(BaseModel):
     token: str
     password: str
 
-    @field_validator("password")
-    @classmethod
-    def password_forte(cls, v: str) -> str:
-        if len(v) < 8:
-            raise ValueError("A password tem de ter pelo menos 8 caracteres.")
-        if not any(c.isupper() for c in v):
-            raise ValueError("A password tem de ter pelo menos uma letra maiúscula.")
-        if not any(c.isdigit() for c in v):
-            raise ValueError("A password tem de ter pelo menos um número.")
-        return v
+    _v_pw = field_validator("password")(lambda cls, v: _validar_pw_forte(v))

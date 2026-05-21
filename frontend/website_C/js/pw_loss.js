@@ -1,4 +1,3 @@
-/* "Esqueceu-se da password" — envia pedido ao backend que envia o email */
 
 (function () {
 
