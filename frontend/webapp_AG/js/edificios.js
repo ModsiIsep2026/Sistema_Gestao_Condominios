@@ -3,9 +3,54 @@
 (async function () {
 
     let dadosEdificios = [];
+    let filtroId = null;
+
+    const params = new URLSearchParams(window.location.search);
+    const idDaURL = params.get("id");
+    if (idDaURL) filtroId = parseInt(idDaURL);
 
     function temCoords(e) {
         return e.latitude != null && e.longitude != null;
+    }
+
+    function aplicarFiltroId(lista) {
+        if (filtroId == null) return lista;
+        return lista.filter((e) => e.id_edificio === filtroId);
+    }
+
+    function mostrarBannerFiltro(edificio) {
+        let banner = document.getElementById("filtro-id-banner");
+        if (!banner) {
+            banner = document.createElement("div");
+            banner.id = "filtro-id-banner";
+            banner.style.cssText = `
+                background-color: rgba(240, 138, 36, 0.10);
+                border: 1px solid var(--cor-acento);
+                border-left-width: 4px;
+                padding: var(--esp-3) var(--esp-4);
+                margin-bottom: var(--esp-4);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                font-size: var(--tam-sm);
+                color: var(--cor-primaria);
+            `;
+            const filtros = document.querySelector(".app-filtros");
+            filtros.parentNode.insertBefore(banner, filtros);
+        }
+        banner.innerHTML = `
+            <span>A mostrar apenas <strong>${edificio?.nome || "edifício seleccionado"}</strong> (vindo do mapa).</span>
+            <button type="button" id="limpar-filtro-id"
+                    style="background:none;border:1px solid var(--cor-primaria);padding:6px 14px;cursor:pointer;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;font-size:var(--tam-xs);">
+                Ver todos
+            </button>
+        `;
+        document.getElementById("limpar-filtro-id").addEventListener("click", () => {
+            filtroId = null;
+            history.replaceState({}, "", "edificios.html");
+            banner.remove();
+            renderizar(dadosEdificios);
+        });
     }
 
     function renderizar(lista) {
@@ -44,7 +89,13 @@
     async function carregar() {
         try {
             dadosEdificios = await window.api.get("/edificios");
-            renderizar(dadosEdificios);
+            const filtrados = aplicarFiltroId(dadosEdificios);
+            renderizar(filtrados);
+
+            if (filtroId != null) {
+                const edificio = dadosEdificios.find((e) => e.id_edificio === filtroId);
+                mostrarBannerFiltro(edificio);
+            }
         } catch (e) {
             document.querySelector('[data-tabela="edificios"]').innerHTML =
                 `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
@@ -56,8 +107,9 @@
 
     document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
         const termo = e.target.value.toLowerCase().trim();
-        if (!termo) return renderizar(dadosEdificios);
-        renderizar(dadosEdificios.filter((ed) =>
+        const base = aplicarFiltroId(dadosEdificios);
+        if (!termo) return renderizar(base);
+        renderizar(base.filter((ed) =>
             (ed.nome || "").toLowerCase().includes(termo) ||
             (ed.cidade || "").toLowerCase().includes(termo) ||
             (ed.morada || "").toLowerCase().includes(termo)

@@ -77,7 +77,7 @@
                                style="color:#F08A24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;">
                                 Street View ↗
                             </a>
-                            <a href="edificios.html"
+                            <a href="edificios.html?id=${e.id_edificio}"
                                style="color:#0B2240;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;">
                                 Ver detalhes →
                             </a>
