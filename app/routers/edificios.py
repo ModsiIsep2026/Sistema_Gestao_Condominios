@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.core.db_connect import get_db
-from app.core.seguranca import gestor_ou_administrador
+from app.core.seguranca import gestor_ou_administrador, requer_perfis, PERFIL_GESTOR
+
+so_gestor = requer_perfis(PERFIL_GESTOR)
 from app.schemas.edificio import CriarEdificio, AtualizarEdificio, LerEdificio
 from app.services import edificio as servico
 
@@ -29,7 +31,7 @@ def obter_edificio(id: int, db: Session = Depends(get_db)):
 def criar_edificio(
     dados: CriarEdificio,
     db: Session = Depends(get_db),
-    _=Depends(gestor_ou_administrador),
+    _=Depends(so_gestor),
 ):
     return servico.criar(db, dados)
 
@@ -39,7 +41,7 @@ def atualizar_edificio(
     id: int,
     dados: AtualizarEdificio,
     db: Session = Depends(get_db),
-    _=Depends(gestor_ou_administrador),
+    _=Depends(so_gestor),
 ):
     return servico.atualizar(db, id, dados)
 
@@ -48,6 +50,6 @@ def atualizar_edificio(
 def remover_edificio(
     id: int,
     db: Session = Depends(get_db),
-    _=Depends(gestor_ou_administrador),
+    _=Depends(so_gestor),
 ):
     return servico.remover(db, id)

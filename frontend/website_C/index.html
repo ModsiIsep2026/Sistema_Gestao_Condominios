@@ -34,7 +34,7 @@
 
             <div class="navbar__acoes">
                 <a href="login.html" class="btn btn--outline">Entrar</a>
-                <a href="registo.html" class="btn btn--primario">Criar conta</a>
+                <a href="registo_gestor.html" class="btn btn--primario">Criar conta</a>
             </div>
         </div>
     </nav>
@@ -220,17 +220,39 @@
             <div class="grelha grelha--2">
                 <div>
                     <span class="etiqueta">Contactos</span>
-                    <h2>Alguma dúvida?</h2>
+                    <h2>Fale connosco.</h2>
                     <p class="texto-suave mt-4">
-                        Para questões de acesso ou de como usar a plataforma,
-                        fale com a administração do seu condomínio.
+                        Para questões sobre a plataforma ou para saber mais sobre os nossos planos,
+                        entre em contacto.
                     </p>
+
+                    <div class="contacto-info mt-6">
+                        <div class="contacto-info__item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            <a href="mailto:geral@sgcondominios.pt">sgc2026i@gmail.com</a>
+                        </div>
+                        <div class="contacto-info__item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <span>T. 220 000 000 &nbsp;|&nbsp; T. 960 000 000</span>
+                        </div>
+                        <div class="contacto-info__item" style="align-items:flex-start;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-top:2px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            <span>R. Dr. António Bernardino de Almeida , 431<br>4249-015 Porto</span>
+                        </div>
+                        <div class="contacto-info__item" style="align-items:flex-start;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-top:2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            <span>
+                                Segunda a Sexta — 09h00 às 18h00<br>
+                                Sábados, domingos e feriados — Encerrado
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <form id="contacto-form" class="form-contacto">
                     <div id="contacto-mensagem" class="login-sucesso" hidden></div>
                     <div class="campo">
-                        <label for="nome">Nome</label>
+                        <label for="contacto-nome">Nome</label>
                         <input type="text" id="contacto-nome" required>
                     </div>
                     <div class="campo">
@@ -238,8 +260,12 @@
                         <input type="email" id="contacto-email" required>
                     </div>
                     <div class="campo">
+                        <label for="contacto-telefone">Telefone <span style="font-weight:400;color:var(--cor-texto-suave);font-size:var(--tam-sm);">(opcional)</span></label>
+                        <input type="tel" id="contacto-telefone">
+                    </div>
+                    <div class="campo">
                         <label for="contacto-mensagem-text">Mensagem</label>
-                        <textarea id="contacto-mensagem-text" rows="5" required></textarea>
+                        <textarea id="contacto-mensagem-text" rows="4" required></textarea>
                     </div>
                     <button type="submit" class="btn btn--primario btn--bloco">Enviar mensagem</button>
                 </form>
@@ -257,7 +283,7 @@
                         <span class="navbar__logo-texto">Sistema de Gestão de Condomínios</span>
                     </div>
                     <p class="mt-4">
-                        Plataforma de gestão de condomínios.
+                        Plataforma digital de gestão de condomínios — quotas, reservas, avarias e manutenção num só lugar.
                     </p>
                 </div>
                 <div class="footer__col">
@@ -266,13 +292,22 @@
                         <li><a href="#sobre">Sobre</a></li>
                         <li><a href="#funcionalidades">Funcionalidades</a></li>
                         <li><a href="#perfis">Perfis</a></li>
-                        <li><a href="#contactos">Contactos</a></li>
                     </ul>
                 </div>
                 <div class="footer__col">
                     <h5>Acesso</h5>
                     <ul>
                         <li><a href="login.html">Entrar</a></li>
+                        <li><a href="registo_gestor.html">Aderir à plataforma</a></li>
+                    </ul>
+                </div>
+                <div class="footer__col">
+                    <h5>Contactos</h5>
+                    <ul>
+                        <li><a href="mailto:geral@sgcondominios.pt">sgc2026i@gmail.com</a></li>
+                        <li>T. 220 000 000</li>
+                        <li>T. 960 000 000</li>
+                        <li style="margin-top:8px;font-size:var(--tam-sm);opacity:0.7;">Rua Dr. António Bernardino de Almeida, 431<br>4249-015 Porto</li>
                     </ul>
                 </div>
             </div>

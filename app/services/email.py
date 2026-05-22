@@ -34,68 +34,92 @@ async def enviar_email(destinatario: str, assunto: str, corpo_texto: str, corpo_
         await aiosmtplib.send(mensagem, start_tls=True, **smtp_kwargs)
 
 
-def template_credenciais(nome: str, email: str, password: str, perfil_nome: str, url_login: str) -> tuple[str, str]:
-   
-
-    texto = (
-        f"Olá {nome},\n\n"
-        f"Foi criada uma conta de {perfil_nome.lower()} para si no Sistema de Gestão de Condomínios.\n\n"
-        "As suas credenciais:\n"
-        f"  Email: {email}\n"
-        f"  Password: {password}\n\n"
-        "Pode aceder em:\n"
-        f"{url_login}\n\n"
-        "Por segurança, recomendamos que altere a sua password logo após o primeiro acesso.\n\n"
-        "— Sistema de Gestão de Condomínios"
-    )
-
-    html = f"""<!DOCTYPE html>
+_BASE_HTML = """\
+<!DOCTYPE html>
 <html lang="pt">
-<body style="margin:0;padding:0;background-color:#F5F5F5;font-family:Arial,sans-serif;color:#1A1A1A;">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F5F5F5;padding:32px 16px;">
-    <tr>
-      <td align="center">
-        <table role="presentation" width="100%" style="max-width:520px;background-color:#FFFFFF;border-top:4px solid #F08A24;">
-          <tr>
-            <td style="padding:24px 32px;background-color:#0B2240;color:#FFFFFF;text-align:center;">
-              <h1 style="margin:0;font-size:18px;letter-spacing:0.5px;">Sistema de Gestão de Condomínios</h1>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:32px;">
-              <h2 style="margin:0 0 16px 0;font-size:22px;color:#0B2240;">A sua conta foi criada</h2>
-              <p style="margin:0 0 16px 0;line-height:1.6;">Olá <strong>{nome}</strong>,</p>
-              <p style="margin:0 0 24px 0;line-height:1.6;">Foi criada uma conta de <strong>{perfil_nome.lower()}</strong> para si. Estas são as suas credenciais de acesso:</p>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background:#ECEEF2;font-family:'Inter',Arial,sans-serif;color:#1A1A1A;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ECEEF2;padding:40px 16px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" style="max-width:520px;background:#FFFFFF;border-radius:8px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 
-              <table style="width:100%;border-collapse:collapse;margin:0 0 24px 0;">
-                <tr>
-                  <td style="padding:12px 16px;background-color:#F5F5F5;border-left:3px solid #0B2240;font-size:13px;color:#5A5A5A;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;width:120px;">Email</td>
-                  <td style="padding:12px 16px;background-color:#F5F5F5;font-family:monospace;font-size:14px;">{email}</td>
-                </tr>
-                <tr><td style="height:4px;"></td></tr>
-                <tr>
-                  <td style="padding:12px 16px;background-color:#F5F5F5;border-left:3px solid #F08A24;font-size:13px;color:#5A5A5A;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">Password</td>
-                  <td style="padding:12px 16px;background-color:#F5F5F5;font-family:monospace;font-size:14px;font-weight:700;color:#0B2240;">{password}</td>
-                </tr>
-              </table>
+      <!-- Cabeçalho -->
+      <tr>
+        <td style="background:#0B2240;padding:28px 32px;text-align:center;">
+          <p style="margin:0 0 6px 0;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#F08A24;">Sistema de Gestão de</p>
+          <p style="margin:0;font-size:20px;font-weight:800;color:#FFFFFF;letter-spacing:0.01em;">Condomínios</p>
+        </td>
+      </tr>
 
-              <p style="text-align:center;margin:24px 0;">
-                <a href="{url_login}" style="display:inline-block;background-color:#F08A24;color:#FFFFFF;padding:14px 28px;text-decoration:none;font-weight:bold;text-transform:uppercase;letter-spacing:1px;">Entrar na plataforma</a>
-              </p>
+      <!-- Barra laranja -->
+      <tr><td style="height:4px;background:#F08A24;"></td></tr>
 
-              <p style="margin:24px 0 0 0;padding:16px;background-color:#FBF2E5;border-left:3px solid #F08A24;font-size:13px;color:#1A1A1A;line-height:1.6;">
-                <strong>Importante:</strong> Por segurança, recomendamos que altere a sua password logo após o primeiro acesso.
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+      <!-- Corpo -->
+      <tr>
+        <td style="padding:36px 32px;">
+          {corpo}
+        </td>
+      </tr>
+
+      <!-- Rodapé -->
+      <tr>
+        <td style="padding:16px 32px;background:#F8F9FB;border-top:1px solid #E8EAED;text-align:center;">
+          <p style="margin:0;font-size:12px;color:#9AA3AF;">Este email foi gerado automaticamente. Por favor não responda.</p>
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
 </body>
 </html>"""
 
-    return texto, html
+
+def _html_email(corpo: str) -> str:
+    return _BASE_HTML.replace("{corpo}", corpo)
+
+
+def template_credenciais(nome: str, email: str, password: str, perfil_nome: str, url_login: str) -> tuple[str, str]:
+    texto = (
+        f"Olá {nome},\n\n"
+        f"Foi criada uma conta de {perfil_nome.lower()} para si no Sistema de Gestão de Condomínios.\n\n"
+        f"  Email:    {email}\n"
+        f"  Password: {password}\n\n"
+        f"Aceder em: {url_login}\n\n"
+        "Por segurança, altere a sua password após o primeiro acesso.\n\n"
+        "— Sistema de Gestão de Condomínios"
+    )
+
+    corpo = f"""
+      <h2 style="margin:0 0 8px 0;font-size:22px;font-weight:800;color:#0B2240;">Olá, {nome}!</h2>
+      <p style="margin:0 0 24px 0;font-size:14px;color:#5A6472;line-height:1.6;">
+        A sua conta está criada. Aqui ficam os dados de acesso.
+      </p>
+
+      <table style="width:100%;border-collapse:separate;border-spacing:0 8px;margin-bottom:28px;">
+        <tr>
+          <td style="width:110px;padding:14px 16px;background:#F0F3F7;border-radius:6px 0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#9AA3AF;">Email</td>
+          <td style="padding:14px 16px;background:#F0F3F7;border-radius:0 6px 6px 0;font-size:14px;color:#0B2240;">{email}</td>
+        </tr>
+        <tr>
+          <td style="padding:14px 16px;background:#0B2240;border-radius:6px 0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#F08A24;">Password</td>
+          <td style="padding:14px 16px;background:#0B2240;border-radius:0 6px 6px 0;font-size:15px;font-weight:800;color:#FFFFFF;letter-spacing:0.05em;font-family:monospace;">{password}</td>
+        </tr>
+      </table>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+        <tr>
+          <td align="center">
+            <a href="{url_login}" style="display:inline-block;background:#F08A24;color:#FFFFFF;padding:14px 36px;text-decoration:none;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;border-radius:4px;">Entrar na plataforma</a>
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:0;padding:14px 16px;background:#F0F3F7;border-radius:6px;font-size:13px;color:#5A6472;line-height:1.6;">
+        Depois de entrar, altere a password quando quiser em <strong>A minha conta</strong>.
+      </p>"""
+
+    return texto, _html_email(corpo)
 
 
 def template_reset_pw(nome: str, link: str, minutos: int) -> tuple[str, str]:
@@ -105,12 +129,25 @@ def template_reset_pw(nome: str, link: str, minutos: int) -> tuple[str, str]:
         f"Aceda ao link para escolher uma nova password:\n\n{link}\n\n"
         f"Este link é válido durante {minutos} minutos.\n\n"
         "Se não pediu a recuperação, ignore este email.\n"
+        "— Sistema de Gestão de Condomínios"
     )
-    html = (
-        f"<p>Olá <strong>{nome}</strong>,</p>"
-        "<p>Recebemos um pedido de recuperação de password para a sua conta.</p>"
-        f"<p><a href=\"{link}\" style=\"background:#F08A24;color:#fff;padding:12px 24px;text-decoration:none;\">Repor password</a></p>"
-        f"<p style=\"font-size:13px;color:#5A5A5A;\">Este link é válido durante {minutos} minutos.</p>"
-        "<p style=\"font-size:13px;color:#5A5A5A;\">Se não pediu a recuperação, ignore este email.</p>"
-    )
-    return texto, html
+
+    corpo = f"""
+      <h2 style="margin:0 0 8px 0;font-size:22px;font-weight:800;color:#0B2240;">Recuperar password</h2>
+      <p style="margin:0 0 24px 0;font-size:14px;color:#5A6472;line-height:1.6;">
+        Olá <strong style="color:#0B2240;">{nome}</strong>, recebemos um pedido de recuperação de password para a sua conta.
+      </p>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
+        <tr>
+          <td align="center">
+            <a href="{link}" style="display:inline-block;background:#F08A24;color:#FFFFFF;padding:14px 36px;text-decoration:none;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:0.1em;border-radius:4px;">Redefinir password</a>
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:0;padding:14px 16px;background:#F0F3F7;border-radius:6px;font-size:13px;color:#5A6472;line-height:1.6;">
+        Este link expira em <strong>{minutos} minutos</strong>. Se não pediu a recuperação, ignore este email.
+      </p>"""
+
+    return texto, _html_email(corpo)

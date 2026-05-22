@@ -31,6 +31,7 @@
             <tr>
                 <td><strong>${f.nome}</strong></td>
                 <td>${f.servico ? `<span class="estado estado--neutro">${f.servico}</span>` : "—"}</td>
+                <td>${f.localizacao || "—"}</td>
                 <td>${linkSite(f.site)}</td>
                 <td><strong>${eur(f.preco_hora)}</strong></td>
                 <td class="app-tabela__acoes">
@@ -59,7 +60,8 @@
         if (!termo) return renderizar(dados);
         renderizar(dados.filter((f) =>
             (f.nome || "").toLowerCase().includes(termo) ||
-            (f.servico || "").toLowerCase().includes(termo)
+            (f.servico || "").toLowerCase().includes(termo) ||
+            (f.localizacao || "").toLowerCase().includes(termo)
         ));
     });
 
@@ -75,6 +77,7 @@
             document.getElementById("f-id").value = fornecedor.id_fornecedor;
             document.getElementById("f-nome").value = fornecedor.nome || "";
             document.getElementById("f-servico").value = fornecedor.servico || "";
+            document.getElementById("f-localizacao").value = fornecedor.localizacao || "";
             document.getElementById("f-site").value = fornecedor.site || "";
             document.getElementById("f-preco-hora").value = fornecedor.preco_hora ?? "";
         } else {
@@ -99,6 +102,7 @@
         const id = document.getElementById("f-id").value;
         const nome = document.getElementById("f-nome").value.trim();
         const servico = document.getElementById("f-servico").value.trim() || null;
+        const localizacao = document.getElementById("f-localizacao").value.trim() || null;
         const siteRaw = document.getElementById("f-site").value.trim();
         const precoRaw = document.getElementById("f-preco-hora").value.trim();
 
@@ -123,7 +127,7 @@
             }
         }
 
-        const payload = { nome, servico, site, preco_hora };
+        const payload = { nome, servico, localizacao, site, preco_hora };
 
         try {
             if (id) {

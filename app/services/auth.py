@@ -41,6 +41,17 @@ def autenticar(db: Session, email: str, password: str, ip: str = None):
         log_falha(db, "login_failed", ip)
         raise HTTPException(401, "Email ou password inválidos")
 
+    if utilizador.status == 0:
+        if not utilizador.email_verificado:
+            # Primeiro login — ativar conta
+            utilizador.status = 1
+            utilizador.email_verificado = True
+            db.commit()
+        else:
+            # Conta desativada pelo administrador
+            log_falha(db, "login_conta_inativa", ip)
+            raise HTTPException(403, "A sua conta está desativada. Contacte o administrador.")
+
     log_ok(db, "login", utilizador.id_utilizador, ip)
     return utilizador
 

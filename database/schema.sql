@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.2-1.fc41
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 21-Maio-2026 às 12:09 Documento criado pelo servidor
+-- Tempo de geração: 22-Maio-2026 às 12:48
 -- Versão do servidor: 10.11.11-MariaDB
 -- versão do PHP: 8.3.26
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Banco de dados: `1211405`
+-- Base de dados: `1211405`
 --
 
 -- --------------------------------------------------------
@@ -121,24 +121,6 @@ CREATE TABLE `edificio` (
   `status` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Extraindo dados da tabela `edificio`
---
-
-INSERT INTO `edificio` (`id_edificio`, `nome`, `morada`, `codigo_postal`, `cidade`, `latitude`, `longitude`, `status`) VALUES
-(1, 'Edifício Aliados', 'Avenida dos Aliados, 100', '4000-064', 'Porto', '41.1496000', '-8.6109000', 0),
-(2, 'Edifício Marquês', 'Avenida da Liberdade, 200', '1250-147', 'Lisboa', '38.7214000', '-9.1459312', 0),
-(3, 'Edifício Sé Velha', 'Rua Larga, 15', '3004-505', 'Coimbra', '40.2086000', '-8.4262000', 1),
-(4, 'Edifício Sameiro', 'Rua do Souto, 45', '4700-326', 'Braga', '41.5503000', '-8.4262000', 1),
-(5, 'Edifício Forum', 'Rua de Coimbra, 10', '3810-186', 'Aveiro', '40.6404000', '-8.6538000', 1),
-(6, 'Edifício Grão Vasco', 'Rua Direita, 60', '3500-088', 'Viseu', '40.6610000', '-7.9097000', 1),
-(7, 'Edifício Ria Formosa', 'Rua de Santo António, 25', '8000-285', 'Faro', '37.0150000', '-7.9351000', 1),
-(8, 'Edifício Templários', 'Rua Serpa Pinto, 80', '7000-537', 'Évora', '38.5712000', '-7.9136000', 1),
-(9, 'Edifício Sado', 'Avenida Luísa Todi, 150', '2900-462', 'Setúbal', '38.5244000', '-8.8882000', 1),
-(10, 'Edifício Atlântico', 'Rua da Carreira, 50', '9000-042', 'Funchal', '32.6469000', '-16.9089000', 1),
-(11, 'ISEP', 'R. Dr. António Bernardino de Almeida 431', '4249-015', 'Porto', '41.1781210', '-8.6073629', 1),
-(12, 'FEUP', 'R. Dr. Roberto Frias s/n', '4200-465', 'Porto', '41.1791486', '-8.5986378', 1);
-
 -- --------------------------------------------------------
 
 --
@@ -209,6 +191,7 @@ CREATE TABLE `fornecedor` (
   `id_fornecedor` int(11) NOT NULL,
   `nome` varchar(200) NOT NULL,
   `servico` varchar(100) DEFAULT NULL,
+  `localizacao` varchar(100) DEFAULT NULL,
   `site` varchar(255) DEFAULT NULL,
   `preco_hora` decimal(8,2) DEFAULT NULL,
   `status` int(11) NOT NULL DEFAULT 1
@@ -218,8 +201,9 @@ CREATE TABLE `fornecedor` (
 -- Extraindo dados da tabela `fornecedor`
 --
 
-INSERT INTO `fornecedor` (`id_fornecedor`, `nome`, `servico`, `site`, `preco_hora`, `status`) VALUES
-(1, 'Otis Portugal', 'Elevadores', 'https://www.otis.com/pt/pt/produtos/elevadores-gen3-gen360?utm_feeditemid=', '50.00', 1);
+INSERT INTO `fornecedor` (`id_fornecedor`, `nome`, `servico`, `localizacao`, `site`, `preco_hora`, `status`) VALUES
+(1, 'Otis Portugal', 'Elevadores', 'Porto', 'https://www.otis.com/pt/pt/produtos/elevadores-gen3-gen360?utm_feeditemid=', 49.00, 1),
+(2, 'Like Garden', 'Jardinagem', 'Porto', 'https://likegarden.pt/', 20.00, 1);
 
 -- --------------------------------------------------------
 
@@ -272,28 +256,54 @@ CREATE TABLE `log_acesso` (
 
 INSERT INTO `log_acesso` (`id_log`, `utilizador_id`, `acao`, `timestamp`, `ip_address`, `resultado`) VALUES
 (1, 1, 'login', '2026-05-20 23:43:06', '127.0.0.1', 'sucesso'),
-(2, 4, 'registo', '2026-05-20 23:45:58', '127.0.0.1', 'sucesso'),
+(2, NULL, 'registo', '2026-05-20 23:45:58', '127.0.0.1', 'sucesso'),
 (3, 1, 'esqueci_password', '2026-05-21 01:13:03', NULL, 'sucesso'),
-(4, 5, 'registo', '2026-05-21 01:13:58', '127.0.0.1', 'sucesso'),
-(5, 5, 'esqueci_password', '2026-05-21 01:14:36', NULL, 'sucesso'),
-(6, 5, 'reset_password', '2026-05-21 01:15:20', '127.0.0.1', 'sucesso'),
-(7, 5, 'login', '2026-05-21 01:15:32', '127.0.0.1', 'sucesso'),
-(8, 5, 'esqueci_password', '2026-05-21 01:20:12', NULL, 'sucesso'),
+(4, NULL, 'registo', '2026-05-21 01:13:58', '127.0.0.1', 'sucesso'),
+(5, NULL, 'esqueci_password', '2026-05-21 01:14:36', NULL, 'sucesso'),
+(6, NULL, 'reset_password', '2026-05-21 01:15:20', '127.0.0.1', 'sucesso'),
+(7, NULL, 'login', '2026-05-21 01:15:32', '127.0.0.1', 'sucesso'),
+(8, NULL, 'esqueci_password', '2026-05-21 01:20:12', NULL, 'sucesso'),
 (9, NULL, 'login_failed', '2026-05-21 01:21:16', '127.0.0.1', 'falhou'),
-(10, 5, 'login', '2026-05-21 01:21:25', '127.0.0.1', 'sucesso'),
+(10, NULL, 'login', '2026-05-21 01:21:25', '127.0.0.1', 'sucesso'),
 (11, 1, 'login', '2026-05-21 01:37:51', '127.0.0.1', 'sucesso'),
 (12, 1, 'logout', '2026-05-21 01:39:44', '127.0.0.1', 'sucesso'),
 (13, NULL, 'login_failed', '2026-05-21 01:40:00', '127.0.0.1', 'falhou'),
 (14, NULL, 'login_failed', '2026-05-21 01:40:04', '127.0.0.1', 'falhou'),
-(15, 4, 'login', '2026-05-21 01:40:08', '127.0.0.1', 'sucesso'),
+(15, NULL, 'login', '2026-05-21 01:40:08', '127.0.0.1', 'sucesso'),
 (16, 1, 'login', '2026-05-21 01:40:24', '127.0.0.1', 'sucesso'),
 (17, 1, 'esqueci_password', '2026-05-21 02:03:43', NULL, 'sucesso'),
 (18, 1, 'login', '2026-05-21 02:10:56', '127.0.0.1', 'sucesso'),
 (19, 1, 'logout', '2026-05-21 02:33:35', '127.0.0.1', 'sucesso'),
 (20, NULL, 'login_failed', '2026-05-21 02:33:47', '127.0.0.1', 'falhou'),
-(21, 4, 'login', '2026-05-21 02:33:51', '127.0.0.1', 'sucesso'),
+(21, NULL, 'login', '2026-05-21 02:33:51', '127.0.0.1', 'sucesso'),
 (22, NULL, 'login_failed', '2026-05-21 02:34:03', '127.0.0.1', 'falhou'),
-(23, 5, 'login', '2026-05-21 02:34:08', '127.0.0.1', 'sucesso');
+(23, NULL, 'login', '2026-05-21 02:34:08', '127.0.0.1', 'sucesso'),
+(24, NULL, 'registo', '2026-05-21 12:02:04', '127.0.0.1', 'sucesso'),
+(25, 1, 'login', '2026-05-21 12:02:25', '127.0.0.1', 'sucesso'),
+(26, 1, 'repor_pw_link', '2026-05-21 12:06:32', NULL, 'sucesso'),
+(27, NULL, 'login_failed', '2026-05-21 12:08:35', '127.0.0.1', 'falhou'),
+(28, NULL, 'login_failed', '2026-05-21 12:08:39', '127.0.0.1', 'falhou'),
+(29, 1, 'logout', '2026-05-21 12:10:32', '127.0.0.1', 'sucesso'),
+(30, NULL, 'login_failed', '2026-05-21 12:10:41', '127.0.0.1', 'falhou'),
+(31, NULL, 'login', '2026-05-21 12:10:47', '127.0.0.1', 'sucesso'),
+(32, 1, 'login', '2026-05-21 16:55:05', '127.0.0.1', 'sucesso'),
+(33, 1, 'repor_pw_link', '2026-05-21 17:00:09', NULL, 'sucesso'),
+(34, 1, 'logout', '2026-05-21 17:00:28', '127.0.0.1', 'sucesso'),
+(35, NULL, 'login', '2026-05-21 17:00:53', '127.0.0.1', 'sucesso'),
+(36, NULL, 'repor_pw_link', '2026-05-21 17:02:06', NULL, 'sucesso'),
+(37, 1, 'login', '2026-05-22 09:43:10', '127.0.0.1', 'sucesso'),
+(38, 1, 'login', '2026-05-22 10:13:52', '127.0.0.1', 'sucesso'),
+(39, 1, 'login', '2026-05-22 10:44:52', '127.0.0.1', 'sucesso'),
+(40, 1, 'repor_pw_link', '2026-05-22 10:46:59', NULL, 'sucesso'),
+(41, 1, 'repor_pw_link', '2026-05-22 10:48:33', NULL, 'sucesso'),
+(42, 1, 'logout', '2026-05-22 10:52:53', '127.0.0.1', 'sucesso'),
+(43, NULL, 'login', '2026-05-22 11:14:17', '127.0.0.1', 'sucesso'),
+(44, NULL, 'repor_pw_link', '2026-05-22 11:15:33', NULL, 'sucesso'),
+(45, NULL, 'nova_pw', '2026-05-22 11:16:13', '127.0.0.1', 'sucesso'),
+(46, NULL, 'login', '2026-05-22 11:16:24', '127.0.0.1', 'sucesso'),
+(47, NULL, 'repor_pw_link', '2026-05-22 11:16:59', NULL, 'sucesso'),
+(48, NULL, 'logout', '2026-05-22 11:17:30', '127.0.0.1', 'sucesso'),
+(49, NULL, 'registo', '2026-05-22 11:18:35', '127.0.0.1', 'sucesso');
 
 -- --------------------------------------------------------
 
@@ -431,8 +441,7 @@ INSERT INTO `utilizador` (`id_utilizador`, `perfil_id`, `nome`, `email`, `passwo
 (1, 5, 'Gustavo Marques', '1211405@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '937062814', '257430011', 'pt', 1, '2026-05-21 00:30:23', 0),
 (2, 5, 'Guilherme Soares', '1220847@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '937212433', NULL, 'pt', 1, '2026-05-21 00:30:23', 0),
 (3, 5, 'Rodrigo Fernandes', '1211070@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '944888710', NULL, 'pt', 1, '2026-05-21 00:30:23', 0),
-(4, 2, 'Mariana Sousa', 'marianasousa@gmail.com', '$2b$12$Pr6qtGan1j0q2RFDpuFqMO/6ltLWMz2k7rlsr2XmdrcuA615NcT.O', '931555837', '125444333', 'pt', 1, '2026-05-21 00:45:58', 0),
-(5, 3, 'Goncalo Marques', 'gustavooliveiramarques10@gmail.com', '$2b$12$aK0l8FxPc1MVTNz1iTKiEOjRDuaiLUWI1B4AwEJsynRb.uDjRUaoy', '938273222', '333222110', 'pt', 1, '2026-05-21 02:13:58', 0);
+(13, 3, 'Gustavo Marques', 'gustavooliveiramarques10@gmail.com', '$2b$12$ms1mS3M0LgzdGButhc5keuXpNU.tMb3irX4RFk3RvDNYCwIlgEq..', '937062814', '123456789', 'pt', 0, '2026-05-22 11:44:05', 0);
 
 -- --------------------------------------------------------
 
@@ -659,7 +668,7 @@ ALTER TABLE `estado_reserva`
 -- AUTO_INCREMENT de tabela `fornecedor`
 --
 ALTER TABLE `fornecedor`
-  MODIFY `id_fornecedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_fornecedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `fracao`
@@ -677,7 +686,7 @@ ALTER TABLE `gestor_edificio`
 -- AUTO_INCREMENT de tabela `log_acesso`
 --
 ALTER TABLE `log_acesso`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de tabela `notificacao`
@@ -719,7 +728,7 @@ ALTER TABLE `reserva`
 -- AUTO_INCREMENT de tabela `utilizador`
 --
 ALTER TABLE `utilizador`
-  MODIFY `id_utilizador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_utilizador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT de tabela `utilizador_fracao`

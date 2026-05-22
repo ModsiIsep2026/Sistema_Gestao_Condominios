@@ -11,7 +11,7 @@ from app.core.seguranca import (
     PERFIL_CONDOMINO,
     PERFIL_TECNICO,
 )
-from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador, LerUtilizador, CriarUtilizadorPorAdmin
+from app.schemas.utilizador import CriarUtilizador, AtualizarUtilizador, LerUtilizador, CriarUtilizadorPorAdmin, LerUtilizadorConvidado
 from app.services import utilizador as servico
 
 router = APIRouter(prefix="/utilizadores", tags=["Utilizadores"])
@@ -25,9 +25,8 @@ router = APIRouter(prefix="/utilizadores", tags=["Utilizadores"])
 
 
 def perfis_geridos(utilizador) -> list[int]:
-
     if utilizador.perfil_id == PERFIL_ADMINISTRADOR:
-        return [PERFIL_GESTOR]
+        return [PERFIL_TECNICO]
     if utilizador.perfil_id == PERFIL_GESTOR:
         return [PERFIL_CONDOMINO, PERFIL_TECNICO]
     raise ACESSO_NEGADO
@@ -71,7 +70,7 @@ def criar_utilizador(
     return servico.criar(db, dados)
 
 
-@router.post("/convidar", response_model=LerUtilizador, status_code=201)
+@router.post("/convidar", response_model=LerUtilizadorConvidado, status_code=201)
 async def convidar_utilizador(
     dados: CriarUtilizadorPorAdmin,
     db: Session = Depends(get_db),

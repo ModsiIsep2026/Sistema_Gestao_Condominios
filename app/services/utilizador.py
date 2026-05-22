@@ -82,11 +82,12 @@ async def criar_por_admin(db: Session, dados: CriarUtilizadorPorAdmin):
     db.commit()
     db.refresh(utilizador)
 
-    # Envia email com credenciais
+
     configs = get_configs()
     perfil_nome = PERFIS_NOMES.get(dados.perfil_id, "utilizador")
     url_login = f"{configs.APP_URL.rstrip('/')}/website_C/login.html"
 
+    aviso = None
     try:
         texto, html = template_credenciais(
             nome=utilizador.nome,
@@ -97,13 +98,13 @@ async def criar_por_admin(db: Session, dados: CriarUtilizadorPorAdmin):
         )
         await enviar_email(
             destinatario=utilizador.email,
-            assunto=f"Conta criada — Sistema de Gestão de Condomínios",
+            assunto="Conta criada — Sistema de Gestão de Condomínios",
             corpo_texto=texto,
             corpo_html=html,
         )
     except Exception as e:
+        aviso = f"Conta criada mas o email não foi enviado: {e}"
 
-        utilizador.password_temp_fallback = password_temporaria  # campo virtual só para resposta
-        utilizador.aviso_email = f"Conta criada mas o email não foi enviado: {e}"
-
+    utilizador.aviso_email = aviso
+    utilizador.password_temporaria = password_temporaria if aviso else None
     return utilizador

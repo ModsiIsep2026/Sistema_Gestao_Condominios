@@ -1,3 +1,32 @@
+.contacto-info {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.contacto-info__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: var(--tam-sm);
+    color: var(--cor-texto);
+    line-height: 1.5;
+}
+
+.contacto-info__item svg {
+    color: var(--cor-acento);
+    flex-shrink: 0;
+}
+
+.contacto-info__item a {
+    color: var(--cor-primaria);
+    text-decoration: none;
+}
+
+.contacto-info__item a:hover {
+    text-decoration: underline;
+}
+
 .hero {
     position: relative;
     min-height: 620px;

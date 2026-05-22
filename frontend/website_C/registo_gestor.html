@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aderir à plataforma — Sistema de Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../shared/css/tokens.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        .passos { display:flex; gap:var(--esp-3); margin-bottom:var(--esp-6); }
+        .passo { flex:1; padding:var(--esp-2) var(--esp-3); border-radius:4px; font-size:var(--tam-sm); font-weight:600; text-align:center; background:var(--cor-fundo-alt); color:var(--cor-texto-suave); }
+        .passo--ativo { background:var(--cor-primaria); color:#fff; }
+        .passo--feito { background:var(--cor-acento); color:#fff; }
+        #stripe-card { border:1px solid var(--cor-borda); border-radius:4px; padding:12px; background:#fff; }
+        .preco-badge { display:inline-block; background:var(--cor-acento); color:#fff; padding:4px 12px; border-radius:20px; font-weight:700; font-size:var(--tam-sm); margin-bottom:var(--esp-4); }
+        .cartao-teste { background:#f0f7ff; border:1px solid #b3d4f5; border-radius:6px; padding:var(--esp-3); font-size:var(--tam-sm); margin-bottom:var(--esp-4); }
+        .cartao-teste code { font-family:monospace; font-weight:700; letter-spacing:2px; }
+    </style>
+</head>
+<body class="login-body">
+
+    <div class="login-fundo">
+        <img src="../shared/img/predios.jpg" alt="">
+        <div class="login-fundo__overlay"></div>
+    </div>
+
+    <main class="login-conteudo">
+        <a href="login.html" class="login-voltar">&larr; Já tenho conta</a>
+
+        <div class="login-card login-card--largo">
+
+            <div class="login-card__topo">
+                <a href="index.html" class="login-logo">
+                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                </a>
+                <h1>Crie a sua conta de gestor em 2 passos.</h1>
+            </div>
+
+            <div class="passos">
+                <div class="passo passo--ativo" id="passo-1-ind">1. Os seus dados</div>
+                <div class="passo" id="passo-2-ind">2. Pagamento</div>
+            </div>
+
+            <div id="msg-erro" class="login-erro" hidden></div>
+            <div id="msg-sucesso" class="login-sucesso" hidden></div>
+
+       
+            <form id="form-dados" class="login-form" novalidate>
+                <div class="campo">
+                    <label for="nome">Nome completo</label>
+                    <input type="text" id="nome" placeholder="João Silva" required autocomplete="name">
+                </div>
+                <div class="campo">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="joao@empresa.pt" required autocomplete="email">
+                </div>
+                <div class="campo-dupla">
+                    <div class="campo">
+                        <label for="telemovel">Telemóvel <span class="campo__opcional">(opcional)</span></label>
+                        <input type="tel" id="telemovel" placeholder="912 345 678" autocomplete="tel">
+                    </div>
+                    <div class="campo">
+                        <label for="nif">NIF <span class="campo__opcional">(opcional)</span></label>
+                        <input type="text" id="nif" placeholder="123456789" maxlength="9" inputmode="numeric">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn--primario btn--bloco" id="btn-avancar">Avançar para pagamento →</button>
+            </form>
+
+          
+            <div id="secao-pagamento" style="display:none;">
+                <span class="preco-badge" id="label-preco" style="margin-bottom:var(--esp-4);display:inline-block;"></span>
+
+                <form id="form-pagamento" class="login-form">
+                    <div class="campo">
+                        <label>Dados do cartão</label>
+                        <div id="stripe-card"></div>
+                        <div id="stripe-erro" style="color:var(--cor-erro);font-size:var(--tam-sm);margin-top:6px;"></div>
+                    </div>
+                    <button type="submit" class="btn btn--primario btn--bloco" id="btn-pagar">
+                        Confirmar pagamento
+                    </button>
+                </form>
+
+                <button type="button" class="btn btn--outline btn--bloco" id="btn-voltar"
+                        style="margin-top:var(--esp-3);">← Voltar aos dados</button>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../shared/js/api.js"></script>
+    <script src="js/registo_gestor.js"></script>
+</body>
+</html>

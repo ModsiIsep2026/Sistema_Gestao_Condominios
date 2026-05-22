@@ -5,6 +5,7 @@ from typing import Optional
 class FornecedorBase(BaseModel):
     nome: str
     servico: Optional[str] = None
+    localizacao: Optional[str] = None
     site: Optional[str] = None
     preco_hora: Optional[float] = None
 
@@ -16,6 +17,7 @@ class CriarFornecedor(FornecedorBase):
 class AtualizarFornecedor(BaseModel):
     nome: Optional[str] = None
     servico: Optional[str] = None
+    localizacao: Optional[str] = None
     site: Optional[str] = None
     preco_hora: Optional[float] = None
     status: Optional[int] = None

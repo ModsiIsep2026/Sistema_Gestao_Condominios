@@ -11,7 +11,7 @@ from app.routers import (
     auth, oauth, utilizadores, edificios, fracoes, utilizador_fracao,
     quotas, pagamentos, espacos, reservas, avarias,
     ordens_trabalho, despesas, fornecedores, notificacoes, refs, relatorios,
-    gestor_edificio,
+    gestor_edificio, subscricao,
 )
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -63,6 +63,7 @@ _auth_required = [Depends(utilizador_atual)]
 
 app.include_router(auth.router)
 app.include_router(oauth.router)
+app.include_router(subscricao.router)   # público — não requer auth
 app.include_router(utilizadores.router, dependencies=_auth_required)
 app.include_router(edificios.router, dependencies=_auth_required)
 app.include_router(fracoes.router, dependencies=_auth_required)

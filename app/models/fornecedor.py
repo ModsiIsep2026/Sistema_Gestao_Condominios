@@ -9,6 +9,7 @@ class Fornecedor(Base):
     id_fornecedor = Column(Integer, primary_key=True, autoincrement=True)
     nome = Column(String(200), nullable=False)
     servico = Column(String(100))
+    localizacao = Column(String(255), nullable=True)
     site = Column(String(255), nullable=True)
     preco_hora = Column(Numeric(8, 2), nullable=True)
     status = Column(Integer, nullable=False, default=1)

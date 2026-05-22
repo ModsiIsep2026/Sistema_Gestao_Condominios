@@ -21,7 +21,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 _tentativas: dict = defaultdict(list)
 _lock = threading.Lock()
 _MAX_TENTATIVAS = 5
-SEP_SEGUNDOS = 300
+SEP_SEGUNDOS = 300 
 
 
 def verificar_rt(ip: str):
@@ -32,7 +32,11 @@ def verificar_rt(ip: str):
         _tentativas[ip] = [t for t in _tentativas[ip] if t > limite]
         if len(_tentativas[ip]) >= _MAX_TENTATIVAS:
             raise HTTPException(429, "Demasiadas tentativas de login. Aguarde alguns minutos.")
-        _tentativas[ip].append(agora)
+
+
+def _registar_tentativa_falhada(ip: str):
+    with _lock:
+        _tentativas[ip].append(datetime.utcnow())
 
 
 def obter_ip(request: Request) -> str:
@@ -48,7 +52,12 @@ def login(dados: Login, request: Request, db: Session = Depends(get_db)):
     ip = obter_ip(request)
     verificar_rt(ip)
 
-    utilizador = servico.autenticar(db, dados.email, dados.password, ip=ip)
+    try:
+        utilizador = servico.autenticar(db, dados.email, dados.password, ip=ip)
+    except HTTPException:
+        _registar_tentativa_falhada(ip)
+        raise
+
     token = criar_token({"sub": str(utilizador.id_utilizador), "perfil": utilizador.perfil_id})
     return {"access_token": token, "token_type": "bearer"}
 

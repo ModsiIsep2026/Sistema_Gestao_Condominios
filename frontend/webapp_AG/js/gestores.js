@@ -1,18 +1,17 @@
 
 (async function () {
 
-   
     for (let i = 0; i < 30 && window.perfilAtual == null; i++) {
         await new Promise((r) => setTimeout(r, 50));
     }
     if (window.perfilAtual !== 5) {
-        alert(" Exclusivo a administradores.");
+        alert("Exclusivo a administradores.");
         window.location.replace("index.html");
         return;
     }
 
     let dados = [];
-    let filtroEstado = "ativos"; // ativos | inativos | todos
+    let filtroEstado = "ativos";
     let filtroPesquisa = "";
 
     function badge(status) {
@@ -23,16 +22,11 @@
 
     function aplicarFiltros() {
         return dados.filter((u) => {
-          
             if (filtroEstado === "ativos" && u.status !== 1) return false;
             if (filtroEstado === "inativos" && u.status !== 0) return false;
-
-            
             if (filtroPesquisa) {
                 const t = filtroPesquisa;
-                if (!u.nome.toLowerCase().includes(t) && !u.email.toLowerCase().includes(t)) {
-                    return false;
-                }
+                if (!u.nome.toLowerCase().includes(t) && !u.email.toLowerCase().includes(t)) return false;
             }
             return true;
         });
@@ -46,8 +40,8 @@
             tbody.innerHTML = `
                 <tr><td colspan="6">
                     <div class="app-vazio">
-                        <h3>Sem gestores</h3>
-                        <p>${filtroEstado === "ativos" ? "Convide o primeiro gestor para começar." : "Sem registos para este filtro."}</p>
+                        <h3>Sem técnicos</h3>
+                        <p>${filtroEstado === "ativos" ? "Convide o primeiro técnico para começar." : "Sem registos para este filtro."}</p>
                     </div>
                 </td></tr>`;
             return;
@@ -55,7 +49,7 @@
 
         tbody.innerHTML = lista.map((u) => {
             const ativo = u.status === 1;
-            const aplicado = ativo
+            const acao = ativo
                 ? `<button class="perigo" data-acao="desativar" data-id="${u.id_utilizador}">Desativar</button>`
                 : `<button data-acao="ativar" data-id="${u.id_utilizador}">Ativar</button>`;
             return `
@@ -65,16 +59,15 @@
                     <td>${u.telemovel || "—"}</td>
                     <td>${u.nif || "—"}</td>
                     <td>${badge(u.status)}</td>
-                    <td class="app-tabela__acoes">${aplicado}</td>
+                    <td class="app-tabela__acoes">${acao}</td>
                 </tr>`;
         }).join("");
     }
 
     async function carregar() {
         try {
-            
             const todos = await window.api.get("/utilizadores?incluir_inativos=true");
-            dados = todos.filter((u) => u.perfil_id === 3);
+            dados = todos.filter((u) => u.perfil_id === 4);
             renderizar();
         } catch (e) {
             document.querySelector('[data-tabela="gestores"]').innerHTML =
@@ -93,7 +86,6 @@
         filtroEstado = e.target.value;
         renderizar();
     });
-
 
     const modal = document.getElementById("modal-gestor");
     const erroModal = document.getElementById("erro-gestor");
@@ -133,11 +125,15 @@
         }
 
         try {
-            await window.api.post("/utilizadores/convidar", {
-                nome, email, telemovel, nif, lingua: "pt", perfil_id: 3,
+            const resultado = await window.api.post("/utilizadores/convidar", {
+                nome, email, telemovel, nif, lingua: "pt", perfil_id: 4,
             });
             fecharModal();
-            alert(`Conta criada. Foi enviado um email para ${email} com as credenciais.`);
+            if (resultado.aviso_email) {
+                alert(`Conta criada para ${email}.\n\n⚠️ ${resultado.aviso_email}\n\nPassword temporária: ${resultado.password_temporaria}`);
+            } else {
+                alert(`Conta criada. Foi enviado um email para ${email} com as credenciais.`);
+            }
             await carregar();
         } catch (e) {
             erroModal.textContent = e.message || "Não foi possível criar a conta.";
@@ -145,7 +141,6 @@
         }
     });
 
-    
     document.querySelector('[data-tabela="gestores"]').addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
         if (!btn) return;

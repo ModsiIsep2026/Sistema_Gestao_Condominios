@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conta criada — Sistema de Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../shared/css/tokens.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .sucesso-icone { font-size:48px; margin-bottom:var(--esp-4); }
+        .sucesso-passos { list-style:none; padding:0; margin:var(--esp-5) 0; text-align:left; }
+        .sucesso-passos li { padding:var(--esp-2) 0; border-bottom:1px solid var(--cor-borda); font-size:var(--tam-sm); display:flex; gap:var(--esp-3); align-items:flex-start; }
+        .sucesso-passos li:last-child { border-bottom:none; }
+        .sucesso-passos .num { background:var(--cor-primaria); color:#fff; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; margin-top:1px; }
+    </style>
+</head>
+<body class="login-body">
+
+    <div class="login-fundo">
+        <img src="../shared/img/predios.jpg" alt="">
+        <div class="login-fundo__overlay"></div>
+    </div>
+
+    <main class="login-conteudo">
+        <div class="login-card login-card--largo" style="text-align:center;">
+
+            <div class="login-card__topo">
+                <a href="index.html" class="login-logo">
+                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                </a>
+            </div>
+
+            <h1 style="margin-bottom:var(--esp-2);">Conta criada com sucesso!</h1>
+            <p id="msg-email" style="color:var(--cor-texto-suave);margin-bottom:var(--esp-5);"></p>
+
+            <a href="login.html" class="btn btn--primario btn--bloco">Ir para o login</a>
+
+        </div>
+    </main>
+
+    <script>
+        const email = sessionStorage.getItem("registo_email");
+        if (email) {
+            document.getElementById("msg-email").textContent =
+                `Enviámos as credenciais para ${email}. Verifica também a pasta de spam.`;
+            sessionStorage.removeItem("registo_email");
+        }
+    </script>
+</body>
+</html>

@@ -44,8 +44,7 @@
 
 
     function obterNavegacao(perfilId) {
-        // ===== ADMINISTRADOR (5) =====
-        // Visão estratégica: edifícios, gestores e fornecedores externos (não trata do dia-a-dia)
+
         if (perfilId === 5) {
             return [
                 {
@@ -57,9 +56,9 @@
                     ]
                 },
                 {
-                    titulo: "Gestão de Pessoas",
+                    titulo: "Recursos",
                     links: [
-                        { url: "gestores.html",    icone: iconeGestor(),     nome: "Gestores" },
+                        { url: "gestores_ver.html", icone: iconeGestor(),     nome: "Gestores" },
                         { url: "fornecedores.html", icone: iconeFornecedor(), nome: "Fornecedores" },
                     ]
                 },
@@ -114,8 +113,6 @@
             ];
         }
 
-        // ===== TÉCNICO (4) =====
-        // Vê apenas as ordens de trabalho atribuídas a ele
         if (perfilId === 4) {
             return [
                 {
@@ -236,7 +233,7 @@
 
 
     const PAGINAS_PERMITIDAS = {
-        5: ["index.html", "edificios.html", "mapa.html", "gestores.html", "fornecedores.html", "perfil.html"],
+        5: ["index.html", "edificios.html", "mapa.html", "gestores_ver.html", "fornecedores.html", "perfil.html"],
         3: ["index.html", "edificios.html", "mapa.html", "reservas.html", "avarias.html", "ordens-trabalho.html",
             "quotas.html", "despesas.html", "condominos.html", "tecnicos.html", "perfil.html"],
         4: ["index.html", "ordens-trabalho.html", "perfil.html"],

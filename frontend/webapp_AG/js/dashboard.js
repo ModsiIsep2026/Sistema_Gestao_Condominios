@@ -1,7 +1,6 @@
 
 (async function () {
 
-    // Aguarda o app.js definir window.perfilAtual
     for (let i = 0; i < 50 && window.perfilAtual == null; i++) {
         await new Promise((r) => setTimeout(r, 50));
     }
@@ -211,7 +210,6 @@
     }
 
 
-    // ===== Técnico: ordens de trabalho =====
     async function renderizarTecnico() {
         conteudo.innerHTML = `
             <div class="painel">

@@ -39,3 +39,8 @@ class LerUtilizador(UtilizadorBase):
 
     class Config:
         from_attributes = True
+
+
+class LerUtilizadorConvidado(LerUtilizador):
+    aviso_email: Optional[str] = None
+    password_temporaria: Optional[str] = None

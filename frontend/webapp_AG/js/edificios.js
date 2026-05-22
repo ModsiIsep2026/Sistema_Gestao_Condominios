@@ -1,6 +1,17 @@
 
-
 (async function () {
+
+
+    function perfilDoToken() {
+        try {
+            const token = sessionStorage.getItem("condo_token");
+            if (!token) return null;
+            const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+            return payload.perfil ?? null;
+        } catch { return null; }
+    }
+    const perfilAtual = perfilDoToken();
+    const eSoAdmin = perfilAtual === 5;
 
     let dadosEdificios = [];
     let filtroId = null;
@@ -60,7 +71,7 @@
                 <tr><td colspan="4">
                     <div class="app-vazio">
                         <h3>Sem edifícios</h3>
-                        <p>Crie o primeiro edifício para começar.</p>
+                        <p>${eSoAdmin ? "Não existem edifícios registados." : "Crie o primeiro edifício para começar."}</p>
                     </div>
                 </td></tr>`;
             return;
@@ -72,16 +83,19 @@
                        title="Abrir no Google Street View"
                        style="margin-right:6px;">Street View ↗</a>`
                 : "";
+
+            const acoes = eSoAdmin
+                ? (streetView || "—")
+                : `${streetView}
+                   <button data-acao="editar" data-id="${e.id_edificio}">Editar</button>
+                   <button class="perigo" data-acao="remover" data-id="${e.id_edificio}">Remover</button>`;
+
             return `
                 <tr>
                     <td><strong>${e.nome}</strong></td>
                     <td>${e.morada}</td>
                     <td>${e.cidade || "—"}</td>
-                    <td class="app-tabela__acoes">
-                        ${streetView}
-                        <button data-acao="editar" data-id="${e.id_edificio}">Editar</button>
-                        <button class="perigo" data-acao="remover" data-id="${e.id_edificio}">Remover</button>
-                    </td>
+                    <td class="app-tabela__acoes">${acoes}</td>
                 </tr>`;
         }).join("");
     }
@@ -98,11 +112,19 @@
             }
         } catch (e) {
             document.querySelector('[data-tabela="edificios"]').innerHTML =
-                `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+                `<tr><td colspan="4" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }
 
     await carregar();
+
+
+    if (eSoAdmin) {
+        const btnNovo = document.getElementById("btn-novo");
+        if (btnNovo) btnNovo.hidden = true;
+        return;
+    }
+
 
 
     document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
@@ -116,9 +138,8 @@
         ));
     });
 
-
     const modal = document.getElementById("modal-edificio");
-    const erro = document.getElementById("erro-edificio");
+    const erro  = document.getElementById("erro-edificio");
     const titulo = document.getElementById("modal-titulo");
 
     function abrirModal(edificio = null) {
@@ -152,11 +173,11 @@
     document.getElementById("btn-guardar").addEventListener("click", async () => {
         erro.hidden = true;
 
-        const id = document.getElementById("e-id").value;
-        const nome = document.getElementById("e-nome").value.trim();
-        const morada = document.getElementById("e-morada").value.trim();
+        const id      = document.getElementById("e-id").value;
+        const nome    = document.getElementById("e-nome").value.trim();
+        const morada  = document.getElementById("e-morada").value.trim();
         const codigo_postal = document.getElementById("e-codigo-postal").value.trim() || null;
-        const cidade = document.getElementById("e-cidade").value.trim() || null;
+        const cidade  = document.getElementById("e-cidade").value.trim() || null;
 
         if (!nome || !morada) {
             erro.textContent = "Indique o nome e a morada.";
@@ -169,14 +190,9 @@
         btn.disabled = true;
         btn.textContent = id ? "A guardar..." : "A adicionar...";
 
-
         const coords = await window.geocodificarMorada(morada, codigo_postal, cidade);
-
-        const dados = {
-            nome, morada, codigo_postal, cidade,
-            latitude: coords?.latitude ?? null,
-            longitude: coords?.longitude ?? null,
-        };
+        const dados  = { nome, morada, codigo_postal, cidade,
+            latitude: coords?.latitude ?? null, longitude: coords?.longitude ?? null };
 
         try {
             if (id) {
@@ -195,7 +211,6 @@
         }
     });
 
-
     document.querySelector('[data-tabela="edificios"]').addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
         if (!btn) return;
@@ -207,7 +222,7 @@
             abrirModal(edificio);
         }
         if (btn.dataset.acao === "remover") {
-            if (!confirm(`Remover o edifício "${edificio.nome}"? Esta ação é irreversível.`)) return;
+            if (!confirm(`Remover o edifício "${edificio.nome}"?`)) return;
             try {
                 await window.api.delete(`/edificios/${id}`);
                 await carregar();

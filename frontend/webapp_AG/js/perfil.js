@@ -13,8 +13,10 @@
 
     document.getElementById("form-perfil").addEventListener("submit", async (e) => {
         e.preventDefault();
+        const email = document.getElementById("perfil-email").value.trim();
         const dados = {
             nome:      document.getElementById("perfil-nome").value.trim(),
+            email:     email || undefined,
             telemovel: document.getElementById("perfil-telemovel").value.trim() || null,
             nif:       document.getElementById("perfil-nif").value.trim() || null,
         };

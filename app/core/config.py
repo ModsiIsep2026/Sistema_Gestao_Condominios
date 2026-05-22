@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     PASSWORD_RESET_PATH: str = "/website_C/reset_pw2.html"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60
 
+    # Stripe (test mode)
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_PUBLISHABLE_KEY: str = ""
+    STRIPE_PRECO_CENTIMOS: int = 5000  
+
     GOOGLE_CLIENT_ID: str = ""                       # Trabalho futuro quando tivermos em prod
     GOOGLE_CLIENT_SECRET: str = "" # --
     GITHUB_CLIENT_ID: str = "" # --

@@ -21,7 +21,7 @@ PERFIL_TECNICO = 4
 PERFIL_ADMINISTRADOR = 5 
 
 
-_credenciais_invalidas = HTTPException(status_code=401, detail="Token inválido ou expirado", headers={"WWW-Authenticate": "Bearer"})
+credenciais_invalidas = HTTPException(status_code=401, detail="Token inválido ou expirado", headers={"WWW-Authenticate": "Bearer"})
 ACESSO_NEGADO = HTTPException(status_code=403, detail="Acesso negado")
 
 
@@ -31,15 +31,14 @@ def hash_pw(password: str) -> str:
 
 
 def random_pw(tamanho: int = 12) -> str:
-    
-    pw_maiusc = string.ascii_uppercase # asci contém as letras do alfabeto em maiusculo
-    pw_minusc = string.ascii_lowercase # asci contém as letras do alfabeto em minusculo
-    digitos = string.digits
-    pw_completa = pw_maiusc +  pw_minusc + digitos
 
+    EXCLUIR = set("0O1lI")
+    pw_maiusc = [c for c in string.ascii_uppercase if c not in EXCLUIR]
+    pw_minusc = [c for c in string.ascii_lowercase if c not in EXCLUIR]
+    digitos   = [c for c in string.digits          if c not in EXCLUIR]
+    pw_completa = pw_maiusc + pw_minusc + digitos
 
     while True:
-
         pw = "".join(secrets.choice(pw_completa) for _ in range(tamanho))
         if (any(c.isupper() for c in pw)
                 and any(c.islower() for c in pw)
@@ -70,14 +69,14 @@ def utilizador_atual(token: str = Depends(oauth2_scheme), db: Session = Depends(
         payload = jwt.decode(token, configs.APP_SECRET_KEY, algorithms=[configs.ALGORITHM])
         user_id = payload.get("sub")
         if user_id is None:
-            raise _credenciais_invalidas
+            raise credenciais_invalidas
     except JWTError:
-        raise _credenciais_invalidas
+        raise credenciais_invalidas
 
     utilizador = db.query(Utilizador).filter(Utilizador.id_utilizador == int(user_id)).first()
 
     if not utilizador or utilizador.status != 1:
-        raise _credenciais_invalidas
+        raise credenciais_invalidas
 
     return utilizador
 
