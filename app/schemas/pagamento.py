@@ -3,28 +3,20 @@ from datetime import datetime
 from typing import Optional
 
 
-class Pagamento(BaseModel):
+class CriarPagamento(BaseModel):
     id_apartamento: int
     mes: str  # formato YYYY-MM
+
+
+class LerPagamento(BaseModel):
+    id: int
+    id_apartamento: int
+    mes: str
     valor: float
     data_i: datetime
-
-
-class CriarPagamento(Pagamento):
-    pass
-
-
-class AtualizarPagamento(BaseModel):
-    estado: Optional[int] = None                # 0=pendente 1=pago
     data_p: Optional[datetime] = None
-    status: Optional[int] = None                # 1=ativo 0=cancelado
-
-
-class LerPagamento(Pagamento):
-    id: int
-    status: int
-    data_p: Optional[datetime] = None
-    estado: int  
+    estado: int   # 0=pendente, 1=pago
+    status: int   # 1=ativo, 0=cancelado
 
     class Config:
         from_attributes = True

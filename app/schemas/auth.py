@@ -5,12 +5,13 @@ from typing import Literal
 class Login(BaseModel):
     email: EmailStr
     pw: str
+    perfil: Literal["admin", "gestor", "condomino", "tecnico"] # o literal restringe o tipo apenas a estes valoes
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
-    tipo_utilizador: Literal["admin", "gestor", "condomino", "tecnico"]
+    perfil_utilizador: Literal["admin", "gestor", "condomino", "tecnico"]
     id: int
 
 

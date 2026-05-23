@@ -1,33 +1,40 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from app.models.espaco_comum import EspacoComum
-from app.schemas.espaco_comum import CriarEspaco, AtualizarEspaco
+from app.models.espaco import Espaco
 
 
-def listar(db: Session):
-    return db.query(EspacoComum).filter(EspacoComum.status == 1).all() # Espaços comuns com status 1 são os ativos, ou seja, os que não foram eliminados (soft delete)
+def listar(db: Session, id_edificio: int):
+    return db.query(Espaco).filter(Espaco.id_edificio == id_edificio, Espaco.status == 1).all()
 
 
 def obter(db: Session, id: int):
-    espaco = db.query(EspacoComum).filter(EspacoComum.id_espaco == id, EspacoComum.status == 1).first()
-
+    espaco = db.query(Espaco).filter(Espaco.id == id, Espaco.status == 1).first()
+    
     if not espaco:
         raise HTTPException(404, "Espaço não encontrado")
     return espaco
 
 
-def criar(db: Session, dados: CriarEspaco):
-    espaco = EspacoComum(**dados.model_dump())
+def criar(db: Session, dados):
+    espaco = Espaco(**dados.model_dump())
     db.add(espaco)
     db.commit()
     db.refresh(espaco)
     return espaco
 
 
-def atualizar(db: Session, id: int, dados: AtualizarEspaco):
+def atualizar(db: Session, id: int, dados):
     espaco = obter(db, id)
-    for k, v in dados.model_dump(exclude_unset=True).items():
-        setattr(espaco, k, v)
+
+    for campo, valor in dados.model_dump(exclude_unset=True).items():setattr(espaco, campo, valor)
+    
     db.commit()
     db.refresh(espaco)
     return espaco
+
+
+def remover(db: Session, id: int):
+    espaco = obter(db, id)
+    espaco.status = 0
+    db.commit()
+    return {"detalhe": "Espaço removido"}

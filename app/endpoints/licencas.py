@@ -1,0 +1,14 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from typing import List
+from app.core.db_connect import get_db
+from app.schemas.licenca import LerLicenca
+from app.services import licenca as servico
+
+router = APIRouter(prefix="/licencas", tags=["Licenças"])
+
+# Licenças são públicas (o gestor escolhe ao registar-se)
+
+@router.get("", response_model=List[LerLicenca])
+def listar(db: Session = Depends(get_db)):
+    return servico.listar(db)
