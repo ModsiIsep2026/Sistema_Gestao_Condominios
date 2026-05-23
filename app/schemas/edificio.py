@@ -2,31 +2,34 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class EdificioBase(BaseModel):
-    nome: str
-    morada: str
-    codigo_postal: Optional[str] = None
+class Edificio(BaseModel):
+    rua: str
+    cp: str
     cidade: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    lat: float
+    lng: float
+    iban: str
+    valor_base_mensal: float
+    id_gestor: int
 
 
-class CriarEdificio(EdificioBase):
+class CriarEdificio(Edificio):
     pass
 
 
 class AtualizarEdificio(BaseModel):
-    nome: Optional[str] = None
-    morada: Optional[str] = None
-    codigo_postal: Optional[str] = None
+    rua: Optional[str] = None    # O utilizador apenas atualiza a coluna que pretender
+    cp: Optional[str] = None
     cidade: Optional[str] = None
-    latitude: Optional[float] = None
-    longitude: Optional[float] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    iban: Optional[str] = None
+    valor_base_mensal: Optional[float] = None
     status: Optional[int] = None
 
 
-class LerEdificio(EdificioBase):
-    id_edificio: int
+class LerEdificio(Edificio):
+    id: int
     status: int
 
     class Config:

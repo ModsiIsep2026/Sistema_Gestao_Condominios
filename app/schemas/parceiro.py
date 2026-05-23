@@ -2,29 +2,28 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class FornecedorBase(BaseModel):
+class Parceiro(BaseModel):
     nome: str
     servico: Optional[str] = None
     localizacao: Optional[str] = None
     site: Optional[str] = None
-    preco_hora: Optional[float] = None
+    id_admin: int
 
 
-class CriarFornecedor(FornecedorBase):
+class CriarParceiro(Parceiro):
     pass
 
 
-class AtualizarFornecedor(BaseModel):
+class AtualizarParceiro(BaseModel):
     nome: Optional[str] = None
     servico: Optional[str] = None
     localizacao: Optional[str] = None
     site: Optional[str] = None
-    preco_hora: Optional[float] = None
     status: Optional[int] = None
 
 
-class LerFornecedor(FornecedorBase):
-    id_fornecedor: int
+class LerParceiro(Parceiro):
+    id: int
     status: int
 
     class Config:

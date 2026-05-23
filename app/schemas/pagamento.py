@@ -1,24 +1,30 @@
 from pydantic import BaseModel
-from datetime import date, datetime
-from decimal import Decimal
+from datetime import datetime
 from typing import Optional
 
 
-class CriarPagamento(BaseModel):
-    quota_id: int
-    utilizador_id: int
-    valor_pago: Decimal
-    data_pagamento: date
+class Pagamento(BaseModel):
+    id_apartamento: int
+    mes: str  # formato YYYY-MM
+    valor: float
+    data_i: datetime
 
 
-class LerPagamento(BaseModel):
-    id_pagamento: int
-    quota_id: int
-    utilizador_id: int
-    valor_pago: Decimal
-    data_pagamento: date
+class CriarPagamento(Pagamento):
+    pass
+
+
+class AtualizarPagamento(BaseModel):
+    estado: Optional[int] = None                # 0=pendente 1=pago
+    data_p: Optional[datetime] = None
+    status: Optional[int] = None                # 1=ativo 0=cancelado
+
+
+class LerPagamento(Pagamento):
+    id: int
     status: int
-    created_at: Optional[datetime] = None
+    data_p: Optional[datetime] = None
+    estado: int  
 
     class Config:
         from_attributes = True
