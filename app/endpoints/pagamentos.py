@@ -1,28 +1,34 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.db_connect import get_db
-from app.core.seguranca import so_gestor
-from app.schemas.pagamento import CriarPagamento, LerPagamento
-from app.services import pagamento as servico
+from app.configs.db_connect import get_db
+from app.configs.seguranca import verificar_g, verificar_c
+from app.estruturas.pagamento import CriarPagamento, LerPagamento
+from app.logica import pagamento as servico
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 
-# (GET)  /pagamentos              - Lista por apartamento (?id_apartamento=)  (gestor)
-# (POST) /pagamentos              - Gestor gera pagamento (valor calculado)    (gestor)
-# (POST) /pagamentos/{id}/pagar   - Marca como pago                            (gestor)
+# (GET)  /pagamentos              - Gestor lista pagamentos por apartamento
+# (GET)  /pagamentos/meus         - Condómino lista os seus pagamentos
+# (POST) /pagamentos              - Gestor gera pagamento mensal 
+# (POST) /pagamentos/{id}/pagar   - Condómino paga a sua quota
 
 
 @router.get("", response_model=List[LerPagamento])
-def listar(id_apartamento: int, _=Depends(so_gestor), db: Session = Depends(get_db)):
+def listar(id_apartamento: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.listar(db, id_apartamento)
 
 
+@router.get("/meus", response_model=List[LerPagamento])
+def listar_meus(condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+    return servico.listar(db, condomino.id_apartamento)
+
+
 @router.post("", response_model=LerPagamento, status_code=201)
-def criar(dados: CriarPagamento, _=Depends(so_gestor), db: Session = Depends(get_db)):
+def criar(dados: CriarPagamento, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.criar(db, dados)
 
 
 @router.post("/{id}/pagar", response_model=LerPagamento)
-def marcar_pago(id: int, _=Depends(so_gestor), db: Session = Depends(get_db)):
-    return servico.marcar_pago(db, id)
+def pagar(id: int, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+    return servico.pagamento_feito(db, id)

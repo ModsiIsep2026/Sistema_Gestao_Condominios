@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.db_connect import get_db
-from app.core.seguranca import so_admin
-from app.schemas.gestor import CriarGestor, AtualizarGestor, LerGestor
-from app.services import gestor as servico
+from app.configs.db_connect import get_db
+from app.configs.seguranca import verificar_a
+from app.estruturas.gestor import CriarGestor, AtualizarGestor, LerGestor
+from app.logica import gestor as servico
 
 router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
@@ -16,25 +16,25 @@ router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
 
 @router.get("", response_model=List[LerGestor])
-def listar(_=Depends(so_admin), db: Session = Depends(get_db)):
+def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.listar(db)
 
 
 @router.get("/{id}", response_model=LerGestor)
-def obter(id: int, _=Depends(so_admin), db: Session = Depends(get_db)):
+def obter(id: int, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.obter(db, id)
 
 
 @router.post("", response_model=LerGestor, status_code=201)
-def criar(dados: CriarGestor, _=Depends(so_admin), db: Session = Depends(get_db)):
+def criar(dados: CriarGestor, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerGestor)
-def atualizar(id: int, dados: AtualizarGestor, _=Depends(so_admin), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarGestor, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover(id: int, _=Depends(so_admin), db: Session = Depends(get_db)):
+def remover(id: int, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.remover(db, id)

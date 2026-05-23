@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.db_connect import get_db
-from app.core.seguranca import so_admin
-from app.schemas.parceiro import CriarParceiro, AtualizarParceiro, LerParceiro
-from app.services import parceiro as servico
+from app.configs.db_connect import get_db
+from app.configs.seguranca import verificar_a
+from app.estruturas.parceiro import CriarParceiro, AtualizarParceiro, LerParceiro
+from app.logica import parceiro as servico
 
 router = APIRouter(prefix="/parceiros", tags=["Parceiros"])
 
@@ -26,15 +26,15 @@ def obter(id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerParceiro, status_code=201)
-def criar(dados: CriarParceiro, _=Depends(so_admin), db: Session = Depends(get_db)):
-    return servico.criar(db, dados)
+def criar(dados: CriarParceiro, admin=Depends(verificar_a), db: Session = Depends(get_db)):
+    return servico.criar(db, dados, admin.id)
 
 
 @router.put("/{id}", response_model=LerParceiro)
-def atualizar(id: int, dados: AtualizarParceiro, _=Depends(so_admin), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarParceiro, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover(id: int, _=Depends(so_admin), db: Session = Depends(get_db)):
+def remover(id: int, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.remover(db, id)

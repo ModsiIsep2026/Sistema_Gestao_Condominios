@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.db_connect import get_db
-from app.core.seguranca import so_gestor, token_atual
-from app.schemas.espaco import CriarEspaco, AtualizarEspaco, LerEspaco
-from app.services import espaco as servico
+from app.configs.db_connect import get_db
+from app.configs.seguranca import verificar_g, token_atual
+from app.estruturas.espaco import CriarEspaco, AtualizarEspaco, LerEspaco
+from app.logica import espaco as servico
 
 router = APIRouter(prefix="/espacos", tags=["Espaços"])
 
-# (GET)    /espacos              - Lista espaços de um edifício (?id_edificio=)  (qualquer autenticado)
-# (GET)    /espacos/{id}         - Obtém espaço                                  (qualquer autenticado)
+# (GET)    /espacos              - Lista espaços de um edifício
+# (GET)    /espacos/{id}         - Obtém espaço                                 
 # (POST)   /espacos              - Cria espaço                                   (gestor)
 # (PUT)    /espacos/{id}         - Atualiza espaço                               (gestor)
 # (DELETE) /espacos/{id}         - Remove espaço                                 (gestor)
@@ -26,15 +26,15 @@ def obter(id: int, _=Depends(token_atual), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerEspaco, status_code=201)
-def criar(dados: CriarEspaco, _=Depends(so_gestor), db: Session = Depends(get_db)):
+def criar(dados: CriarEspaco, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerEspaco)
-def atualizar(id: int, dados: AtualizarEspaco, _=Depends(so_gestor), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarEspaco, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover(id: int, _=Depends(so_gestor), db: Session = Depends(get_db)):
+def remover(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.remover(db, id)

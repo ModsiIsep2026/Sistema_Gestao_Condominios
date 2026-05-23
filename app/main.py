@@ -5,13 +5,13 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from pathlib import Path
 
-from app.core.config import get_configs
+from app.configs.config import get_configs
 from app.endpoints import (
     auth, admin, licencas, gestores, contratos,
     edificios, apartamentos, condominos, tecnicos,
     parceiros, espacos, materiais,
     alugueres_espaco, alugueres_material,
-    pagamentos, avarias,
+    pagamentos, avarias, relatorios,
 )
 
 _configs = get_configs()
@@ -24,7 +24,7 @@ app = FastAPI(
 )
 
 
-# ── Middlewares ────────────────────────────────────────────────────────────────
+
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -43,8 +43,7 @@ app.add_middleware(
     allow_origins=["http://localhost:5000"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["Authorization", "Content-Type"],
-)
+    allow_headers=["Authorization", "Content-Type"],)
 
 
 # Endpoints
@@ -65,6 +64,7 @@ app.include_router(alugueres_espaco.router)
 app.include_router(alugueres_material.router)
 app.include_router(pagamentos.router)
 app.include_router(avarias.router)
+app.include_router(relatorios.router)
 
 
 # Frontend 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
-from app.core.db_connect import get_db
-from app.schemas.licenca import LerLicenca
-from app.services import licenca as servico
+from app.configs.db_connect import get_db
+from app.estruturas.licenca import LerLicenca
+from app.logica import licenca as servico
 
 router = APIRouter(prefix="/licencas", tags=["Licenças"])
 

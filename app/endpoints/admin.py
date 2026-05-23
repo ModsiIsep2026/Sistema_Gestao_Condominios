@@ -1,21 +1,22 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.core.db_connect import get_db
-from app.core.seguranca import so_admin
-from app.schemas.admin import LerAdmin, AtualizarAdmin
-from app.services import admin as servico
+from app.configs.db_connect import get_db
+from app.configs.seguranca import verificar_a
+from app.estruturas.admin import LerAdmin, AtualizarAdmin
+from app.logica import admin as servico
 
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
-# (GET) /admin/me      - Perfil do admin autenticado
-# (PUT) /admin/me      - Atualiza perfil do admin
+# (GET) /admin  - Perfil do admin autenticado
+# (PUT) /admin  - Atualiza perfil do admin
 
 
-@router.get("/me", response_model=LerAdmin)
-def perfil(admin=Depends(so_admin)):
-    return admin  # so_admin já carrega o objeto da BD
+@router.get("", response_model=LerAdmin)
+def perfil(admin=Depends(verificar_a)):
+    return admin
 
 
-@router.put("/me", response_model=LerAdmin)
-def atualizar(dados: AtualizarAdmin, admin=Depends(so_admin), db: Session = Depends(get_db)):
+@router.put("", response_model=LerAdmin)
+
+def atualizar(dados: AtualizarAdmin, admin=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.atualizar(db, admin.id, dados)
