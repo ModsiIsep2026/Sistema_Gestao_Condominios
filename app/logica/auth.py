@@ -15,10 +15,17 @@ PERFIS = {
 
 
 def autenticar(db: Session, email: str, pw: str, tipo: str):
-    perfis = PERFIS[tipo]
-    utilizador = db.query(perfis).filter(perfis.email == email, perfis.status == 1).first()
-
+    modelo = PERFIS[tipo]
+    utilizador = db.query(modelo).filter(modelo.email == email, modelo.status == 1).first()
     if not utilizador or not verificar_pw(pw, utilizador.pw):
-        
         raise HTTPException(401, "Email ou password inválidos")
     return utilizador
+
+
+def autenticar_auto(db: Session, email: str, pw: str):
+    """Tenta todas as tabelas por ordem e devolve (utilizador, tipo)."""
+    for tipo, modelo in PERFIS.items():
+        u = db.query(modelo).filter(modelo.email == email, modelo.status == 1).first()
+        if u and verificar_pw(pw, u.pw):
+            return u, tipo
+    raise HTTPException(401, "Email ou password inválidos")

@@ -19,10 +19,10 @@
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
                     <h1>Condóminos</h1>
-                    <p>Pessoas com fração no edifício.</p>
+                    <p>Pessoas com fração nos seus edifícios.</p>
                 </div>
                 <div class="app-cabecalho__acoes">
-                    <button class="btn btn--primario">Adicionar condómino</button>
+                    <button type="button" class="btn btn--primario" id="btn-novo-condomino">Adicionar condómino</button>
                 </div>
             </div>
             <div class="app-filtros">
@@ -35,7 +35,7 @@
                             <th>Nome</th>
                             <th>Email</th>
                             <th>Telemóvel</th>
-                            <th>NIF</th>
+                            <th>Apartamento</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -45,9 +45,48 @@
         </main>
     </div>
 </div>
+
+<!-- Modal: adicionar condómino -->
+<div class="modal-overlay" id="modal-condomino" hidden>
+    <div class="modal">
+        <div class="modal__cabecalho">
+            <h3>Adicionar condómino</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-condomino" class="login-erro" hidden></div>
+            <form id="form-condomino">
+                <div class="campo">
+                    <label for="c-nome">Nome completo</label>
+                    <input type="text" id="c-nome" required>
+                </div>
+                <div class="campo">
+                    <label for="c-email">Email</label>
+                    <input type="email" id="c-email" required>
+                </div>
+                <div class="campo">
+                    <label for="c-telemovel">Telemóvel</label>
+                    <input type="tel" id="c-telemovel" required>
+                </div>
+                <div class="campo">
+                    <label for="c-apartamento">ID do apartamento</label>
+                    <input type="number" id="c-apartamento" min="1" required>
+                </div>
+                <div class="campo">
+                    <label for="c-pw">Password inicial</label>
+                    <input type="password" id="c-pw" required autocomplete="new-password">
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-criar-condomino">Adicionar</button>
+        </div>
+    </div>
+</div>
+
 <script src="../shared/js/api.js"></script>
 <script src="js/app.js"></script>
-<script src="js/listagem.js"></script>
 <script src="js/condominos.js"></script>
 </body>
 </html>

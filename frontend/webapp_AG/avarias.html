@@ -25,23 +25,25 @@
                 </div>
 
                 <div class="app-filtros">
-                    <input type="search" placeholder="Procurar..." data-pesquisa>
+                    <select id="filtro-edificio">
+                        <option value="">— Selecione um edifício —</option>
+                    </select>
+                    <input type="search" placeholder="Procurar por zona ou descrição..." data-pesquisa>
                 </div>
 
                 <div class="painel">
                     <table class="app-tabela">
                         <thead>
                             <tr>
-                                <th>Quem reportou</th>
-                                <th>Edifício</th>
-                                <th>Fração</th>
-                                <th>Categoria</th>
+                                <th>Data</th>
+                                <th>Zona</th>
                                 <th>Descrição</th>
+                                <th>Estado</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody data-tabela="avarias">
-                            <tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr>
+                            <tr><td colspan="5" class="app-vazio"><p>Selecione um edifício para ver as avarias.</p></td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -51,7 +53,6 @@
 
     <script src="../shared/js/api.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/listagem.js"></script>
     <script src="js/avarias.js"></script>
 </body>
 </html>

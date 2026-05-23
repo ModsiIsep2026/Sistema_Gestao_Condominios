@@ -3,49 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar — Sistema de Gestão de Condomínios</title>
-
-    <link rel="stylesheet" href="../shared/css/tokens.css">
-    <link rel="stylesheet" href="../shared/css/base.css">
-    <link rel="stylesheet" href="../shared/css/componentes.css">
-    <link rel="stylesheet" href="css/login.css">
+    <title>Entrar — Gestão de Condomínios</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-</head>
-<body class="login-body">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <div class="login-fundo">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --azul:    #0B2240;
+            --acento:  #F08A24;
+            --cinza:   #F4F3F1;
+            --borda:   #E2E0DC;
+            --texto:   #1A1A1A;
+            --suave:   #6B6860;
+            --erro:    #C0392B;
+            --ok:      #2E7D32;
+        }
+
+        html, body { height: 100%; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cinza);
+            color: var(--texto);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 100vh;
+        }
+
+        /* ── Painel esquerdo — imagem ──────────────────────────────────────── */
+        .painel-imagem {
+            position: relative;
+            overflow: hidden;
+        }
+        .painel-imagem img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .painel-imagem__overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(160deg, rgba(11,34,64,.75) 0%, rgba(240,138,36,.35) 100%);
+        }
+        .painel-imagem__conteudo {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            color: #fff;
+        }
+        .painel-imagem__logo {
+            display: flex; align-items: center; gap: 12px;
+            text-decoration: none; color: #fff;
+        }
+        .painel-imagem__logo img { height: 36px; width: auto; filter: brightness(0) invert(1); }
+        .painel-imagem__logo span {
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 600; font-size: 14px; letter-spacing: .02em;
+            line-height: 1.3; opacity: .9;
+        }
+        .painel-imagem__frase {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(28px, 3vw, 42px);
+            line-height: 1.15;
+            max-width: 380px;
+        }
+        .painel-imagem__frase em {
+            font-style: italic; color: var(--acento);
+        }
+        .painel-imagem__rodape {
+            font-size: 13px; opacity: .6;
+        }
+
+        /* ── Painel direito — formulário ───────────────────────────────────── */
+        .painel-form {
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            padding: 48px 40px;
+            background: #fff;
+            overflow-y: auto;
+        }
+        .painel-form__interior {
+            width: 100%; max-width: 400px;
+        }
+
+        .voltar {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--suave); text-decoration: none;
+            margin-bottom: 36px;
+            transition: color .2s;
+        }
+        .voltar:hover { color: var(--azul); }
+
+        h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 30px; font-weight: 400;
+            line-height: 1.2; margin-bottom: 8px;
+        }
+        .subtitulo {
+            font-size: 14px; color: var(--suave); margin-bottom: 32px;
+        }
+
+        /* ── Selector de perfil ─────────────────────────────────────────────── */
+        .perfil-tabs {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 6px; margin-bottom: 24px;
+        }
+        .perfil-tab {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; padding: 10px 6px;
+            border: 1.5px solid var(--borda);
+            background: var(--cinza); cursor: pointer;
+            font-size: 11px; font-weight: 500; color: var(--suave);
+            transition: all .18s; line-height: 1.2; text-align: center;
+        }
+        .perfil-tab svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+        .perfil-tab.ativo {
+            border-color: var(--azul); background: var(--azul); color: #fff;
+        }
+
+        /* ── Campos ────────────────────────────────────────────────────────── */
+        .campo { margin-bottom: 18px; }
+        .campo label {
+            display: block; font-size: 13px; font-weight: 500;
+            margin-bottom: 6px; color: var(--texto);
+        }
+        .campo__cabecalho { display: flex; justify-content: space-between; align-items: baseline; }
+        .campo input, .campo select {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid var(--borda);
+            background: var(--cinza); font-size: 14px;
+            font-family: inherit; color: var(--texto);
+            outline: none; transition: border-color .18s;
+        }
+        .campo input:focus, .campo select:focus { border-color: var(--azul); background: #fff; }
+
+        .pw-wrapper { position: relative; }
+        .pw-wrapper input { padding-right: 42px; }
+        .toggle-pass {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer;
+            color: var(--suave); padding: 4px;
+        }
+        .toggle-pass svg { display: block; }
+
+        .campo__link { font-size: 12px; color: var(--acento); text-decoration: none; }
+        .campo__link:hover { text-decoration: underline; }
+
+        /* ── Botão principal ────────────────────────────────────────────────── */
+        .btn-entrar {
+            width: 100%; padding: 13px;
+            background: var(--azul); color: #fff;
+            border: none; cursor: pointer;
+            font-family: inherit; font-size: 14px; font-weight: 600;
+            letter-spacing: .04em; text-transform: uppercase;
+            transition: background .18s;
+        }
+        .btn-entrar:hover { background: #0d2d52; }
+        .btn-entrar:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* ── Erro ───────────────────────────────────────────────────────────── */
+        #login-erro {
+            background: #FEF2F2; border-left: 3px solid var(--erro);
+            padding: 10px 14px; font-size: 13px; color: var(--erro);
+            margin-bottom: 18px;
+        }
+
+        /* ── Separador ──────────────────────────────────────────────────────── */
+        .separador {
+            display: flex; align-items: center; gap: 12px;
+            margin: 24px 0; font-size: 12px; color: var(--suave);
+        }
+        .separador::before, .separador::after {
+            content: ''; flex: 1; height: 1px; background: var(--borda);
+        }
+
+        /* ── Botões OAuth ───────────────────────────────────────────────────── */
+        .oauth-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+        .btn-oauth {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 16px; width: 100%;
+            border: 1.5px solid var(--borda); background: var(--cinza);
+            font-family: inherit; font-size: 13px; font-weight: 500;
+            color: var(--texto); cursor: pointer;
+            transition: background .18s, border-color .18s;
+        }
+        .btn-oauth:hover { background: #ECEAE6; border-color: #C8C5BF; }
+        .btn-oauth svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .rodape-form {
+            text-align: center; font-size: 13px; color: var(--suave);
+        }
+        .rodape-form a { color: var(--azul); font-weight: 500; text-decoration: none; }
+        .rodape-form a:hover { text-decoration: underline; }
+
+        /* ── Responsive ─────────────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            body { grid-template-columns: 1fr; }
+            .painel-imagem { display: none; }
+            .painel-form { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Painel esquerdo -->
+    <div class="painel-imagem">
         <img src="../shared/img/predios.jpg" alt="">
-        <div class="login-fundo__overlay"></div>
+        <div class="painel-imagem__overlay"></div>
+        <div class="painel-imagem__conteudo">
+            <a href="index.html" class="painel-imagem__logo">
+                <img src="../shared/img/logo.png" alt="Logo">
+                <span>Gestão de<br>Condomínios</span>
+            </a>
+            <p class="painel-imagem__frase">
+                Quotas, reservas e avarias —<br>
+                <em>tudo num só lugar.</em>
+            </p>
+            <p class="painel-imagem__rodape">© 2026 Gestão de Condomínios</p>
+        </div>
     </div>
 
-    <main class="login-conteudo">
-        <a href="index.html" class="login-voltar">&larr; Voltar ao início</a>
+    <!-- Painel direito -->
+    <div class="painel-form">
+        <div class="painel-form__interior">
 
-        <div class="login-card">
+            <a href="index.html" class="voltar">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+                Voltar ao início
+            </a>
 
-            <div class="login-card__topo">
-                <a href="index.html" class="login-logo">
-                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
-                </a>
-                <h1>Bem-vindo de volta</h1>
-                <p>Insira as suas credenciais para aceder à plataforma.</p>
-            </div>
+            <h1>Bem-vindo de volta</h1>
+            <p class="subtitulo">Insira as suas credenciais para aceder à plataforma.</p>
 
-            <div id="login-erro" class="login-erro" hidden></div>
+            <div id="login-erro" hidden></div>
 
-            <form id="login-form" class="login-form" novalidate>
-
+            <form id="login-form" novalidate>
                 <div class="campo">
                     <label for="email">Email</label>
-                    <input type="email"
-                           id="email"
-                           name="email"
-                           autocomplete="username"
-                           placeholder="nome@exemplo.pt"
-                           required>
+                    <input type="email" id="email" autocomplete="username"
+                           placeholder="nome@exemplo.pt" required>
                 </div>
 
                 <div class="campo">
@@ -53,18 +253,11 @@
                         <label for="password">Password</label>
                         <a href="reset_pw.html" class="campo__link">Esqueceu-se?</a>
                     </div>
-                    <div class="password-wrapper">
-                        <input type="password"
-                               id="password"
-                               name="password"
-                               autocomplete="current-password"
-                               placeholder="••••••••"
-                               required>
-                        <button type="button"
-                                class="toggle-pass"
-                                aria-label="Mostrar password"
-                                data-target="password">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="pw-wrapper">
+                        <input type="password" id="password" autocomplete="current-password"
+                               placeholder="••••••••" required>
+                        <button type="button" class="toggle-pass" data-target="password" aria-label="Mostrar password">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                 <circle cx="12" cy="12" r="3"/>
                             </svg>
@@ -72,49 +265,33 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn--primario btn--bloco">Entrar</button>
-
+                <button type="submit" class="btn-entrar">Entrar</button>
             </form>
 
-            <div class="login-separador"><span>ou</span></div>
+            <div class="separador">ou continuar com</div>
 
-            <div class="login-social">
+            <div class="oauth-btns">
+                <button type="button" class="btn-oauth" data-provider="google">
+                    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8a12 12 0 1 1 0-24c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 24 4a20 20 0 1 0 19.6 16.1z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 6.3 14.7z"/><path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.4-5.2l-6.2-5.2a12 12 0 0 1-7.2 2.4c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5A20 20 0 0 0 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.6-.4-3.9z"/></svg>
+                    Continuar com Google
+                </button>
+                <button type="button" class="btn-oauth" data-provider="github">
+                    <svg viewBox="0 0 24 24" fill="#1A1A1A"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 0a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.8 1.3 3.5 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 0z"/></svg>
+                    Continuar com GitHub
+                </button>
+                <button type="button" class="btn-oauth" data-provider="microsoft">
+                    <svg viewBox="0 0 23 23"><path fill="#f25022" d="M1 1h10v10H1z"/><path fill="#00a4ef" d="M12 1h10v10H12z"/><path fill="#7fba00" d="M1 12h10v10H1z"/><path fill="#ffb900" d="M12 12h10v10H12z"/></svg>
+                    Continuar com Microsoft
+                </button>
+            </div>
 
-  <button type="button" class="btn-social" data-provider="google" aria-label="Continuar com Google">
-    <svg class="btn-social__icone" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.6-6 8-11.3 8a12 12 0 1 1 0-24c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 24 4a20 20 0 1 0 19.6 16.1z"/>
-      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.8 1.1 7.9 3l5.6-5.6A20 20 0 0 0 6.3 14.7z"/>
-      <path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.4-5.2l-6.2-5.2a12 12 0 0 1-7.2 2.4c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5A20 20 0 0 0 24 44z"/>
-      <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2c-.4.4 6.6-4.8 6.6-14.8 0-1.3-.1-2.6-.4-3.9z"/>
-    </svg>
-    <span>Continuar com Google (BREVEMENTE)</span>
-  </button>
-
-  <button type="button" class="btn-social" data-provider="github" aria-label="Continuar com GitHub">
-    <svg class="btn-social__icone" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#1A1A1A">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M12 0a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.8 1.3 3.5 1 .1-.8.4-1.4.8-1.7-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 0z"/>
-    </svg>
-    <span>Continuar com GitHub (BREVEMENTE)</span>
-  </button>
-
-
-  <button type="button" class="btn-social" data-provider="microsoft" aria-label="Continuar com Microsoft">
-    <svg class="btn-social__icone" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
-      <path fill="#f25022" d="M1 1h10v10H1z"/>
-      <path fill="#00a4ef" d="M12 1h10v10H12z"/>
-      <path fill="#7fba00" d="M1 12h10v10H1z"/>
-      <path fill="#ffb900" d="M12 12h10v10H12z"/>
-    </svg>
-    <span>Continuar com Microsoft (BREVEMENTE)</span>
-  </button>
-
-</div>
-            <p class="login-rodape">
-                <a href="registo_gestor.html">Aderir à plataforma</a>
+            <p class="rodape-form">
+                Quer aderir à plataforma?
+                <a href="registo_gestor.html">Criar conta</a>
             </p>
 
         </div>
-    </main>
+    </div>
 
     <script src="../shared/js/api.js"></script>
     <script src="js/login.js"></script>

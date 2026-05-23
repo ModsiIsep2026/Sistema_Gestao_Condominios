@@ -1,11 +1,11 @@
 from pydantic import BaseModel, EmailStr
-from typing import Literal
+from typing import Literal, Optional
 
 
 class Login(BaseModel):
     email: EmailStr
     pw: str
-    perfil: Literal["admin", "gestor", "condomino", "tecnico"] # o literal restringe o tipo apenas a estes valoes
+    perfil: Optional[Literal["admin", "gestor", "condomino", "tecnico"]] = None
 
 
 class Token(BaseModel):

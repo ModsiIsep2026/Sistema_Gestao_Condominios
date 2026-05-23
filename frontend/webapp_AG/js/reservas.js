@@ -1,89 +1,73 @@
+
+// Reservas de Espaço — gestor vê todos os alugueres
 (async function () {
+
     await new Promise((r) => setTimeout(r, 50));
 
-    function fmt(iso) {
-        if (!iso) return "—";
-        return new Date(iso).toLocaleString("pt-PT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
-    }
+    let dados = [];
 
-    function badge(nome) {
-        const n = (nome || "").toLowerCase();
-        if (n === "pendente")  return `<span class="estado estado--alerta">Pendente</span>`;
-        if (n === "aprovada")  return `<span class="estado estado--ok">Aprovada</span>`;
-        if (n === "rejeitada") return `<span class="estado estado--erro">Rejeitada</span>`;
-        if (n === "cancelada") return `<span class="estado estado--erro">Cancelada</span>`;
-        if (n === "concluida") return `<span class="estado estado--ok">Concluída</span>`;
-        return `<span class="estado estado--neutro">${nome || "—"}</span>`;
-    }
+    const fmtData = (iso) => iso
+        ? new Date(iso).toLocaleString("pt-PT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
+        : "—";
+    const fmtEur = (v) => v != null
+        ? new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(v)
+        : "—";
 
-    const dados = await window.renderizarListagem({
-        endpoint: "/reservas",
-        tabelaSeletor: '[data-tabela="reservas"]',
-        colunas: [
-            { chave: "utilizador", transformar: (l) => l.utilizador?.nome || "—" },
-            { chave: "espaco",     transformar: (l) => `<strong>${l.espaco?.nome || "Espaço " + l.espaco_id}</strong>` },
-            { chave: "data_inicio", transformar: (l) => fmt(l.data_inicio) },
-            { chave: "data_fim",    transformar: (l) => fmt(l.data_fim) },
-            { chave: "estado",     transformar: (l) => badge(l.estado?.nome_pt) },
-        ],
-        acoes: (l) => {
-            const estado = (l.estado?.nome_pt || "").toLowerCase();
-            if (estado === "pendente") {
-                return `
-                    <button type="button" data-acao="aprovar" data-id="${l.id_reserva}">Aprovar</button>
-                    <button type="button" class="perigo" data-acao="rejeitar" data-id="${l.id_reserva}">Rejeitar</button>
-                `;
-            }
-            return `<button type="button" data-acao="ver" data-id="${l.id_reserva}">Ver</button>`;
-        },
-        estadoVazio: { titulo: "Sem reservas", texto: "Ainda não há pedidos de reserva." },
-        filtro: (l, termo) =>
-            (l.utilizador?.nome || "").toLowerCase().includes(termo) ||
-            (l.espaco?.nome || "").toLowerCase().includes(termo),
-    });
-
-
-    document.getElementById("filtro-estado")?.addEventListener("change", (e) => {
-        const valor = e.target.value;
-  
-        const tabela = document.querySelector('[data-tabela="reservas"]');
-        const linhas = valor === "" ? dados : dados.filter((l) => (l.estado?.nome_pt || "").toLowerCase() === valor);
-        tabela.innerHTML = linhas.map((l) => `
+    function renderizar(lista) {
+        const tbody = document.querySelector('[data-tabela="reservas"]');
+        if (!lista.length) {
+            tbody.innerHTML = `
+                <tr><td colspan="5">
+                    <div class="app-vazio">
+                        <h3>Sem reservas</h3>
+                        <p>Ainda não existem reservas de espaços.</p>
+                    </div>
+                </td></tr>`;
+            return;
+        }
+        tbody.innerHTML = lista.map((r) => `
             <tr>
-                <td>${l.utilizador?.nome || "—"}</td>
-                <td><strong>${l.espaco?.nome || "—"}</strong></td>
-                <td>${fmt(l.data_inicio)}</td>
-                <td>${fmt(l.data_fim)}</td>
-                <td>${badge(l.estado?.nome_pt)}</td>
+                <td>${r.id_condomino}</td>
+                <td>${r.id_espaco}</td>
+                <td>${fmtData(r.data_inicio)}</td>
+                <td>${fmtData(r.data_fim)}</td>
+                <td>${fmtEur(r.preco_total)}</td>
                 <td class="app-tabela__acoes">
-                    ${(l.estado?.nome_pt || "").toLowerCase() === "pendente"
-                        ? `<button data-acao="aprovar" data-id="${l.id_reserva}">Aprovar</button>
-                           <button class="perigo" data-acao="rejeitar" data-id="${l.id_reserva}">Rejeitar</button>`
-                        : `<button data-acao="ver" data-id="${l.id_reserva}">Ver</button>`}
+                    <button class="perigo" data-acao="cancelar" data-id="${r.id}">Cancelar</button>
                 </td>
-            </tr>`).join("") || `<tr><td colspan="6" class="app-vazio"><p>Sem resultados.</p></td></tr>`;
+            </tr>`).join("");
+    }
+
+    async function carregar() {
+        try {
+            dados = await window.api.get("/alugueres-espaco");
+            renderizar(dados);
+        } catch (e) {
+            document.querySelector('[data-tabela="reservas"]').innerHTML =
+                `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+        }
+    }
+
+    await carregar();
+
+    document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
+        const termo = e.target.value.toLowerCase().trim();
+        if (!termo) return renderizar(dados);
+        renderizar(dados.filter((r) =>
+            String(r.id_condomino).includes(termo) ||
+            String(r.id_espaco).includes(termo)
+        ));
     });
 
-    // Aprovação / rejeição
-    document.addEventListener("click", async (e) => {
+    document.querySelector('[data-tabela="reservas"]')?.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
-        if (!btn) return;
-        const acao = btn.dataset.acao;
-        const id = btn.dataset.id;
-
-        if (acao === "aprovar") {
-            if (!confirm("Aprovar esta reserva?")) return;
-            try {
-                await window.api.patch(`/reservas/${id}`, { estado_id: 2 }); // 2 = aprovada
-                location.reload();
-            } catch (err) { alert(err.message); }
-        }
-        if (acao === "rejeitar") {
-            if (!confirm("Rejeitar esta reserva?")) return;
-            try {
-                await window.api.patch(`/reservas/${id}`, { estado_id: 3 }); // 3 = rejeitada
-                location.reload();
-            } catch (err) { alert(err.message); }
-        }
+        if (!btn || btn.dataset.acao !== "cancelar") return;
+        const id = parseInt(btn.dataset.id);
+        if (!confirm("Cancelar esta reserva?")) return;
+        try {
+            await window.api.delete(`/alugueres-espaco/${id}`);
+            await carregar();
+        } catch (err) { alert(err.message); }
     });
+
 })();

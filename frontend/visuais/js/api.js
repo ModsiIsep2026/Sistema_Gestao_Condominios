@@ -1,18 +1,17 @@
 
 const API_BASE = "http://localhost:8000";
-
 const CHAVE_TOKEN = "condo_token";
 
 function obterToken() {
     return sessionStorage.getItem(CHAVE_TOKEN);
 }
-
 function guardarToken(token) {
     sessionStorage.setItem(CHAVE_TOKEN, token);
 }
-
 function limparToken() {
     sessionStorage.removeItem(CHAVE_TOKEN);
+    sessionStorage.removeItem("condo_tipo");
+    sessionStorage.removeItem("condo_id");
 }
 
 async function pedido(metodo, endpoint, corpo = null) {
@@ -27,7 +26,6 @@ async function pedido(metodo, endpoint, corpo = null) {
 
     if (resposta.status === 401) {
         limparToken();
-        
     }
 
     const tipo = resposta.headers.get("content-type") || "";
@@ -41,21 +39,28 @@ async function pedido(metodo, endpoint, corpo = null) {
 }
 
 const api = {
-    get:    (endpoint)         => pedido("GET",    endpoint),
-    post:   (endpoint, corpo)  => pedido("POST",   endpoint, corpo),
-    put:    (endpoint, corpo)  => pedido("PUT",    endpoint, corpo),
-    patch:  (endpoint, corpo)  => pedido("PATCH",  endpoint, corpo),
-    delete: (endpoint)         => pedido("DELETE", endpoint),
+    get:    (endpoint)        => pedido("GET",    endpoint),
+    post:   (endpoint, corpo) => pedido("POST",   endpoint, corpo),
+    put:    (endpoint, corpo) => pedido("PUT",    endpoint, corpo),
+    patch:  (endpoint, corpo) => pedido("PATCH",  endpoint, corpo),
+    delete: (endpoint)        => pedido("DELETE", endpoint),
 
-    login: async (email, password) => {
-        const dados = await pedido("POST", "/auth/login", { email, password });
-        if (dados && dados.access_token) guardarToken(dados.access_token);
+    login: async (email, pw) => {
+        const dados = await pedido("POST", "/auth/login", { email, pw });
+        if (dados?.access_token) {
+            guardarToken(dados.access_token);
+            sessionStorage.setItem("condo_tipo", dados.perfil_utilizador);
+            sessionStorage.setItem("condo_id",   String(dados.id));
+        }
         return dados;
     },
-    logout: async () => {
-        try { await pedido("POST", "/auth/logout"); } catch (e) { /* ignora */ }
+
+    logout: () => {
         limparToken();
     },
+
+    me: () => pedido("GET", "/auth/conta"),
+
     autenticado: () => !!obterToken(),
 };
 

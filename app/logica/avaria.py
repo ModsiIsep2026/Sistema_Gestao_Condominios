@@ -6,6 +6,14 @@ from app.tabelas_bd.resolucao_avaria import ResolucaoAvaria
 
 
 
+def listar_ptecnico(db: Session, id_tecnico: int):
+
+    resolucoes = db.query(ResolucaoAvaria).filter(ResolucaoAvaria.id_tecnico == id_tecnico).all()
+    
+    ids = [r.id_registo_avaria for r in resolucoes]
+    return db.query(RegistoAvaria).filter(RegistoAvaria.id.in_(ids), RegistoAvaria.status == 1).all()
+
+
 def listar_pcondomino(db: Session, id_condomino: int):
     return db.query(RegistoAvaria).filter(RegistoAvaria.id_condomino == id_condomino, RegistoAvaria.status == 1).all()
 

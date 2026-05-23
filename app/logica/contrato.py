@@ -27,7 +27,7 @@ def atualizar(db: Session, id_gestor: int, dados):
     contrato = obter_pgestor(db, id_gestor)
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
-    for campo, valor in dados.model_dump(exclude_unset=True).items()    setattr(contrato, campo, valor)
+        setattr(contrato, campo, valor)
     
     db.commit()
     db.refresh(contrato)

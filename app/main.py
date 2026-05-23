@@ -3,15 +3,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from pathlib import Path
 
 from app.configs.config import get_configs
 from app.endpoints import (
-    auth, admin, licencas, gestores, contratos,
+    auth, oauth, admin, licencas, gestores, contratos,
     edificios, apartamentos, condominos, tecnicos,
     parceiros, espacos, materiais,
     alugueres_espaco, alugueres_material,
-    pagamentos, avarias, relatorios,
+    pagamentos, avarias, relatorios, contacto,
 )
 
 _configs = get_configs()
@@ -29,15 +30,16 @@ app = FastAPI(
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
-        response.headers["X-Content-Type-Options"]  = "nosniff"
-        response.headers["X-Frame-Options"]         = "DENY"
-        response.headers["X-XSS-Protection"]        = "1; mode=block"
+        response.headers["X-Content-Type-Options"]  = "nosniff"                                 # Proteção contra MIME sniffing
+        response.headers["X-Frame-Options"]         = "DENY"                                      # Proteção contra clickjacking
+        response.headers["X-XSS-Protection"]        = "1; mode=block"                           # Proteção contra XSS
         response.headers["Referrer-Policy"]         = "strict-origin-when-cross-origin"
-        response.headers["Cache-Control"]           = "no-store"
+        response.headers["Cache-Control"]           = "no-store"                                    # Evita cache de dados sensíveis
         return response
 
 
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(SessionMiddleware, secret_key=_configs.APP_SECRET_KEY)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5000"],
@@ -48,7 +50,8 @@ app.add_middleware(
 
 # Endpoints
 
-app.include_router(auth.router)           
+app.include_router(auth.router)
+app.include_router(oauth.router)           
 app.include_router(licencas.router)       
 app.include_router(parceiros.router)      
 app.include_router(admin.router)
@@ -65,15 +68,17 @@ app.include_router(alugueres_material.router)
 app.include_router(pagamentos.router)
 app.include_router(avarias.router)
 app.include_router(relatorios.router)
+app.include_router(contacto.router)
 
 
 # Frontend 
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"
 
-app.mount("/shared",    StaticFiles(directory=_frontend / "shared"),               name="shared")
+app.mount("/shared",    StaticFiles(directory=_frontend / "visuais"),              name="shared")
 app.mount("/website_C", StaticFiles(directory=_frontend / "website_C", html=True), name="website_C")
 app.mount("/webapp_AG", StaticFiles(directory=_frontend / "webapp_AG", html=True), name="webapp_AG")
+app.mount("/webapp_C",  StaticFiles(directory=_frontend / "webapp_C",  html=True), name="webapp_C")
 
 
 @app.get("/", include_in_schema=False)

@@ -19,6 +19,11 @@ def listar(_=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.listar(db)
 
 
+@router.get("/espaco/{id_espaco}", response_model=List[LerAluguerEspaco])
+def listar_pespaco(id_espaco: int, _=Depends(verificar_c), db: Session = Depends(get_db)):
+    return servico.listar_pespaco(db, id_espaco)
+
+
 @router.get("/condomino", response_model=List[LerAluguerEspaco])
 def listar_meus(condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.listar_pcondomino(db, condomino.id)

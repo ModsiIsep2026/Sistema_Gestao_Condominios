@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quotas — Gestão de Condomínios</title>
+<title>Pagamentos — Gestão de Condomínios</title>
 <link rel="stylesheet" href="../shared/css/tokens.css">
 <link rel="stylesheet" href="../shared/css/base.css">
 <link rel="stylesheet" href="../shared/css/componentes.css">
@@ -16,38 +16,107 @@
     <div>
         <header class="app-topbar"></header>
         <main class="app-main">
+
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
-                    <h1>Quotas</h1>
-                    <p>Quotas mensais por fração.</p>
+                    <h1>Pagamentos</h1>
+                    <p>Quotas mensais de todos os apartamentos nos seus edifícios.</p>
                 </div>
                 <div class="app-cabecalho__acoes">
-                    <button class="btn btn--primario">Gerar quotas do mês</button>
+                    <button type="button" class="btn btn--primario" id="btn-gerar-quota">Gerar quota</button>
                 </div>
             </div>
-            <div class="app-filtros">
-                <input type="search" placeholder="Procurar fração..." data-pesquisa>
+
+            <!-- KPIs -->
+            <div class="kpis" style="grid-template-columns:repeat(4,1fr);">
+                <div class="kpi">
+                    <div class="kpi__rotulo">Total de quotas</div>
+                    <div class="kpi__valor" id="resumo-total">—</div>
+                </div>
+                <div class="kpi kpi--ok">
+                    <div class="kpi__rotulo">Pagas</div>
+                    <div class="kpi__valor" id="resumo-pagos">—</div>
+                </div>
+                <div class="kpi kpi--alerta">
+                    <div class="kpi__rotulo">Pendentes</div>
+                    <div class="kpi__valor" id="resumo-pendentes">—</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__rotulo">Montante cobrado</div>
+                    <div class="kpi__valor" id="resumo-montante" style="font-size:24px;">—</div>
+                </div>
             </div>
+
+            <div class="app-filtros">
+                <input type="search" placeholder="Procurar por mês ou apartamento..." data-pesquisa>
+                <select id="filtro-estado">
+                    <option value="">Todos os estados</option>
+                    <option value="pago">Apenas pagos</option>
+                    <option value="pendente">Apenas pendentes</option>
+                </select>
+            </div>
+
             <div class="painel">
                 <table class="app-tabela">
                     <thead>
                         <tr>
-                            <th>Fração</th>
+                            <th>Apartamento</th>
                             <th>Mês</th>
                             <th>Valor</th>
                             <th>Estado</th>
-                            <th></th>
+                            <th>Data pagamento</th>
                         </tr>
                     </thead>
                     <tbody data-tabela="quotas"><tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
                 </table>
             </div>
+
         </main>
     </div>
 </div>
+
+<!-- Modal: gerar quota -->
+<div class="modal-overlay" id="modal-gerar" hidden>
+    <div class="modal">
+        <div class="modal__cabecalho">
+            <h3>Gerar quota</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-gerar" class="login-erro" hidden></div>
+            <form id="form-gerar">
+                <div class="campo">
+                    <label for="g-apartamento">ID do apartamento</label>
+                    <input type="number" id="g-apartamento" min="1" required>
+                </div>
+                <div class="campo">
+                    <label for="g-mes">Mês (AAAA-MM)</label>
+                    <input type="text" id="g-mes" placeholder="2024-01" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-gerar">Gerar</button>
+        </div>
+    </div>
+</div>
+
 <script src="../shared/js/api.js"></script>
 <script src="js/app.js"></script>
-<script src="js/listagem.js"></script>
 <script src="js/quotas.js"></script>
+<script>
+// Abrir/fechar modal de gerar quota
+document.addEventListener("DOMContentLoaded", () => {
+    const modal = document.getElementById("modal-gerar");
+    document.getElementById("btn-gerar-quota")?.addEventListener("click", () => {
+        if (modal) modal.hidden = false;
+    });
+    document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
+        el.addEventListener("click", () => { if (modal) modal.hidden = true; })
+    );
+    modal?.addEventListener("click", (e) => { if (e.target === modal) modal.hidden = true; });
+});
+</script>
 </body>
 </html>

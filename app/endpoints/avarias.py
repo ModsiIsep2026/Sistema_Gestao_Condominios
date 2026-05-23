@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
-from app.configs.seguranca import verificar_g, verificar_c, verificar_t, token_atual
+from app.configs.seguranca import verificar_g, verificar_c, verificar_t, token_atual, verificar_a
 from app.estruturas.registo_avaria import CriarRegistoAvaria, AtualizarRegistoAvaria, LerRegistoAvaria
 from app.estruturas.resolucao_avaria import CriarResolucaoAvaria, AtualizarResolucaoAvaria, LerResolucaoAvaria
 from app.logica import avaria as servico
@@ -22,6 +22,11 @@ router = APIRouter(prefix="/avarias", tags=["Avarias"])
 @router.get("", response_model=List[LerRegistoAvaria])
 def listar(id_edificio: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.listar_pedificio(db, id_edificio)
+
+
+@router.get("/tecnico", response_model=List[LerRegistoAvaria])
+def listar_tecnico(tecnico=Depends(verificar_t), db: Session = Depends(get_db)):
+    return servico.listar_ptecnico(db, tecnico.id)
 
 
 @router.get("/condomino", response_model=List[LerRegistoAvaria])

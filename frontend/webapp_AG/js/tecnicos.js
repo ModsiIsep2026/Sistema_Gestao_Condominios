@@ -1,7 +1,8 @@
+
 (async function () {
 
-    let dados = [];
-    let filtroEstado = "ativos";
+    let dados          = [];
+    let filtroEstado   = "ativos";
     let filtroPesquisa = "";
 
     function badge(status) {
@@ -11,12 +12,13 @@
     }
 
     function aplicarFiltros() {
-        return dados.filter((u) => {
-            if (filtroEstado === "ativos"   && u.status !== 1) return false;
-            if (filtroEstado === "inativos" && u.status !== 0) return false;
+        return dados.filter((t) => {
+            if (filtroEstado === "ativos"   && t.status !== 1) return false;
+            if (filtroEstado === "inativos" && t.status !== 0) return false;
             if (filtroPesquisa) {
-                const t = filtroPesquisa;
-                if (!u.nome.toLowerCase().includes(t) && !u.email.toLowerCase().includes(t)) return false;
+                const term = filtroPesquisa;
+                if (!(t.nome  || "").toLowerCase().includes(term) &&
+                    !(t.email || "").toLowerCase().includes(term)) return false;
             }
             return true;
         });
@@ -28,27 +30,26 @@
 
         if (!lista.length) {
             tbody.innerHTML = `
-                <tr><td colspan="6">
+                <tr><td colspan="5">
                     <div class="app-vazio">
                         <h3>Sem técnicos</h3>
-                        <p>${filtroEstado === "ativos" ? "Adicione o primeiro técnico para começar." : "Sem registos para este filtro."}</p>
+                        <p>${filtroEstado === "ativos" ? "Adicione o primeiro técnico." : "Sem registos para este filtro."}</p>
                     </div>
                 </td></tr>`;
             return;
         }
 
-        tbody.innerHTML = lista.map((u) => {
-            const ativo = u.status === 1;
+        tbody.innerHTML = lista.map((t) => {
+            const ativo = t.status === 1;
             const btnEstado = ativo
-                ? `<button class="perigo" data-acao="desativar" data-id="${u.id_utilizador}">Desativar</button>`
-                : `<button data-acao="ativar" data-id="${u.id_utilizador}">Ativar</button>`;
+                ? `<button class="perigo" data-acao="desativar" data-id="${t.id}">Desativar</button>`
+                : `<button data-acao="ativar" data-id="${t.id}">Ativar</button>`;
             return `
                 <tr style="${ativo ? "" : "opacity:0.55;"}">
-                    <td><strong>${u.nome}</strong></td>
-                    <td>${u.email}</td>
-                    <td>${u.telemovel || "—"}</td>
-                    <td>${u.nif || "—"}</td>
-                    <td>${badge(u.status)}</td>
+                    <td><strong>${t.nome}</strong></td>
+                    <td>${t.funcao || "—"}</td>
+                    <td>${t.email}</td>
+                    <td>${badge(t.status)}</td>
                     <td class="app-tabela__acoes">${btnEstado}</td>
                 </tr>`;
         }).join("");
@@ -56,12 +57,11 @@
 
     async function carregar() {
         try {
-            const todos = await window.api.get("/utilizadores?incluir_inativos=true");
-            dados = todos.filter((u) => u.perfil_id === 4);
+            dados = await window.api.get("/tecnicos");
             renderizar();
         } catch (e) {
             document.querySelector('[data-tabela="tecnicos"]').innerHTML =
-                `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+                `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }
 
@@ -71,13 +71,12 @@
         filtroPesquisa = e.target.value.toLowerCase().trim();
         renderizar();
     });
-
     document.getElementById("filtro-estado")?.addEventListener("change", (e) => {
         filtroEstado = e.target.value;
         renderizar();
     });
 
-    // ── Modal ──────────────────────────────────────────────────────────────
+    // ── Modal criar técnico ───────────────────────────────────────────────────
     const modal    = document.getElementById("modal-tecnico");
     const erroModal = document.getElementById("erro-tecnico");
 
@@ -97,50 +96,35 @@
     document.getElementById("btn-criar-tecnico").addEventListener("click", async () => {
         erroModal.hidden = true;
 
-        const nome     = document.getElementById("t-nome").value.trim();
-        const email    = document.getElementById("t-email").value.trim();
-        const telemovel = document.getElementById("t-telemovel").value.trim() || null;
-        const nif      = document.getElementById("t-nif").value.trim() || null;
+        const nome    = document.getElementById("t-nome").value.trim();
+        const funcao  = document.getElementById("t-funcao").value.trim()  || null;
+        const email   = document.getElementById("t-email").value.trim();
+        const pw      = document.getElementById("t-pw").value.trim();
 
-        if (!nome || nome.length < 2) {
-            erroModal.textContent = "Indique o nome completo.";
-            erroModal.hidden = false; return;
-        }
-        if (!email) {
-            erroModal.textContent = "Indique o email.";
-            erroModal.hidden = false; return;
-        }
-        if (nif && !/^\d{9}$/.test(nif)) {
-            erroModal.textContent = "O NIF tem de ter 9 dígitos.";
-            erroModal.hidden = false; return;
-        }
+        if (!nome)  { erroModal.textContent = "Indique o nome.";    erroModal.hidden = false; return; }
+        if (!email) { erroModal.textContent = "Indique o email.";   erroModal.hidden = false; return; }
+        if (!pw)    { erroModal.textContent = "Defina uma password."; erroModal.hidden = false; return; }
 
+        // id_gestor vem do token — o backend pega via verificar_g
         try {
-            const resultado = await window.api.post("/utilizadores/convidar", {
-                nome, email, telemovel, nif, lingua: "pt", perfil_id: 4,
-            });
+            await window.api.post("/tecnicos", { nome, funcao, email, pw });
             fecharModal();
-            if (resultado.aviso_email) {
-                alert(`Conta criada para ${email}.\n\n⚠️ ${resultado.aviso_email}\n\nPassword temporária: ${resultado.password_temporaria}`);
-            } else {
-                alert(`Técnico adicionado. Foi enviado um email para ${email} com as credenciais.`);
-            }
             await carregar();
         } catch (e) {
-            erroModal.textContent = e.message || "Não foi possível adicionar o técnico.";
+            erroModal.textContent = e.message || "Não foi possível criar o técnico.";
             erroModal.hidden = false;
         }
     });
 
-    // ── Ativar / Desativar ─────────────────────────────────────────────────
+    // ── Ativar / Desativar ────────────────────────────────────────────────────
     document.querySelector('[data-tabela="tecnicos"]').addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
         if (!btn) return;
-        const id = parseInt(btn.dataset.id);
+        const id        = parseInt(btn.dataset.id);
         const novoStatus = btn.dataset.acao === "ativar" ? 1 : 0;
         btn.disabled = true;
         try {
-            await window.api.put(`/utilizadores/${id}`, { status: novoStatus });
+            await window.api.put(`/tecnicos/${id}`, { status: novoStatus });
             await carregar();
         } catch (err) {
             alert(err.message);

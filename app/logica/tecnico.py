@@ -34,7 +34,7 @@ def atualizar(db: Session, id: int, dados):
     tecnico = obter(db, id)
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
-    for campo, valor in dados.model_dump(exclude_unset=True).items()    setattr(tecnico, campo, valor)
+        setattr(tecnico, campo, valor)
     
     db.commit()
     db.refresh(tecnico)

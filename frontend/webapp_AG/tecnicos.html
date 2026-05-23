@@ -37,14 +37,13 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
+                            <th>Função</th>
                             <th>Email</th>
-                            <th>Telemóvel</th>
-                            <th>NIF</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody data-tabela="tecnicos"><tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                    <tbody data-tabela="tecnicos"><tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
                 </table>
             </div>
         </main>
@@ -60,27 +59,22 @@
         </div>
         <div class="modal__corpo">
             <div id="erro-tecnico" class="login-erro" hidden></div>
-            <p class="texto-suave" style="margin-bottom:var(--esp-4);font-size:var(--tam-sm);">
-                Uma password aleatória será gerada e enviada para o email indicado.
-            </p>
             <form id="form-tecnico">
                 <div class="campo">
                     <label for="t-nome">Nome completo</label>
                     <input type="text" id="t-nome" required>
                 </div>
                 <div class="campo">
+                    <label for="t-funcao">Função / especialidade</label>
+                    <input type="text" id="t-funcao" placeholder="Ex: Electricista, Canalizador…">
+                </div>
+                <div class="campo">
                     <label for="t-email">Email</label>
                     <input type="email" id="t-email" required>
                 </div>
-                <div class="campo-dupla" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
-                    <div class="campo">
-                        <label for="t-telemovel">Telemóvel</label>
-                        <input type="tel" id="t-telemovel">
-                    </div>
-                    <div class="campo">
-                        <label for="t-nif">NIF</label>
-                        <input type="text" id="t-nif" maxlength="9">
-                    </div>
+                <div class="campo">
+                    <label for="t-pw">Password inicial</label>
+                    <input type="password" id="t-pw" required autocomplete="new-password">
                 </div>
             </form>
         </div>

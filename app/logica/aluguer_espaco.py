@@ -8,7 +8,7 @@ def listar(db: Session):
     return db.query(AluguerEspaco).filter(AluguerEspaco.status == 1).all()
 
 
-def listar_por_espaco(db: Session, id_espaco: int):
+def listar_pespaco(db: Session, id_espaco: int):
     return db.query(AluguerEspaco).filter(AluguerEspaco.id_espaco == id_espaco, AluguerEspaco.status == 1).all()
 
 

@@ -3,35 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistema de gestão de condomínios. Consulta de quotas, reserva de espaços comuns, reporte de avarias e acompanhamento de reparações.">
-    <title>Sistema de Gestão de Condomínios</title>
-
-    <link rel="stylesheet" href="../shared/css/tokens.css">
-    <link rel="stylesheet" href="../shared/css/base.css">
-    <link rel="stylesheet" href="../shared/css/componentes.css">
-    <link rel="stylesheet" href="css/website.css">
+    <meta name="description" content="Sistema de gestão de condomínios. Quotas, reservas de espaços, reporte de avarias num só sítio.">
+    <title>Gestão de Condomínios</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --azul:   #0B2240;
+            --azul2:  #0d2d52;
+            --acento: #F08A24;
+            --cinza:  #F4F3F1;
+            --borda:  #E2E0DC;
+            --texto:  #1A1A1A;
+            --suave:  #5E5C58;
+            --branco: #FFFFFF;
+        }
+
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--branco); color: var(--texto); }
+
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+
+        .navbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,.92); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--borda);
+        }
+        .navbar__inner {
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 24px;
+            padding: 0 24px; height: 64px; max-width: 1120px; margin: 0 auto;
+        }
+        .navbar__logo {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; font-size: 15px; letter-spacing: -.01em; color: var(--azul);
+        }
+        .navbar__logo img { height: 30px; width: auto; }
+        .navbar__links {
+            display: flex; list-style: none; gap: 32px;
+        }
+        .navbar__links a {
+            font-size: 14px; font-weight: 500; color: var(--suave);
+            transition: color .2s;
+        }
+        .navbar__links a:hover { color: var(--azul); }
+        .navbar__acoes { display: flex; gap: 10px; }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 20px; font-family: inherit; font-size: 13px;
+            font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+            cursor: pointer; transition: all .2s; border: 1.5px solid transparent;
+        }
+        .btn--outline {
+            border-color: var(--borda); color: var(--azul); background: transparent;
+        }
+        .btn--outline:hover { border-color: var(--azul); }
+        .btn--primario {
+            background: var(--azul); color: #fff; border-color: var(--azul);
+        }
+        .btn--primario:hover { background: var(--azul2); }
+        .btn--acento {
+            background: var(--acento); color: #fff; border-color: var(--acento);
+        }
+        .btn--acento:hover { filter: brightness(1.08); }
+        .btn--lg { padding: 14px 28px; font-size: 14px; }
+
+
+        .hero {
+            position: relative; min-height: 100svh;
+            display: flex; align-items: flex-end;
+            overflow: hidden;
+        }
+        .hero__bg {
+            position: absolute; inset: 0; z-index: 0;
+        }
+        .hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+        .hero__bg::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(
+                170deg,
+                rgba(11,34,64,.82) 0%,
+                rgba(11,34,64,.55) 50%,
+                rgba(11,34,64,.80) 100%
+            );
+        }
+        .hero__conteudo {
+            position: relative; z-index: 1;
+            padding: 80px 24px 96px; max-width: 1120px; margin: 0 auto; width: 100%;
+        }
+        .hero__etiqueta {
+            display: inline-block;
+            font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+            color: var(--acento); margin-bottom: 20px;
+        }
+        .hero__titulo {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(44px, 7vw, 88px);
+            font-weight: 400; line-height: 1.05;
+            color: #fff; margin-bottom: 24px;
+            max-width: 700px;
+        }
+        .hero__titulo em { font-style: italic; color: var(--acento); }
+        .hero__sub {
+            font-size: clamp(15px, 1.6vw, 18px); color: rgba(255,255,255,.7);
+            max-width: 480px; line-height: 1.65; margin-bottom: 40px;
+        }
+        .hero__acoes { display: flex; gap: 12px; flex-wrap: wrap; }
+
+
+        .numeros {
+            background: var(--azul); color: #fff;
+        }
+        .numeros__inner {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            max-width: 1120px; margin: 0 auto;
+        }
+        .numeros__item {
+            padding: 48px 32px;
+            border-right: 1px solid rgba(255,255,255,.08);
+        }
+        .numeros__item:last-child { border-right: none; }
+        .numeros__n {
+            font-family: 'DM Serif Display', serif;
+            font-size: 56px; color: var(--acento);
+            line-height: 1;
+        }
+        .numeros__legenda {
+            font-size: 14px; opacity: .65; margin-top: 8px;
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+
+
+        .sobre {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 0; min-height: 560px;
+        }
+        .sobre__imagem { position: relative; overflow: hidden; }
+        .sobre__imagem img { width: 100%; height: 100%; object-fit: cover; }
+        .sobre__texto {
+            background: var(--cinza);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 80px 72px;
+        }
+        .etiqueta {
+            display: inline-block;
+            font-size: 13px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+            color: var(--acento); margin-bottom: 16px;
+        }
+        .sobre__titulo {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(28px, 3vw, 40px); font-weight: 400; line-height: 1.18;
+            margin-bottom: 24px; color: var(--azul);
+        }
+        .sobre__p { font-size: 15px; color: var(--suave); line-height: 1.7; margin-bottom: 16px; }
+
+
+        .funcionalidades { padding: 96px 0; }
+        .seccao-cabecalho { text-align: center; margin-bottom: 64px; }
+        .seccao-titulo {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(32px, 4vw, 52px); font-weight: 400;
+            color: var(--azul); margin-bottom: 12px;
+        }
+        .seccao-sub { font-size: 16px; color: var(--suave); max-width: 480px; margin: 0 auto; }
+
+        .cards-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+            background: var(--borda);
+            border: 1px solid var(--borda);
+        }
+        .card-func {
+            background: var(--branco);
+            padding: 40px 36px;
+            transition: background .2s;
+        }
+        .card-func:hover { background: var(--cinza); }
+        .card-func__num {
+            font-family: 'DM Serif Display', serif;
+            font-size: 48px; color: var(--borda); line-height: 1;
+            margin-bottom: 20px;
+        }
+        .card-func__titulo {
+            font-size: 17px; font-weight: 700; color: var(--azul);
+            margin-bottom: 10px;
+        }
+        .card-func__texto { font-size: 14px; color: var(--suave); line-height: 1.65; }
+
+
+        .perfis { padding: 96px 0; background: var(--azul); }
+        .perfis .seccao-titulo { color: #fff; }
+        .perfis .seccao-sub    { color: rgba(255,255,255,.55); }
+
+        .perfis-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.08);
+            margin-top: 64px;
+        }
+        .perfil-card {
+            background: rgba(255,255,255,.04);
+            padding: 40px 28px;
+            border-top: 3px solid transparent;
+            transition: border-color .2s, background .2s;
+        }
+        .perfil-card:hover { border-color: var(--acento); background: rgba(255,255,255,.07); }
+        .perfil-card__icone {
+            width: 44px; height: 44px;
+            border: 1.5px solid rgba(255,255,255,.15);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 20px; color: var(--acento);
+        }
+        .perfil-card__icone svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+        .perfil-card__titulo { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .perfil-card__texto  { font-size: 13px; color: rgba(255,255,255,.5); line-height: 1.65; }
+
+
+        .cta {
+            background: #1C1C1C;
+            display: flex; align-items: center;
+        }
+        .cta__bg { display: none; }
+        .cta__inner {
+            position: relative; z-index: 1;
+            max-width: 1120px; margin: 0 auto; padding: 32px 24px;
+            display: flex; align-items: center; justify-content: space-between; gap: 32px;
+            flex-wrap: wrap;
+        }
+        .cta__titulo {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(22px, 3vw, 34px); font-weight: 400;
+            color: #fff; line-height: 1.15;
+        }
+        .cta__titulo em { font-style: italic; color: var(--acento); }
+
+
+        .parceiros-faixa {
+            background: var(--cinza); border-top: 1px solid var(--borda); border-bottom: 1px solid var(--borda);
+            padding: 28px 0; overflow: hidden;
+        }
+        .parceiros-faixa__cabecalho {
+            text-align: center; margin-bottom: 20px;
+        }
+        .parceiros-faixa__label {
+            font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+            color: var(--suave);
+        }
+        .marquee-wrap { overflow: hidden; position: relative; }
+        .marquee-wrap::before,
+        .marquee-wrap::after {
+            content: ''; position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2; pointer-events: none;
+        }
+        .marquee-wrap::before { left: 0;  background: linear-gradient(to right, var(--cinza), transparent); }
+        .marquee-wrap::after  { right: 0; background: linear-gradient(to left,  var(--cinza), transparent); }
+        .marquee-track {
+            display: flex; gap: 64px; width: max-content;
+            animation: marquee-scroll 25s linear infinite;
+        }
+        .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+        @keyframes marquee-scroll {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+        .parceiro-logo {
+            display: flex; align-items: center;
+            text-decoration: none; flex-shrink: 0;
+            opacity: .55; filter: grayscale(1);
+            transition: opacity .25s, filter .25s;
+        }
+        .parceiro-logo:hover { opacity: 1; filter: grayscale(0); }
+        .parceiro-logo img { height: 38px; width: auto; display: block; }
+
+        /* ── Contactos ────────────────────────────────────────────────────────── */
+        .contactos { padding: 96px 0; background: var(--cinza); }
+        .contactos__inner {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+            max-width: 1120px; margin: 0 auto; padding: 0 24px;
+        }
+        .contacto-info { margin-top: 32px; }
+        .contacto-item {
+            display: flex; align-items: flex-start; gap: 12px;
+            font-size: 14px; color: var(--suave);
+            padding: 12px 0; border-bottom: 1px solid var(--borda);
+        }
+        .contacto-item svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+        .contacto-item a { color: var(--azul); }
+        .form-contacto { display: flex; flex-direction: column; gap: 16px; }
+        .campo-c { display: flex; flex-direction: column; gap: 6px; }
+        .campo-c label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+        .campo-c input, .campo-c textarea {
+            padding: 11px 14px; border: 1.5px solid var(--borda);
+            background: #fff; font-family: inherit; font-size: 14px; color: var(--texto);
+            outline: none; resize: vertical;
+            transition: border-color .18s;
+        }
+        .campo-c input:focus, .campo-c textarea:focus { border-color: var(--azul); }
+
+        /* ── Footer ───────────────────────────────────────────────────────────── */
+        .footer { background: var(--azul); color: rgba(255,255,255,.6); padding: 64px 0 32px; }
+        .footer__inner {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px; max-width: 1120px; margin: 0 auto; padding: 0 24px;
+        }
+        .footer__logo {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px;
+        }
+        .footer__logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+        .footer__descricao { font-size: 13px; line-height: 1.6; }
+        .footer h5 { color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
+        .footer ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+        .footer li { font-size: 13px; }
+        .footer a { color: rgba(255,255,255,.6); transition: color .2s; }
+        .footer a:hover { color: #fff; }
+        .footer__copy {
+            border-top: 1px solid rgba(255,255,255,.08);
+            margin-top: 48px; padding-top: 24px;
+            text-align: center; font-size: 12px;
+            max-width: 1120px; margin-left: auto; margin-right: auto;
+            padding-left: 24px; padding-right: 24px;
+        }
+
+        /* ── Responsive ───────────────────────────────────────────────────────── */
+        @media (max-width: 900px) {
+            .navbar__links { display: none; }
+            .sobre { grid-template-columns: 1fr; }
+            .sobre__texto { padding: 56px 32px; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .perfis-grid { grid-template-columns: repeat(2, 1fr); }
+            .contactos__inner { grid-template-columns: 1fr; gap: 48px; }
+            .numeros__inner { grid-template-columns: 1fr; }
+            .numeros__item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); padding: 32px 24px; }
+            .footer__inner { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 540px) {
+            .perfis-grid { grid-template-columns: 1fr; }
+            .footer__inner { grid-template-columns: 1fr; }
+            .cta__inner { flex-direction: column; }
+            .hero__acoes { flex-direction: column; }
+            .hero__titulo { font-size: 40px; }
+        }
+    </style>
 </head>
 <body>
 
-    
-    <nav class="navbar">
-        <div class="container navbar__container">
-            <a href="index.html" class="navbar__logo">
-                <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios" class="navbar__logo-img">
-                <span class="navbar__logo-texto">Sistema de Gestão de Condomínios</span>
-            </a>
 
+    <nav class="navbar">
+        <div class="navbar__inner">
+            <a href="index.html" class="navbar__logo">
+                <img src="../shared/img/logo.png" alt="Logo">
+                Gestão de Condomínios
+            </a>
             <ul class="navbar__links">
                 <li><a href="#sobre">Sobre</a></li>
                 <li><a href="#funcionalidades">Funcionalidades</a></li>
                 <li><a href="#perfis">Perfis</a></li>
                 <li><a href="#contactos">Contactos</a></li>
             </ul>
-
             <div class="navbar__acoes">
                 <a href="login.html" class="btn btn--outline">Entrar</a>
                 <a href="registo_gestor.html" class="btn btn--primario">Criar conta</a>
@@ -39,282 +376,273 @@
         </div>
     </nav>
 
-    
+
     <header class="hero">
-        <div class="hero__imagem">
-            <img src="../shared/img/predios.jpg" alt="">
+        <div class="hero__bg">
+            <img src="../shared/img/predios.jpg" alt="Edifícios">
         </div>
-        <div class="hero__overlay"></div>
-        <div class="container hero__container">
-            <div class="hero__texto">
-                <h1>Gestão profissional<br>do seu condomínio.</h1>
-                <p class="hero__subtitulo">
-                    Quotas, reservas de espaços comuns, reporte de avarias e acompanhamento
-                    das reparações, num só sítio.
-                </p>
-                <div class="hero__acoes">
-                    <a href="login.html" class="btn btn--primario">Entrar na minha área</a>
-                    <a href="#funcionalidades" class="btn btn--outline-claro">Ver funcionalidades</a>
-                </div>
+        <div class="hero__conteudo">
+            <span class="hero__etiqueta">Plataforma de gestão</span>
+            <h1 class="hero__titulo">
+                O seu condomínio,<br>
+                <em>gerido da melhor forma</em>
+            </h1>
+            <p class="hero__sub">
+                Quotas, reservas de espaços comuns, reporte de avarias e
+                acompanhamento das reparações — num só sítio.
+            </p>
+            <div class="hero__acoes">
+                <a href="login.html" class="btn btn--acento btn--lg">Entrar na minha área</a>
+                <a href="#funcionalidades" class="btn btn--outline btn--lg" style="border-color:rgba(255,255,255,.35);color:#fff;">
+                    Ver funcionalidades
+                </a>
             </div>
         </div>
     </header>
 
-   
-    <section class="seccao" id="sobre">
-        <div class="container">
-            <div class="bloco-sobre">
-                <div class="bloco-sobre__imagem">
-                    <img src="../shared/img/contrato.jpg" alt="Reunião de gestão de condomínio">
-                </div>
-                <div class="bloco-sobre__texto">
-                    <span class="etiqueta">Sobre</span>
-                    <h2>Pensado para quem vive no edifício e para quem o gere.</h2>
-                    <p>
-                        Os condóminos consultam quotas, reservam espaços comuns e reportam
-                        o que está partido. O gestor trata da parte financeira, aprova as
-                        reservas e atribui as reparações a um técnico, que vai ao local e
-                        marca como concluído quando termina.
-                    </p>
-                    <p class="mt-4">
-                        Em vez de telefonemas e emails perdidos, fica tudo registado e
-                        cada pessoa vê apenas o que lhe diz respeito.
-                    </p>
-                </div>
+
+    <div class="numeros">
+        <div class="numeros__inner">
+            <div class="numeros__item">
+                <div class="numeros__n">100%</div>
+                <div class="numeros__legenda">DIGITAL — Sem papel, sem burocracias</div>
             </div>
+            <div class="numeros__item">
+                <div class="numeros__n">24/7</div>
+                <div class="numeros__legenda">DISPONÍVEL — Acesso em qualquer dispositivo</div>
+            </div>
+            <div class="numeros__item">
+                <div class="numeros__n">360º</div>
+                <div class="numeros__legenda">VISÃO TOTAL — Gestão financeira e técnica</div>
+            </div>
+            <div class="numeros__item">
+                <div class="numeros__n">Até 20</div>
+                <div class="numeros__legenda">EDIFÍCIOS — Plano de controlo centralizado</div>
+            </div>
+        </div>
+    </div>
+
+
+    <section class="sobre" id="sobre">
+        <div class="sobre__imagem">
+            <img src="../shared/img/contrato.jpg" alt="Reunião de condomínio">
+        </div>
+        <div class="sobre__texto">
+            <span class="etiqueta">Sobre a plataforma</span>
+            <h2 class="sobre__titulo">
+                Pensado para quem vive<br>e para quem gere.
+            </h2>
+            <p class="sobre__p">
+                Plataforma centralizada e segura que elimina comunicações dispersas.
+
+            </p>
+            <p class="sobre__p">
+                Os condóminos gerem quotas, reservas e avarias, enquanto os gestores controlam as finanças e coordenam técnicos.
+            </p>
         </div>
     </section>
 
-   
-    <section class="seccao seccao--alt" id="funcionalidades">
+
+    <section class="funcionalidades" id="funcionalidades">
         <div class="container">
-            <div class="cabecalho-seccao">
+            <div class="seccao-cabecalho">
                 <span class="etiqueta">Funcionalidades</span>
-                <h2>O que faz.</h2>
+                <h2 class="seccao-titulo">Os nosso serviços</h2>
+                <p class="seccao-sub">Tudo o que precisa para gerir e viver num condomínio organizado</p>
             </div>
-
-            <div class="grelha grelha--3 mt-7">
-                <article class="card">
-                    <h3 class="card__titulo">Quotas e despesas</h3>
-                    <p class="card__texto">
-                        Histórico organizado por edifício. O condómino vê sempre o que
-                        pagou e o que está em falta.
-                    </p>
-                </article>
-
-                <article class="card">
-                    <h3 class="card__titulo">Reservas de espaços</h3>
-                    <p class="card__texto">
-                        Salão, ginásio, churrasqueira. Reserva-se online, o gestor aprova
-                        e fica no calendário do edifício.
-                    </p>
-                </article>
-
-                <article class="card">
-                    <h3 class="card__titulo">Reporte de avarias</h3>
-                    <p class="card__texto">
-                        Quando algo se avaria, o condómino reporta a partir da sua área
-                        pessoal. Chega diretamente ao gestor.
-                    </p>
-                </article>
-
-                <article class="card">
-                    <h3 class="card__titulo">Ordens de trabalho</h3>
-                    <p class="card__texto">
-                        Cada avaria gera uma ordem para um técnico. Quem reportou consegue
-                        ver o estado até a reparação estar feita.
-                    </p>
-                </article>
-
-                <article class="card">
-                    <h3 class="card__titulo">Notificações</h3>
-                    <p class="card__texto">
-                        Aviso quando a reserva é aprovada, quando há uma nova quota ou
-                        quando o estado de uma reparação muda.
-                    </p>
-                </article>
-
-                <article class="card">
-                    <h3 class="card__titulo">Histórico</h3>
-                    <p class="card__texto">
-                        Pagamentos, reservas e avarias ficam guardados na sua área.
-                        Pode consultar a qualquer momento.
-                    </p>
-                </article>
+            <div class="cards-grid">
+                <div class="card-func">
+                    <div class="card-func__num">01</div>
+                    <div class="card-func__titulo">Quotas e pagamentos</div>
+                    <p class="card-func__texto">Acompanhe as suas quotas sem complicações. Consulte o extrato atualizado da sua fração e faça os seus pagamentos online, a qualquer hora.</p>
+                </div>
+                <div class="card-func">
+                    <div class="card-func__num">02</div>
+                    <div class="card-func__titulo">Reservas de espaços comuns</div>
+                    <p class="card-func__texto">Organize os seus eventos sem stress. Veja imediatamente quando a sala de festas ou o campo de futebol estão livres e confirme a sua reserva de forma 100% digital.</p>
+                </div>
+                <div class="card-func">
+                    <div class="card-func__num">03</div>
+                    <div class="card-func__titulo">Reporte de avarias</div>
+                    <p class="card-func__texto">Reporte de problemas à distância de um clique. O condómino regista a anomalia e o gestor é notificado em tempo real para resolver.</p>
+                </div>
+                <div class="card-func">
+                    <div class="card-func__num">04</div>
+                    <div class="card-func__titulo">Alocação de técnicos</div>
+                    <p class="card-func__texto">O gestor atribui cada avaria a um técnico. O técnico vê as suas ordens e atualiza o estado da reparação.</p>
+                </div>
+                <div class="card-func">
+                    <div class="card-func__num">05</div>
+                    <div class="card-func__titulo">Relatórios estruturados</div>
+                    <p class="card-func__texto">O gestor exporta relatórios de pagamentos filtrados por período — em Excel ou PDF, com um clique.</p>
+                </div>
+                <div class="card-func">
+                    <div class="card-func__num">06</div>
+                    <div class="card-func__titulo">Mapa de edifícios</div>
+                    <p class="card-func__texto">Controlo geográfico simplificado. Visualize todos os edifícios da plataforma num mapa centralizado, com acesso imediato à fachada através do Street View.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    
-    <section class="seccao" id="perfis">
+  
+    <section class="perfis" id="perfis">
         <div class="container">
-            <div class="cabecalho-seccao">
-                <span class="etiqueta">Quem entra</span>
-                <h2>Cada pessoa vê apenas o que lhe diz respeito.</h2>
-                <p class="texto-suave">
-                    Um condómino não tem acesso aos dados dos vizinhos.
-                    Um técnico não vê a parte financeira.
-                </p>
+            <div class="seccao-cabecalho">
+                <span class="etiqueta" style="color:var(--acento);">Quem usa</span>
+                <h2 class="seccao-titulo">A plataforma certa para cada utilizador</h2>
             </div>
-
-            <div class="grupos-perfis mt-7">
-
-                <div class="grupo-perfis">
-                    <div class="grupo-perfis__cabecalho">
-                        <span class="etiqueta">Para os condóminos</span>
-                        <h3>Quem vive no edifício</h3>
+            <div class="perfis-grid">
+                <div class="perfil-card">
+                    <div class="perfil-card__icone">
+                        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     </div>
-
-                    <div class="grupo-perfis__cards">
-                        <div class="passo">
-                            <h4>Visitante</h4>
-                            <p>Vê a informação pública do condomínio. Não precisa de conta.</p>
-                        </div>
-                        <div class="passo">
-                            <h4>Condómino</h4>
-                            <p>Vê quotas, paga online, reserva espaços, reporta avarias e segue as reparações.</p>
-                        </div>
-                    </div>
+                    <div class="perfil-card__titulo">Condómino</div>
+                    <p class="perfil-card__texto">Autonomia total para pagar quotas, reservar a sala de festas ou reportar uma lâmpada fundida. Tudo a partir de uma área pessoal e segura.</p>
                 </div>
-
-                <div class="grupo-perfis">
-                    <div class="grupo-perfis__cabecalho">
-                        <span class="etiqueta">Para os profissionais</span>
-                        <h3>Quem trata do edifício</h3>
+                <div class="perfil-card">
+                    <div class="perfil-card__icone">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
                     </div>
-
-                    <div class="grupo-perfis__cards">
-                        <div class="passo">
-                            <h4>Gestor</h4>
-                            <p>Cuida da parte financeira, aprova reservas e acompanha a manutenção. Pode gerir mais do que um edifício.</p>
-                        </div>
-                        <div class="passo">
-                            <h4>Técnico</h4>
-                            <p>Recebe as ordens de trabalho que lhe são atribuídas e vai marcando o estado à medida que avança.</p>
-                        </div>
-                    </div>
+                    <div class="perfil-card__titulo">Gestor</div>
+                    <p class="perfil-card__texto">O painel de controlo da sua  empresa. Acompanha pagamentos, exporta relatórios financeiros num clique e gere a alocação de manutenção.</p>
                 </div>
-
+                <div class="perfil-card">
+                    <div class="perfil-card__icone">
+                        <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                    </div>
+                    <div class="perfil-card__titulo">Técnico</div>
+                    <p class="perfil-card__texto">Foco apenas no que interessa: o trabalho. Consulta as avarias que lhe foram destacadas e atualiza o estado à medida que avança na reparação.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    
-    <section class="faixa-cta">
-        <div class="faixa-cta__imagem">
+
+    <section class="cta">
+        <div class="cta__bg">
             <img src="../shared/img/banner.jpg" alt="">
         </div>
-        <div class="faixa-cta__overlay"></div>
-        <div class="container faixa-cta__container">
+        <div class="cta__inner">
+            <h2 class="cta__titulo">
+                Já tem conta?<br>
+                <em>Entre agora.</em>
+            </h2>
+            <a href="login.html" class="btn btn--acento btn--lg">Entrar na minha área</a>
+        </div>
+    </section>
+
+
+    <section class="parceiros-faixa" id="parceiros">
+        <div class="parceiros-faixa__cabecalho">
+            <span class="parceiros-faixa__label">Parceiros de confiança</span>
+        </div>
+        <div class="marquee-wrap">
+            <div class="marquee-track">
+                <a href="https://www.otis.com/pt/pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/otis.png" alt="OTIS"></a>
+                <a href="https://supernovaenergy.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/supernova.png" alt="Supernova Energy"></a>
+                <a href="https://situsprimmus.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/situsprimus.png" alt="Situs Primmus"></a>
+                <a href="https://focopiscinas.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/fogopiscinas.png" alt="Foco Piscinas"></a>
+                <a href="https://plantaecorta.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/plataecorta.png" alt="Planta&amp;Corta"></a>
+                <a href="https://houseshine.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/houseshine.png" alt="House Shine"></a>
+                <a href="https://www.astrolimpa.com/limpezas-porto/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/astrolimpa.png" alt="Astrolimpa"></a>
+                <!-- duplicado para loop contínuo -->
+                <a href="https://www.otis.com/pt/pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/otis.png" alt="OTIS"></a>
+                <a href="https://supernovaenergy.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/supernova.png" alt="Supernova Energy"></a>
+                <a href="https://situsprimmus.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/situsprimus.png" alt="Situs Primmus"></a>
+                <a href="https://focopiscinas.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/fogopiscinas.png" alt="Foco Piscinas"></a>
+                <a href="https://plantaecorta.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/plataecorta.png" alt="Planta&amp;Corta"></a>
+                <a href="https://houseshine.pt/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/houseshine.png" alt="House Shine"></a>
+                <a href="https://www.astrolimpa.com/limpezas-porto/" target="_blank" rel="noopener" class="parceiro-logo"><img src="../shared/img/parceiros/astrolimpa.png" alt="Astrolimpa"></a>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="contactos" id="contactos">
+        <div class="contactos__inner">
             <div>
-                <h3>Já tem conta?</h3>
-                <p>Entre na sua área para ver quotas, reservas e reparações.</p>
-            </div>
-            <a href="login.html" class="btn btn--primario">Entrar</a>
-        </div>
-    </section>
-
-
-    <section class="seccao seccao--alt" id="contactos">
-        <div class="container">
-            <div class="grelha grelha--2">
-                <div>
-                    <span class="etiqueta">Contactos</span>
-                    <h2>Fale connosco.</h2>
-                    <p class="texto-suave mt-4">
-                        Para questões sobre a plataforma ou para saber mais sobre os nossos planos,
-                        entre em contacto.
-                    </p>
-
-                    <div class="contacto-info mt-6">
-                        <div class="contacto-info__item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                            <a href="mailto:geral@sgcondominios.pt">sgc2026i@gmail.com</a>
-                        </div>
-                        <div class="contacto-info__item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-                            <span>T. 220 000 000 &nbsp;|&nbsp; T. 960 000 000</span>
-                        </div>
-                        <div class="contacto-info__item" style="align-items:flex-start;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-top:2px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                            <span>R. Dr. António Bernardino de Almeida , 431<br>4249-015 Porto</span>
-                        </div>
-                        <div class="contacto-info__item" style="align-items:flex-start;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" style="margin-top:2px;flex-shrink:0;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                            <span>
-                                Segunda a Sexta — 09h00 às 18h00<br>
-                                Sábados, domingos e feriados — Encerrado
-                            </span>
-                        </div>
+                <span class="etiqueta">Contactos</span>
+                <h2 class="seccao-titulo" style="text-align:left;font-size:clamp(28px,3vw,40px);">
+                    Fale connosco.
+                </h2>
+                <p style="font-size:15px;color:var(--suave);margin-top:12px;line-height:1.65;">
+                    Para questões sobre a plataforma ou para saber mais sobre os nossos planos.
+                </p>
+                <div class="contacto-info">
+                    <div class="contacto-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <a href="mailto:sgc2026i@gmail.com">sgc2026i@gmail.com</a>
+                    </div>
+                    <div class="contacto-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.59 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span>T. 220 000 000 &nbsp;|&nbsp; T. 960 000 000</span>
+                    </div>
+                    <div class="contacto-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-top:2px;flex-shrink:0;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <span>R. Dr. António Bernardino de Almeida, 431<br>4249-015 Porto</span>
                     </div>
                 </div>
-
-                <form id="contacto-form" class="form-contacto">
-                    <div id="contacto-mensagem" class="login-sucesso" hidden></div>
-                    <div class="campo">
-                        <label for="contacto-nome">Nome</label>
-                        <input type="text" id="contacto-nome" required>
-                    </div>
-                    <div class="campo">
-                        <label for="contacto-email">Email</label>
-                        <input type="email" id="contacto-email" required>
-                    </div>
-                    <div class="campo">
-                        <label for="contacto-telefone">Telefone <span style="font-weight:400;color:var(--cor-texto-suave);font-size:var(--tam-sm);">(opcional)</span></label>
-                        <input type="tel" id="contacto-telefone">
-                    </div>
-                    <div class="campo">
-                        <label for="contacto-mensagem-text">Mensagem</label>
-                        <textarea id="contacto-mensagem-text" rows="4" required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn--primario btn--bloco">Enviar mensagem</button>
-                </form>
             </div>
+
+            <form id="contacto-form" class="form-contacto">
+                <div id="contacto-mensagem" style="padding:12px;background:#F0FFF4;border-left:3px solid #2E7D32;font-size:13px;color:#2E7D32;" hidden></div>
+                <div class="campo-c">
+                    <label for="contacto-nome">Nome</label>
+                    <input type="text" id="contacto-nome" placeholder="O seu nome" required>
+                </div>
+                <div class="campo-c">
+                    <label for="contacto-email">Email</label>
+                    <input type="email" id="contacto-email" placeholder="nome@exemplo.pt" required>
+                </div>
+                <div class="campo-c">
+                    <label for="contacto-telefone">Telefone <span style="font-weight:400;opacity:.6;">(opcional)</span></label>
+                    <input type="tel" id="contacto-telefone" placeholder="+351 9xx xxx xxx">
+                </div>
+                <div class="campo-c">
+                    <label for="contacto-msg">Mensagem</label>
+                    <textarea id="contacto-msg" rows="4" placeholder="Como podemos ajudar?" required></textarea>
+                </div>
+                <button type="submit" class="btn btn--primario" style="align-self:flex-start;padding:12px 28px;">
+                    Enviar mensagem
+                </button>
+            </form>
         </div>
     </section>
 
-    
     <footer class="footer">
-        <div class="container">
-            <div class="footer__grelha">
-                <div class="footer__col">
-                    <div class="navbar__logo navbar__logo--claro">
-                        <img src="../shared/img/logo.png" alt="" class="navbar__logo-img">
-                        <span class="navbar__logo-texto">Sistema de Gestão de Condomínios</span>
-                    </div>
-                    <p class="mt-4">
-                        Plataforma digital de gestão de condomínios — quotas, reservas, avarias e manutenção num só lugar.
-                    </p>
-                </div>
-                <div class="footer__col">
-                    <h5>Navegação</h5>
-                    <ul>
-                        <li><a href="#sobre">Sobre</a></li>
-                        <li><a href="#funcionalidades">Funcionalidades</a></li>
-                        <li><a href="#perfis">Perfis</a></li>
-                    </ul>
-                </div>
-                <div class="footer__col">
-                    <h5>Acesso</h5>
-                    <ul>
-                        <li><a href="login.html">Entrar</a></li>
-                        <li><a href="registo_gestor.html">Aderir à plataforma</a></li>
-                    </ul>
-                </div>
-                <div class="footer__col">
-                    <h5>Contactos</h5>
-                    <ul>
-                        <li><a href="mailto:geral@sgcondominios.pt">sgc2026i@gmail.com</a></li>
-                        <li>T. 220 000 000</li>
-                        <li>T. 960 000 000</li>
-                        <li style="margin-top:8px;font-size:var(--tam-sm);opacity:0.7;">Rua Dr. António Bernardino de Almeida, 431<br>4249-015 Porto</li>
-                    </ul>
+        <div class="footer__inner">
+            <div>
+                <div class="footer__logo">
+                    <img src="../shared/img/logo.png" alt="Logo">
+                    Gestão de Condomínios
                 </div>
             </div>
-            <div class="footer__copyright">
-                © 2026 Sistema de Gestão de Condomínios
+            <div>
+                <h5>Navegação</h5>
+                <ul>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#funcionalidades">Funcionalidades</a></li>
+                    <li><a href="#perfis">Perfis</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5>Acesso</h5>
+                <ul>
+                    <li><a href="login.html">Entrar</a></li>
+                    <li><a href="registo_gestor.html">Criar conta</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5>Contactos</h5>
+                <ul>
+                    <li><a href="mailto:sgc2026i@gmail.com">sgc2026i@gmail.com</a></li>
+                    <li>T. 220 000 000</li>
+                    <li>T. 960 000 000</li>
+                </ul>
             </div>
         </div>
+        <div class="footer__copy">© 2026 Sistema de Gestão de Condomínios</div>
     </footer>
 
     <script src="../shared/js/api.js"></script>

@@ -1,42 +1,42 @@
 
 (async function () {
 
-    for (let i = 0; i < 50 && window.perfilAtual == null; i++) {
+    // Aguardar app.js terminar
+    for (let i = 0; i < 50 && window.tipoAtual == null; i++) {
         await new Promise((r) => setTimeout(r, 50));
     }
-    const perfil = window.perfilAtual;
-    const conteudo = document.getElementById("dashboard-conteudo");
-    const rotulo = document.querySelector('[data-rotulo="dashboard"]');
 
-    if (perfil === 5) {
-        rotulo.textContent = "Visão geral dos edifícios na plataforma.";
+    const tipo      = window.tipoAtual;
+    const conteudo  = document.getElementById("dashboard-conteudo");
+    const rotulo    = document.querySelector('[data-rotulo="dashboard"]');
+
+    if (tipo === "admin") {
+        if (rotulo) rotulo.textContent = "Visão geral da plataforma.";
         await renderizarAdmin();
-    } else if (perfil === 3) {
-        rotulo.textContent = "Vista geral dos edifícios que gere.";
+    } else if (tipo === "gestor") {
+        if (rotulo) rotulo.textContent = "Vista geral dos edifícios que gere.";
         await renderizarGestor();
-    } else if (perfil === 4) {
-        rotulo.textContent = "Ordens de trabalho atribuídas a si.";
+    } else if (tipo === "tecnico") {
+        if (rotulo) rotulo.textContent = "Avarias que lhe foram atribuídas.";
         await renderizarTecnico();
     }
 
 
-
+    // ── Admin ─────────────────────────────────────────────────────────────────
     async function renderizarAdmin() {
         conteudo.innerHTML = `
             <div class="kpis" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="kpi">
                     <div class="kpi__rotulo">Edifícios</div>
-                    <div class="kpi__valor" id="kpi-total">—</div>
-               
+                    <div class="kpi__valor" id="kpi-edificios">—</div>
                 </div>
                 <div class="kpi kpi--ok">
                     <div class="kpi__rotulo">Gestores</div>
                     <div class="kpi__valor" id="kpi-gestores">—</div>
-                  
                 </div>
                 <div class="kpi kpi--alerta">
-                    <div class="kpi__rotulo">Fornecedores</div>
-                    <div class="kpi__valor" id="kpi-fornecedores">—</div>
+                    <div class="kpi__rotulo">Parceiros</div>
+                    <div class="kpi__valor" id="kpi-parceiros">—</div>
                 </div>
             </div>
 
@@ -47,75 +47,45 @@
                 </div>
                 <div class="painel__corpo painel__corpo--sem-pad">
                     <table class="app-tabela">
-                        <thead><tr><th>Nome</th><th>Morada</th><th>Cidade</th></tr></thead>
-                        <tbody id="tabela-edificios"><tr><td colspan="3" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                        <thead><tr><th>Morada</th><th>Cidade</th><th>Gestor</th></tr></thead>
+                        <tbody id="tabela-edificios">
+                            <tr><td colspan="3" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
         try {
-            const edificios = await window.api.get("/edificios");
-            document.getElementById("kpi-total").textContent = edificios.length;
-            renderizarTabelaEdificios(edificios);
-        } catch {
-            document.getElementById("kpi-total").textContent = "0";
-        }
+            const edificios = await window.api.get("/edificios/todos");
+            set("kpi-edificios", edificios.length);
+            const tbody = document.getElementById("tabela-edificios");
+            if (!edificios.length) {
+                tbody.innerHTML = `<tr><td colspan="3" class="app-vazio"><p>Sem edifícios.</p></td></tr>`;
+            } else {
+                tbody.innerHTML = edificios.slice(0, 10).map((e) => `
+                    <tr>
+                        <td><strong>${e.rua}</strong></td>
+                        <td>${e.cidade || "—"}</td>
+                        <td>${e.id_gestor}</td>
+                    </tr>`).join("");
+            }
+        } catch { set("kpi-edificios", "0"); }
 
         try {
-            const gestores = await window.api.get("/utilizadores");
-            document.getElementById("kpi-gestores").textContent = gestores.length;
-        } catch {
-            document.getElementById("kpi-gestores").textContent = "0";
-        }
+            const gestores = await window.api.get("/gestores");
+            set("kpi-gestores", gestores.length);
+        } catch { set("kpi-gestores", "0"); }
 
         try {
-            const fornecedores = await window.api.get("/fornecedores");
-            document.getElementById("kpi-fornecedores").textContent = fornecedores.length;
-        } catch {
-            document.getElementById("kpi-fornecedores").textContent = "0";
-        }
-    }
-
-    function renderizarTabelaEdificios(edificios) {
-        const tbody = document.getElementById("tabela-edificios");
-        if (!edificios.length) {
-            tbody.innerHTML = `<tr><td colspan="3" class="app-vazio"><p>Sem edifícios.</p></td></tr>`;
-            return;
-        }
-        tbody.innerHTML = edificios.slice(0, 10).map((e) => `
-            <tr>
-                <td><strong>${e.nome}</strong></td>
-                <td>${e.morada}</td>
-                <td>${e.cidade || "—"}</td>
-            </tr>
-        `).join("");
-    }
-
-    function inicializarMiniMapa(edificios) {
-        const PT = L.latLngBounds([36.5, -10.0], [42.5, -6.0]);
-        const m = L.map("mini-mapa", {
-            zoomControl: false,
-            attributionControl: false,
-            maxBounds: PT,
-            minZoom: 6,
-            maxZoom: 12,
-        }).fitBounds(PT);
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            maxZoom: 18,
-        }).addTo(m);
-
-        const comCoords = edificios.filter((e) => e.latitude != null && e.longitude != null);
-        comCoords.forEach((e) => {
-            L.circleMarker([e.latitude, e.longitude], {
-                radius: 6, color: "#F08A24", fillColor: "#F08A24",
-                fillOpacity: 0.9, weight: 2,
-            }).addTo(m).bindPopup(`<strong>${e.nome}</strong><br>${e.cidade || ""}`);
-        });
+            const parceiros = await window.api.get("/parceiros");
+            set("kpi-parceiros", parceiros.length);
+        } catch { set("kpi-parceiros", "0"); }
     }
 
 
+    // ── Gestor ────────────────────────────────────────────────────────────────
     async function renderizarGestor() {
         conteudo.innerHTML = `
             <div class="kpis">
@@ -125,52 +95,63 @@
                     <div class="kpi__sub">Sob gestão</div>
                 </div>
                 <div class="kpi kpi--ok">
-                    <div class="kpi__rotulo">Quotas pagas (mês)</div>
-                    <div class="kpi__valor" data-kpi="quotas-pagas">—</div>
-                    <div class="kpi__sub">Percentagem</div>
+                    <div class="kpi__rotulo">Pagamentos este mês</div>
+                    <div class="kpi__valor" data-kpi="pagamentos-pagos">—</div>
+                    <div class="kpi__sub">Estado pago</div>
                 </div>
                 <div class="kpi kpi--alerta">
-                    <div class="kpi__rotulo">Reservas pendentes</div>
-                    <div class="kpi__valor" data-kpi="reservas-pendentes">—</div>
-                    <div class="kpi__sub">A aguardar aprovação</div>
+                    <div class="kpi__rotulo">Pagamentos pendentes</div>
+                    <div class="kpi__valor" data-kpi="pagamentos-pendentes">—</div>
+                    <div class="kpi__sub">Por pagar</div>
                 </div>
                 <div class="kpi kpi--erro">
                     <div class="kpi__rotulo">Avarias abertas</div>
-                    <div class="kpi__valor" data-kpi="avarias-abertas">—</div>
-                    <div class="kpi__sub">A precisar de OT</div>
+                    <div class="kpi__valor" data-kpi="avarias">—</div>
+                    <div class="kpi__sub">A precisar de resolução</div>
                 </div>
             </div>
 
             <div class="dois-paineis">
                 <div class="painel">
                     <div class="painel__cabecalho">
-                        <h2>Últimas avarias reportadas</h2>
+                        <h2>Últimas avarias</h2>
                         <a href="avarias.html" class="btn btn--outline">Ver todas</a>
                     </div>
                     <div class="painel__corpo painel__corpo--sem-pad">
                         <table class="app-tabela">
-                            <thead><tr><th>Data</th><th>Edifício</th><th>Categoria</th><th>Estado</th></tr></thead>
-                            <tbody data-tabela="avarias-recentes"><tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                            <thead><tr><th>Data</th><th>Zona</th><th>Descrição</th></tr></thead>
+                            <tbody data-tabela="avarias-recentes">
+                                <tr><td colspan="3" class="app-vazio"><p>A carregar...</p></td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
                 <div class="painel">
                     <div class="painel__cabecalho">
-                        <h2>Reservas pendentes</h2>
-                        <a href="reservas.html" class="btn btn--outline">Ver todas</a>
+                        <h2>Últimos pagamentos</h2>
+                        <a href="quotas.html" class="btn btn--outline">Ver todos</a>
                     </div>
                     <div class="painel__corpo painel__corpo--sem-pad">
                         <table class="app-tabela">
-                            <thead><tr><th>Espaço</th><th>Quando</th></tr></thead>
-                            <tbody data-tabela="reservas-pendentes"><tr><td colspan="2" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                            <thead><tr><th>Mês</th><th>Valor</th><th>Estado</th></tr></thead>
+                            <tbody data-tabela="pagamentos-recentes">
+                                <tr><td colspan="3" class="app-vazio"><p>A carregar...</p></td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        const setKpi = (n, v) => { const el = document.querySelector(`[data-kpi="${n}"]`); if (el) el.textContent = v; };
-        const fmt = (iso) => iso ? new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short" }) : "—";
+        const setKpi = (n, v) => {
+            const el = document.querySelector(`[data-kpi="${n}"]`);
+            if (el) el.textContent = v;
+        };
+        const fmtData = (iso) => iso
+            ? new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short" })
+            : "—";
+        const fmtEur = (v) => v != null
+            ? new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(v)
+            : "—";
 
         try {
             const edificios = await window.api.get("/edificios");
@@ -178,71 +159,98 @@
         } catch { setKpi("edificios", "0"); }
 
         try {
-            const reservas = await window.api.get("/reservas");
-            const pendentes = reservas.filter((r) => (r.estado?.nome_pt || "").toLowerCase() === "pendente");
-            setKpi("reservas-pendentes", pendentes.length);
-            document.querySelector('[data-tabela="reservas-pendentes"]').innerHTML =
-                pendentes.slice(0, 5).map((r) => `
-                    <tr><td><strong>${r.espaco?.nome || "Espaço " + r.espaco_id}</strong></td><td>${fmt(r.data_inicio)}</td></tr>
-                `).join("") || `<tr><td colspan="2" class="app-vazio"><p>Sem reservas pendentes.</p></td></tr>`;
-        } catch { setKpi("reservas-pendentes", "0"); }
+            const pagamentos = await window.api.get("/pagamentos/gestor");
+            const pagos     = pagamentos.filter((p) => p.estado === 1);
+            const pendentes = pagamentos.filter((p) => p.estado === 0);
+            setKpi("pagamentos-pagos",     pagos.length);
+            setKpi("pagamentos-pendentes", pendentes.length);
 
-        try {
-            const avarias = await window.api.get("/avarias");
-            setKpi("avarias-abertas", avarias.length);
-            document.querySelector('[data-tabela="avarias-recentes"]').innerHTML =
-                avarias.slice(-5).reverse().map((a) => `
-                    <tr>
-                        <td>${fmt(a.created_at)}</td>
-                        <td>${a.edificio?.nome || "—"}</td>
-                        <td>${a.categoria?.nome_pt || "—"}</td>
-                        <td><span class="estado estado--alerta">Aberta</span></td>
-                    </tr>
-                `).join("") || `<tr><td colspan="4" class="app-vazio"><p>Sem avarias.</p></td></tr>`;
-        } catch { setKpi("avarias-abertas", "0"); }
+            const recentes = [...pagamentos].reverse().slice(0, 5);
+            document.querySelector('[data-tabela="pagamentos-recentes"]').innerHTML =
+                recentes.length
+                    ? recentes.map((p) => `
+                        <tr>
+                            <td>${p.mes}</td>
+                            <td>${fmtEur(p.valor)}</td>
+                            <td>${p.estado === 1
+                                ? '<span class="estado estado--ok">Pago</span>'
+                                : '<span class="estado estado--alerta">Pendente</span>'}</td>
+                        </tr>`).join("")
+                    : `<tr><td colspan="3" class="app-vazio"><p>Sem pagamentos.</p></td></tr>`;
+        } catch {
+            setKpi("pagamentos-pagos", "0");
+            setKpi("pagamentos-pendentes", "0");
+        }
 
+        // Avarias — tenta o primeiro edifício para mostrar algo no dashboard
         try {
-            const quotas = await window.api.get("/quotas");
-            const pagamentos = await window.api.get("/pagamentos");
-            const pct = quotas.length === 0 ? 0 : Math.round((pagamentos.length / quotas.length) * 100);
-            setKpi("quotas-pagas", `${Math.min(pct, 100)}%`);
-        } catch { setKpi("quotas-pagas", "—"); }
+            const edificios = await window.api.get("/edificios");
+            if (edificios.length) {
+                const avarias = await window.api.get(`/avarias?id_edificio=${edificios[0].id}`);
+                setKpi("avarias", avarias.length);
+                document.querySelector('[data-tabela="avarias-recentes"]').innerHTML =
+                    avarias.length
+                        ? avarias.slice(-5).reverse().map((a) => `
+                            <tr>
+                                <td>${fmtData(a.data_registo)}</td>
+                                <td>${a.zona || "—"}</td>
+                                <td>${(a.descricao || "").substring(0, 40)}</td>
+                            </tr>`).join("")
+                        : `<tr><td colspan="3" class="app-vazio"><p>Sem avarias.</p></td></tr>`;
+            } else {
+                setKpi("avarias", "0");
+                document.querySelector('[data-tabela="avarias-recentes"]').innerHTML =
+                    `<tr><td colspan="3" class="app-vazio"><p>Sem edifícios registados.</p></td></tr>`;
+            }
+        } catch { setKpi("avarias", "0"); }
     }
 
 
+    // ── Técnico ───────────────────────────────────────────────────────────────
     async function renderizarTecnico() {
         conteudo.innerHTML = `
             <div class="painel">
                 <div class="painel__cabecalho">
-                    <h2>As minhas ordens de trabalho</h2>
-                    <a href="ordens-trabalho.html" class="btn btn--outline">Ver todas</a>
+                    <h2>As minhas avarias atribuídas</h2>
+                    <a href="avarias.html" class="btn btn--outline">Ver todas</a>
                 </div>
                 <div class="painel__corpo painel__corpo--sem-pad">
                     <table class="app-tabela">
-                        <thead><tr><th>Avaria</th><th>Edifício</th><th>Início</th><th>Estado</th></tr></thead>
-                        <tbody id="tabela-ots-tecnico"><tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                        <thead>
+                            <tr><th>Data</th><th>Zona</th><th>Descrição</th><th>Estado resolução</th></tr>
+                        </thead>
+                        <tbody id="tabela-avarias-tecnico">
+                            <tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        `;
+            </div>`;
+
+        const fmtData = (iso) => iso
+            ? new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" })
+            : "—";
 
         try {
-            const ots = await window.api.get("/ordens-trabalho");
-            const tbody = document.getElementById("tabela-ots-tecnico");
-            if (!ots.length) {
-                tbody.innerHTML = `<tr><td colspan="4" class="app-vazio"><p>Sem ordens de trabalho atribuídas.</p></td></tr>`;
+            const avarias = await window.api.get("/avarias/tecnico");
+            const tbody   = document.getElementById("tabela-avarias-tecnico");
+            if (!avarias.length) {
+                tbody.innerHTML = `<tr><td colspan="4" class="app-vazio"><p>Sem avarias atribuídas.</p></td></tr>`;
                 return;
             }
-            tbody.innerHTML = ots.map((o) => `
-                <tr>
-                    <td>${o.avaria?.descricao?.substring(0, 40) || "—"}</td>
-                    <td>${o.avaria?.edificio?.nome || "—"}</td>
-                    <td>${o.data_inicio ? new Date(o.data_inicio).toLocaleDateString("pt-PT") : "—"}</td>
-                    <td><span class="estado estado--alerta">${o.estado?.nome_pt || "—"}</span></td>
-                </tr>
-            `).join("");
+            tbody.innerHTML = avarias.map((a) => {
+                const resolvida = a.resolucao?.status === 1;
+                return `
+                    <tr>
+                        <td>${fmtData(a.data_registo)}</td>
+                        <td>${a.zona || "—"}</td>
+                        <td>${(a.descricao || "").substring(0, 50)}</td>
+                        <td>${resolvida
+                            ? '<span class="estado estado--ok">Resolvida</span>'
+                            : '<span class="estado estado--alerta">Pendente</span>'}</td>
+                    </tr>`;
+            }).join("");
         } catch (e) {
-            document.getElementById("tabela-ots-tecnico").innerHTML =
+            document.getElementById("tabela-avarias-tecnico").innerHTML =
                 `<tr><td colspan="4" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }

@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Técnicos — Sistema de Gestão de Condomínios</title>
+<title>Gestores — Gestão de Condomínios</title>
 <link rel="stylesheet" href="../shared/css/tokens.css">
 <link rel="stylesheet" href="../shared/css/base.css">
 <link rel="stylesheet" href="../shared/css/componentes.css">
@@ -18,11 +18,11 @@
 
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
-                    <h1>Técnicos</h1>
-                    <p>Profissionais técnicos que executam ordens de trabalho na plataforma.</p>
+                    <h1>Gestores</h1>
+                    <p>Gestores de condomínio registados na plataforma.</p>
                 </div>
                 <div class="app-cabecalho__acoes">
-                    <button type="button" class="btn btn--primario" id="btn-novo-gestor">Adicionar técnico</button>
+                    <button type="button" class="btn btn--primario" id="btn-novo-gestor">Adicionar gestor</button>
                 </div>
             </div>
 
@@ -40,14 +40,13 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
+                            <th>Empresa</th>
                             <th>Email</th>
-                            <th>Telemóvel</th>
-                            <th>NIF</th>
                             <th>Estado</th>
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody data-tabela="gestores"><tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                    <tbody data-tabela="gestores"><tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
                 </table>
             </div>
 
@@ -55,42 +54,41 @@
     </div>
 </div>
 
-<!-- Modal: criar técnico -->
+<!-- Modal: criar gestor -->
 <div class="modal-overlay" id="modal-gestor" hidden>
     <div class="modal">
         <div class="modal__cabecalho">
-            <h3>Convidar técnico</h3>
+            <h3>Adicionar gestor</h3>
             <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
         </div>
         <div class="modal__corpo">
             <div id="erro-gestor" class="login-erro" hidden></div>
-            <p class="texto-suave" style="margin-bottom:var(--esp-4);font-size:var(--tam-sm);">
-                Uma password aleatória será gerada e enviada para o email indicado.
-            </p>
             <form id="form-gestor">
                 <div class="campo">
                     <label for="g-nome">Nome completo</label>
                     <input type="text" id="g-nome" required>
                 </div>
                 <div class="campo">
+                    <label for="g-empresa">Empresa</label>
+                    <input type="text" id="g-empresa" placeholder="Opcional">
+                </div>
+                <div class="campo">
                     <label for="g-email">Email</label>
                     <input type="email" id="g-email" required>
                 </div>
-                <div class="campo-dupla" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
-                    <div class="campo">
-                        <label for="g-telemovel">Telemóvel</label>
-                        <input type="tel" id="g-telemovel">
-                    </div>
-                    <div class="campo">
-                        <label for="g-nif">NIF</label>
-                        <input type="text" id="g-nif" maxlength="9">
-                    </div>
+                <div class="campo">
+                    <label for="g-telemovel">Telemóvel</label>
+                    <input type="tel" id="g-telemovel" required>
+                </div>
+                <div class="campo">
+                    <label for="g-pw">Password inicial</label>
+                    <input type="password" id="g-pw" required autocomplete="new-password">
                 </div>
             </form>
         </div>
         <div class="modal__rodape">
             <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
-            <button type="button" class="btn btn--primario" id="btn-criar-gestor">Convidar</button>
+            <button type="button" class="btn btn--primario" id="btn-criar-gestor">Criar gestor</button>
         </div>
     </div>
 </div>

@@ -27,7 +27,7 @@ def atualizar(db: Session, id: int, dados):
     espaco = obter(db, id)
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
-    for campo, valor in dados.model_dump(exclude_unset=True).items()    setattr(espaco, campo, valor)
+        setattr(espaco, campo, valor)
     
     db.commit()
     db.refresh(espaco)
