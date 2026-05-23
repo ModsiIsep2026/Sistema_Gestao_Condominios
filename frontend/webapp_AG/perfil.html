@@ -41,13 +41,25 @@
             <div class="painel" style="max-width:640px;">
                 <div class="painel__cabecalho"><h2>Alterar Password</h2></div>
                 <div class="painel__corpo">
-                    <p class="texto-suave">
-                    Peça um link de recuperação.
-                    </p>
-                    <div id="msg-pw" hidden style="margin-top:var(--esp-3);"></div>
-                    <button type="button" class="btn btn--outline" id="btn-pedir-pw" style="margin-top:var(--esp-3);">
-                        Enviar link
-                    </button>
+                    <div id="msg-pw" hidden style="margin-bottom:var(--esp-3);"></div>
+                    <form id="form-pw">
+                        <div class="campo">
+                            <label for="pw-atual">Password atual</label>
+                            <input type="password" id="pw-atual" autocomplete="current-password" required>
+                        </div>
+                        <div class="campo">
+                            <label for="pw-nova">Nova password</label>
+                            <input type="password" id="pw-nova" autocomplete="new-password" required
+                                   placeholder="Mínimo 8 caracteres, maiúscula e número">
+                        </div>
+                        <div class="campo">
+                            <label for="pw-confirmar">Confirmar nova password</label>
+                            <input type="password" id="pw-confirmar" autocomplete="new-password" required>
+                        </div>
+                        <button type="submit" class="btn btn--primario" style="margin-top:var(--esp-2);">
+                            Guardar nova password
+                        </button>
+                    </form>
                 </div>
             </div>
 

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmar password — Sistema de Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../shared/css/tokens.css">
+    <link rel="stylesheet" href="../shared/css/base.css">
+    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="css/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="login-body">
+
+    <div class="login-fundo">
+        <img src="../shared/img/predios.jpg" alt="">
+        <div class="login-fundo__overlay"></div>
+    </div>
+
+    <main class="login-conteudo">
+        <div class="login-card" style="text-align:center;">
+
+            <div class="login-card__topo">
+                <a href="index.html" class="login-logo">
+                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                </a>
+            </div>
+
+            <!-- Estado: a verificar -->
+            <div id="estado-loading">
+                <p style="color:var(--cor-texto-suave);font-size:14px;">A verificar o link…</p>
+            </div>
+
+            <!-- Estado: sucesso -->
+            <div id="estado-sucesso" hidden>
+                <div style="font-size:48px;margin-bottom:16px;">✅</div>
+                <h1 style="margin-bottom:8px;">Password alterada!</h1>
+                <p style="color:var(--cor-texto-suave);font-size:14px;margin-bottom:28px;">
+                    A sua password foi alterada com sucesso.<br>
+                    Já pode iniciar sessão com a nova password.
+                </p>
+                <a href="login.html" class="btn btn--primario btn--bloco">Ir para o login</a>
+            </div>
+
+            <!-- Estado: erro -->
+            <div id="estado-erro" hidden>
+                <div style="font-size:48px;margin-bottom:16px;">❌</div>
+                <h1 style="margin-bottom:8px;">Link inválido</h1>
+                <p id="msg-erro-texto" style="color:var(--cor-texto-suave);font-size:14px;margin-bottom:28px;"></p>
+                <a href="login.html" class="btn btn--outline btn--bloco">Voltar ao login</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="../shared/js/api.js"></script>
+    <script>
+    (async function () {
+        const params = new URLSearchParams(window.location.search);
+        const token  = params.get("token");
+
+        const elLoading = document.getElementById("estado-loading");
+        const elSucesso = document.getElementById("estado-sucesso");
+        const elErro    = document.getElementById("estado-erro");
+        const elMsg     = document.getElementById("msg-erro-texto");
+
+        if (!token) {
+            elLoading.hidden = true;
+            elMsg.textContent = "O link de confirmação é inválido ou está incompleto.";
+            elErro.hidden = false;
+            return;
+        }
+
+        try {
+            await window.api.post("/auth/confirmar-nova-password", { token });
+            elLoading.hidden = true;
+            elSucesso.hidden = false;
+        } catch (err) {
+            elLoading.hidden = true;
+            elMsg.textContent = err.message || "O link expirou ou é inválido. Solicite uma nova alteração de password.";
+            elErro.hidden = false;
+        }
+    })();
+    </script>
+</body>
+</html>

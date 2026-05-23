@@ -1,6 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import date
 from typing import Optional
+
+
 
 
 class Contrato(BaseModel):
@@ -11,7 +13,7 @@ class Contrato(BaseModel):
 
 
 class CriarContrato(Contrato):
-    pass # o gestor vai mexer nos contratos, apenas vai selecionar e pagar
+    pass  # o gestor vai mexer nos contratos, apenas vai selecionar e pagar
 
 
 class AtualizarContrato(BaseModel):
@@ -27,3 +29,25 @@ class LerContrato(Contrato):
 
     class Config:
         from_attributes = True
+
+
+
+
+class IniciarPagamento(BaseModel):
+    nome: str
+    email: EmailStr
+    telemovel: str
+    nif: Optional[str] = None
+    id_licenca: int
+    num_meses: int = 1
+
+
+class ConcluirPagamento(BaseModel):
+    """Passo 2 — confirma pagamento, cria gestor + contrato."""
+    payment_intent_id: str
+    nome: str
+    email: EmailStr
+    telemovel: str
+    nif: Optional[str] = None
+    id_licenca: int
+    num_meses: int = 1

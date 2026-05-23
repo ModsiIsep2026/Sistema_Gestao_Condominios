@@ -28,6 +28,9 @@ async function pedido(metodo, endpoint, corpo = null) {
         limparToken();
     }
 
+    // 204 No Content — sem corpo, não tentar fazer .json()
+    if (resposta.status === 204) return null;
+
     const tipo = resposta.headers.get("content-type") || "";
     const dados = tipo.includes("application/json") ? await resposta.json() : null;
 

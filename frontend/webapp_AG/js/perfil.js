@@ -52,4 +52,40 @@
         }
     });
 
+    // ── Alterar password ───────────────────────────────────────────────────
+    document.getElementById("form-pw")?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const msgPw    = document.getElementById("msg-pw");
+        const pwAtual  = document.getElementById("pw-atual").value;
+        const pwNova   = document.getElementById("pw-nova").value;
+        const pwConf   = document.getElementById("pw-confirmar").value;
+
+        msgPw.hidden = true;
+
+        if (pwNova.length < 8 || !/[A-Z]/.test(pwNova) || !/\d/.test(pwNova)) {
+            msgPw.textContent = "A nova password precisa de ter pelo menos 8 caracteres, uma maiúscula e um número.";
+            msgPw.className   = "login-erro";
+            msgPw.hidden      = false;
+            return;
+        }
+        if (pwNova !== pwConf) {
+            msgPw.textContent = "As passwords não coincidem.";
+            msgPw.className   = "login-erro";
+            msgPw.hidden      = false;
+            return;
+        }
+
+        try {
+            const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
+            msgPw.textContent = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
+            msgPw.className   = "login-sucesso";
+            msgPw.hidden      = false;
+            document.getElementById("form-pw").reset();
+        } catch (err) {
+            msgPw.textContent = err.message || "Não foi possível alterar a password.";
+            msgPw.className   = "login-erro";
+            msgPw.hidden      = false;
+        }
+    });
+
 })();

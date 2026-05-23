@@ -14,7 +14,7 @@ router = APIRouter(prefix="/auth", tags=["OAuth"])
 
 _configs = get_configs()
 
-# ── Authlib ────────────────────────────────────────────────────────────────────
+
 try:
     from authlib.integrations.starlette_client import OAuth, OAuthError
     _oauth = OAuth()

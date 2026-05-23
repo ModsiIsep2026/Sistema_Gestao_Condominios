@@ -11,14 +11,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
+        /* Passos */
         .passos { display:flex; gap:var(--esp-3); margin-bottom:var(--esp-6); }
         .passo { flex:1; padding:var(--esp-2) var(--esp-3); border-radius:4px; font-size:var(--tam-sm); font-weight:600; text-align:center; background:var(--cor-fundo-alt); color:var(--cor-texto-suave); }
         .passo--ativo { background:var(--cor-primaria); color:#fff; }
         .passo--feito { background:var(--cor-acento); color:#fff; }
+
+        /* Cartões de licença */
+        .licencas-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
+        .licenca-card {
+            border:2px solid var(--cor-borda); border-radius:6px;
+            padding:16px 10px; text-align:center; cursor:pointer;
+            background:var(--cor-fundo-alt); transition:all .18s;
+        }
+        .licenca-card:hover { border-color:var(--cor-primaria); background:#fff; }
+        .licenca-card.selecionado { border-color:var(--cor-primaria); background:var(--cor-primaria); color:#fff; }
+        .licenca-card__edificios { font-size:26px; font-weight:800; line-height:1; margin-bottom:4px; }
+        .licenca-card__label { font-size:11px; font-weight:500; opacity:.75; margin-bottom:10px; }
+        .licenca-card__preco { font-size:14px; font-weight:700; }
+        .licenca-card__preco small { font-size:11px; font-weight:400; opacity:.8; }
+
+        /* Stripe */
         #stripe-card { border:1px solid var(--cor-borda); border-radius:4px; padding:12px; background:#fff; }
-        .preco-badge { display:inline-block; background:var(--cor-acento); color:#fff; padding:4px 12px; border-radius:20px; font-weight:700; font-size:var(--tam-sm); margin-bottom:var(--esp-4); }
-        .cartao-teste { background:#f0f7ff; border:1px solid #b3d4f5; border-radius:6px; padding:var(--esp-3); font-size:var(--tam-sm); margin-bottom:var(--esp-4); }
-        .cartao-teste code { font-family:monospace; font-weight:700; letter-spacing:2px; }
+
+        /* Secção de carregamento */
+        .a-carregar-txt { text-align:center; color:var(--cor-texto-suave); font-size:13px; padding:20px 0; }
+
+        /* Seletor de meses */
+        .meses-grid { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+        .mes-btn {
+            flex:1; min-width:70px; padding:10px 8px; text-align:center;
+            border:2px solid var(--cor-borda); border-radius:6px;
+            background:var(--cor-fundo-alt); cursor:pointer;
+            font-family:inherit; font-size:13px; font-weight:600; color:var(--cor-texto-suave);
+            transition:all .18s;
+        }
+        .mes-btn:hover { border-color:var(--cor-primaria); color:var(--cor-primaria); background:#fff; }
+        .mes-btn.selecionado { border-color:var(--cor-primaria); background:var(--cor-primaria); color:#fff; }
+        .mes-btn__desconto { display:block; font-size:10px; font-weight:500; margin-top:2px; opacity:.8; }
+
+        /* Stripe section fade-in */
+        #stripe-secao { transition: opacity .25s; }
+        #stripe-secao.oculto { opacity:0; pointer-events:none; height:0; overflow:hidden; }
     </style>
 </head>
 <body class="login-body">
@@ -46,9 +80,8 @@
             </div>
 
             <div id="msg-erro" class="login-erro" hidden></div>
-            <div id="msg-sucesso" class="login-sucesso" hidden></div>
 
-       
+            <!-- ── Passo 1: Dados pessoais ─────────────────────────────────── -->
             <form id="form-dados" class="login-form" novalidate>
                 <div class="campo">
                     <label for="nome">Nome completo</label>
@@ -60,31 +93,78 @@
                 </div>
                 <div class="campo-dupla">
                     <div class="campo">
-                        <label for="telemovel">Telemóvel <span class="campo__opcional">(opcional)</span></label>
-                        <input type="tel" id="telemovel" placeholder="912 345 678" autocomplete="tel">
+                        <label for="telemovel">Telemóvel</label>
+                        <input type="tel" id="telemovel" placeholder="912 345 678" required autocomplete="tel">
                     </div>
                     <div class="campo">
                         <label for="nif">NIF <span class="campo__opcional">(opcional)</span></label>
                         <input type="text" id="nif" placeholder="123456789" maxlength="9" inputmode="numeric">
                     </div>
                 </div>
-                <button type="submit" class="btn btn--primario btn--bloco" id="btn-avancar">Avançar para pagamento →</button>
+                <button type="submit" class="btn btn--primario btn--bloco" id="btn-avancar">
+                    Escolher plano →
+                </button>
             </form>
 
-          
+            <!-- ── Passo 2: Plano + Pagamento ─────────────────────────────── -->
             <div id="secao-pagamento" style="display:none;">
-                <span class="preco-badge" id="label-preco" style="margin-bottom:var(--esp-4);display:inline-block;"></span>
 
-                <form id="form-pagamento" class="login-form">
-                    <div class="campo">
-                        <label>Dados do cartão</label>
-                        <div id="stripe-card"></div>
-                        <div id="stripe-erro" style="color:var(--cor-erro);font-size:var(--tam-sm);margin-top:6px;"></div>
+                <!-- Seletor de planos -->
+                <p style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--cor-texto);">
+                    Escolha o seu plano
+                </p>
+                <div id="licencas-container">
+                    <div class="a-carregar-txt">A carregar planos…</div>
+                </div>
+
+                <!-- Seletor de meses (aparece depois de escolher plano) -->
+                <div id="meses-secao" style="display:none;">
+                    <p style="font-size:13px;font-weight:600;margin:4px 0 10px;color:var(--cor-texto);">
+                        Duração do contrato
+                    </p>
+                    <div class="meses-grid">
+                        <button type="button" class="mes-btn" data-meses="1">1 mês</button>
+                        <button type="button" class="mes-btn" data-meses="3">3 meses</button>
+                        <button type="button" class="mes-btn" data-meses="6">6 meses</button>
+                        <button type="button" class="mes-btn" data-meses="12">12 meses</button>
                     </div>
-                    <button type="submit" class="btn btn--primario btn--bloco" id="btn-pagar">
-                        Confirmar pagamento
-                    </button>
-                </form>
+                </div>
+
+                <div id="stripe-secao" class="oculto">
+                    <hr style="border:none;border-top:1px solid var(--cor-borda);margin:20px 0;">
+
+                    <!-- Resumo do plano selecionado -->
+                    <div id="resumo-plano" style="
+                        display:flex; align-items:center; gap:16px;
+                        background:var(--cor-fundo-alt); border:2px solid var(--cor-primaria);
+                        border-radius:8px; padding:16px 20px; margin-bottom:20px;">
+                        <div style="text-align:center; min-width:72px;">
+                            <div id="resumo-edificios" style="font-size:32px;font-weight:800;color:var(--cor-primaria);line-height:1;"></div>
+                            <div id="resumo-label-ed" style="font-size:11px;font-weight:500;color:var(--cor-texto-suave);"></div>
+                        </div>
+                        <div style="flex:1;border-left:1px solid var(--cor-borda);padding-left:16px;">
+                            <div style="font-size:13px;color:var(--cor-texto-suave);margin-bottom:2px;">Plano selecionado</div>
+                            <div id="resumo-mensal" style="font-size:14px;color:var(--cor-texto-suave);"></div>
+                            <div id="resumo-preco" style="font-size:22px;font-weight:800;color:var(--cor-primaria);margin:4px 0 2px;"></div>
+                            <div id="resumo-detalhe" style="font-size:12px;color:var(--cor-texto-suave);"></div>
+                        </div>
+                    </div>
+
+                    <p style="font-size:12px;color:var(--cor-texto-suave);margin-bottom:14px;">
+                        🔒 Pagamento seguro pelo Stripe. Os dados do cartão não são armazenados nos nossos servidores.
+                    </p>
+
+                    <form id="form-pagamento" class="login-form">
+                        <div class="campo">
+                            <label>Dados do cartão</label>
+                            <div id="stripe-card"></div>
+                            <div id="stripe-erro" style="color:var(--cor-erro);font-size:var(--tam-sm);margin-top:6px;"></div>
+                        </div>
+                        <button type="submit" class="btn btn--primario btn--bloco" id="btn-pagar">
+                            Confirmar pagamento
+                        </button>
+                    </form>
+                </div>
 
                 <button type="button" class="btn btn--outline btn--bloco" id="btn-voltar"
                         style="margin-top:var(--esp-3);">← Voltar aos dados</button>
