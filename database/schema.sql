@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 22-Maio-2026 às 12:48
+-- Tempo de geração: 23-Maio-2026 às 08:22
 -- Versão do servidor: 10.11.11-MariaDB
 -- versão do PHP: 8.3.26
 
@@ -18,90 +18,99 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de dados: `1211405`
+-- Base de dados: `1211405_modsigc`
 --
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `avaria`
+-- Estrutura da tabela `admin`
 --
 
-CREATE TABLE `avaria` (
-  `id_avaria` int(11) NOT NULL,
-  `utilizador_id` int(11) NOT NULL,
-  `edificio_id` int(11) NOT NULL,
-  `fracao_id` int(11) DEFAULT NULL,
-  `categoria_id` int(11) NOT NULL,
-  `descricao` mediumtext NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+CREATE TABLE `admin` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(150) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `pw` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categoria_avaria`
+-- Estrutura da tabela `aluguer_espaco`
 --
 
-CREATE TABLE `categoria_avaria` (
-  `id_categoria` int(11) NOT NULL,
-  `nome_pt` varchar(50) NOT NULL,
-  `nome_en` varchar(50) NOT NULL
+CREATE TABLE `aluguer_espaco` (
+  `id` int(11) NOT NULL,
+  `id_espaco` int(11) NOT NULL,
+  `id_condomino` int(11) NOT NULL,
+  `data_inicio` datetime NOT NULL,
+  `data_fim` datetime NOT NULL,
+  `preco_total` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `categoria_avaria`
---
-
-INSERT INTO `categoria_avaria` (`id_categoria`, `nome_pt`, `nome_en`) VALUES
-(1, 'canalizacao', 'plumbing'),
-(2, 'eletricidade', 'electrical'),
-(3, 'elevador', 'elevator'),
-(4, 'limpeza', 'cleaning'),
-(5, 'seguranca', 'security'),
-(6, 'outra', 'other');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categoria_despesa`
+-- Estrutura da tabela `aluguer_material`
 --
 
-CREATE TABLE `categoria_despesa` (
-  `id_categoria` int(11) NOT NULL,
-  `nome_pt` varchar(50) NOT NULL,
-  `nome_en` varchar(50) NOT NULL
+CREATE TABLE `aluguer_material` (
+  `id` int(11) NOT NULL,
+  `id_material_espaco` int(11) NOT NULL,
+  `qtd_alugada` int(11) NOT NULL DEFAULT 1,
+  `data_inicio` datetime NOT NULL,
+  `data_fim` datetime NOT NULL,
+  `id_condomino` int(11) NOT NULL,
+  `preco_total` decimal(10,2) NOT NULL DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `categoria_despesa`
---
-
-INSERT INTO `categoria_despesa` (`id_categoria`, `nome_pt`, `nome_en`) VALUES
-(1, 'manutencao', 'maintenance'),
-(2, 'agua', 'water'),
-(3, 'eletricidade', 'electricity'),
-(4, 'limpeza', 'cleaning'),
-(5, 'jardinagem', 'gardening'),
-(6, 'seguro', 'insurance'),
-(7, 'outra', 'other');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `despesa`
+-- Estrutura da tabela `apartamento`
 --
 
-CREATE TABLE `despesa` (
-  `id_despesa` int(11) NOT NULL,
-  `edificio_id` int(11) NOT NULL,
-  `gestor_id` int(11) NOT NULL,
-  `fornecedor_id` int(11) DEFAULT NULL,
-  `categoria_id` int(11) NOT NULL,
-  `valor` decimal(10,2) NOT NULL,
-  `data_despesa` date NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+CREATE TABLE `apartamento` (
+  `id` int(11) NOT NULL,
+  `fracao` varchar(20) NOT NULL,
+  `andar` smallint(6) DEFAULT NULL,
+  `id_edificio` int(11) NOT NULL,
+  `permilagem` decimal(6,2) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `condomino`
+--
+
+CREATE TABLE `condomino` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `pw` varchar(255) NOT NULL,
+  `telemovel` varchar(150) NOT NULL,
+  `id_apartamento` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `contrato`
+--
+
+CREATE TABLE `contrato` (
+  `id` int(11) NOT NULL,
+  `id_licenca` int(11) NOT NULL,
+  `id_gestor` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `data_inicio` date NOT NULL,
+  `data_fim` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -111,233 +120,82 @@ CREATE TABLE `despesa` (
 --
 
 CREATE TABLE `edificio` (
-  `id_edificio` int(11) NOT NULL,
-  `nome` varchar(200) NOT NULL,
-  `morada` varchar(255) NOT NULL,
-  `codigo_postal` varchar(10) DEFAULT NULL,
-  `cidade` varchar(100) DEFAULT NULL,
-  `latitude` decimal(10,7) DEFAULT NULL,
-  `longitude` decimal(10,7) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+  `id` int(11) NOT NULL,
+  `rua` varchar(100) NOT NULL,
+  `cp` varchar(100) NOT NULL,
+  `cidade` varchar(80) DEFAULT NULL,
+  `lat` decimal(10,7) NOT NULL,
+  `lng` decimal(10,7) NOT NULL,
+  `iban` varchar(100) NOT NULL,
+  `valor_base_mensal` decimal(10,2) NOT NULL,
+  `id_gestor` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `espaco_comum`
+-- Estrutura da tabela `espaco`
 --
 
-CREATE TABLE `espaco_comum` (
-  `id_espaco` int(11) NOT NULL,
-  `edificio_id` int(11) NOT NULL,
+CREATE TABLE `espaco` (
+  `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
-  `capacidade` int(11) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+  `id_edificio` int(11) NOT NULL,
+  `preco_hora` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `estado_ordem_trabalho`
+-- Estrutura da tabela `gestor`
 --
 
-CREATE TABLE `estado_ordem_trabalho` (
-  `id_estado` int(11) NOT NULL,
-  `nome_pt` varchar(50) NOT NULL,
-  `nome_en` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `estado_ordem_trabalho`
---
-
-INSERT INTO `estado_ordem_trabalho` (`id_estado`, `nome_pt`, `nome_en`) VALUES
-(1, 'aberta', 'open'),
-(2, 'em curso', 'in progress'),
-(3, 'em espera', 'on hold'),
-(4, 'concluida', 'completed'),
-(5, 'cancelada', 'cancelled');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `estado_reserva`
---
-
-CREATE TABLE `estado_reserva` (
-  `id_estado` int(11) NOT NULL,
-  `nome_pt` varchar(50) NOT NULL,
-  `nome_en` varchar(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `estado_reserva`
---
-
-INSERT INTO `estado_reserva` (`id_estado`, `nome_pt`, `nome_en`) VALUES
-(1, 'pendente', 'pending'),
-(2, 'aprovada', 'approved'),
-(3, 'rejeitada', 'rejected'),
-(4, 'cancelada', 'cancelled'),
-(5, 'concluida', 'completed');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `fornecedor`
---
-
-CREATE TABLE `fornecedor` (
-  `id_fornecedor` int(11) NOT NULL,
-  `nome` varchar(200) NOT NULL,
-  `servico` varchar(100) DEFAULT NULL,
-  `localizacao` varchar(100) DEFAULT NULL,
-  `site` varchar(255) DEFAULT NULL,
-  `preco_hora` decimal(8,2) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `fornecedor`
---
-
-INSERT INTO `fornecedor` (`id_fornecedor`, `nome`, `servico`, `localizacao`, `site`, `preco_hora`, `status`) VALUES
-(1, 'Otis Portugal', 'Elevadores', 'Porto', 'https://www.otis.com/pt/pt/produtos/elevadores-gen3-gen360?utm_feeditemid=', 49.00, 1),
-(2, 'Like Garden', 'Jardinagem', 'Porto', 'https://likegarden.pt/', 20.00, 1);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `fracao`
---
-
-CREATE TABLE `fracao` (
-  `id_fracao` int(11) NOT NULL,
-  `edificio_id` int(11) NOT NULL,
-  `codigo_fracao` varchar(20) NOT NULL,
-  `andar` varchar(10) DEFAULT NULL,
-  `area_m2` decimal(8,2) DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+CREATE TABLE `gestor` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `empresa` varchar(100) DEFAULT NULL,
+  `telemovel` varchar(20) NOT NULL,
+  `email` varchar(150) NOT NULL,
+  `pw` varchar(255) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `gestor_edificio`
+-- Estrutura da tabela `licenca`
 --
 
-CREATE TABLE `gestor_edificio` (
-  `id_gestor_edificio` int(11) NOT NULL,
-  `gestor_id` int(11) NOT NULL,
-  `edificio_id` int(11) NOT NULL,
-  `data_inicio` date NOT NULL DEFAULT curdate(),
-  `data_fim` date DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+CREATE TABLE `licenca` (
+  `id` int(11) NOT NULL,
+  `num_edificios` int(11) NOT NULL,
+  `ppem` decimal(10,2) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Extraindo dados da tabela `licenca`
+--
+
+INSERT INTO `licenca` (`id`, `num_edificios`, `ppem`, `status`) VALUES
+(1, 1, 200.00, 1),
+(2, 5, 180.00, 1),
+(3, 20, 125.00, 1);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `log_acesso`
+-- Estrutura da tabela `material_espaco`
 --
 
-CREATE TABLE `log_acesso` (
-  `id_log` int(11) NOT NULL,
-  `utilizador_id` int(11) DEFAULT NULL,
-  `acao` varchar(50) NOT NULL,
-  `timestamp` datetime NOT NULL,
-  `ip_address` varchar(45) DEFAULT NULL,
-  `resultado` varchar(20) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `log_acesso`
---
-
-INSERT INTO `log_acesso` (`id_log`, `utilizador_id`, `acao`, `timestamp`, `ip_address`, `resultado`) VALUES
-(1, 1, 'login', '2026-05-20 23:43:06', '127.0.0.1', 'sucesso'),
-(2, NULL, 'registo', '2026-05-20 23:45:58', '127.0.0.1', 'sucesso'),
-(3, 1, 'esqueci_password', '2026-05-21 01:13:03', NULL, 'sucesso'),
-(4, NULL, 'registo', '2026-05-21 01:13:58', '127.0.0.1', 'sucesso'),
-(5, NULL, 'esqueci_password', '2026-05-21 01:14:36', NULL, 'sucesso'),
-(6, NULL, 'reset_password', '2026-05-21 01:15:20', '127.0.0.1', 'sucesso'),
-(7, NULL, 'login', '2026-05-21 01:15:32', '127.0.0.1', 'sucesso'),
-(8, NULL, 'esqueci_password', '2026-05-21 01:20:12', NULL, 'sucesso'),
-(9, NULL, 'login_failed', '2026-05-21 01:21:16', '127.0.0.1', 'falhou'),
-(10, NULL, 'login', '2026-05-21 01:21:25', '127.0.0.1', 'sucesso'),
-(11, 1, 'login', '2026-05-21 01:37:51', '127.0.0.1', 'sucesso'),
-(12, 1, 'logout', '2026-05-21 01:39:44', '127.0.0.1', 'sucesso'),
-(13, NULL, 'login_failed', '2026-05-21 01:40:00', '127.0.0.1', 'falhou'),
-(14, NULL, 'login_failed', '2026-05-21 01:40:04', '127.0.0.1', 'falhou'),
-(15, NULL, 'login', '2026-05-21 01:40:08', '127.0.0.1', 'sucesso'),
-(16, 1, 'login', '2026-05-21 01:40:24', '127.0.0.1', 'sucesso'),
-(17, 1, 'esqueci_password', '2026-05-21 02:03:43', NULL, 'sucesso'),
-(18, 1, 'login', '2026-05-21 02:10:56', '127.0.0.1', 'sucesso'),
-(19, 1, 'logout', '2026-05-21 02:33:35', '127.0.0.1', 'sucesso'),
-(20, NULL, 'login_failed', '2026-05-21 02:33:47', '127.0.0.1', 'falhou'),
-(21, NULL, 'login', '2026-05-21 02:33:51', '127.0.0.1', 'sucesso'),
-(22, NULL, 'login_failed', '2026-05-21 02:34:03', '127.0.0.1', 'falhou'),
-(23, NULL, 'login', '2026-05-21 02:34:08', '127.0.0.1', 'sucesso'),
-(24, NULL, 'registo', '2026-05-21 12:02:04', '127.0.0.1', 'sucesso'),
-(25, 1, 'login', '2026-05-21 12:02:25', '127.0.0.1', 'sucesso'),
-(26, 1, 'repor_pw_link', '2026-05-21 12:06:32', NULL, 'sucesso'),
-(27, NULL, 'login_failed', '2026-05-21 12:08:35', '127.0.0.1', 'falhou'),
-(28, NULL, 'login_failed', '2026-05-21 12:08:39', '127.0.0.1', 'falhou'),
-(29, 1, 'logout', '2026-05-21 12:10:32', '127.0.0.1', 'sucesso'),
-(30, NULL, 'login_failed', '2026-05-21 12:10:41', '127.0.0.1', 'falhou'),
-(31, NULL, 'login', '2026-05-21 12:10:47', '127.0.0.1', 'sucesso'),
-(32, 1, 'login', '2026-05-21 16:55:05', '127.0.0.1', 'sucesso'),
-(33, 1, 'repor_pw_link', '2026-05-21 17:00:09', NULL, 'sucesso'),
-(34, 1, 'logout', '2026-05-21 17:00:28', '127.0.0.1', 'sucesso'),
-(35, NULL, 'login', '2026-05-21 17:00:53', '127.0.0.1', 'sucesso'),
-(36, NULL, 'repor_pw_link', '2026-05-21 17:02:06', NULL, 'sucesso'),
-(37, 1, 'login', '2026-05-22 09:43:10', '127.0.0.1', 'sucesso'),
-(38, 1, 'login', '2026-05-22 10:13:52', '127.0.0.1', 'sucesso'),
-(39, 1, 'login', '2026-05-22 10:44:52', '127.0.0.1', 'sucesso'),
-(40, 1, 'repor_pw_link', '2026-05-22 10:46:59', NULL, 'sucesso'),
-(41, 1, 'repor_pw_link', '2026-05-22 10:48:33', NULL, 'sucesso'),
-(42, 1, 'logout', '2026-05-22 10:52:53', '127.0.0.1', 'sucesso'),
-(43, NULL, 'login', '2026-05-22 11:14:17', '127.0.0.1', 'sucesso'),
-(44, NULL, 'repor_pw_link', '2026-05-22 11:15:33', NULL, 'sucesso'),
-(45, NULL, 'nova_pw', '2026-05-22 11:16:13', '127.0.0.1', 'sucesso'),
-(46, NULL, 'login', '2026-05-22 11:16:24', '127.0.0.1', 'sucesso'),
-(47, NULL, 'repor_pw_link', '2026-05-22 11:16:59', NULL, 'sucesso'),
-(48, NULL, 'logout', '2026-05-22 11:17:30', '127.0.0.1', 'sucesso'),
-(49, NULL, 'registo', '2026-05-22 11:18:35', '127.0.0.1', 'sucesso');
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `notificacao`
---
-
-CREATE TABLE `notificacao` (
-  `id_notificacao` int(11) NOT NULL,
-  `utilizador_id` int(11) NOT NULL,
-  `titulo` varchar(200) NOT NULL,
-  `mensagem` mediumtext NOT NULL,
-  `lida` int(11) NOT NULL DEFAULT 0,
-  `status` int(11) NOT NULL DEFAULT 1,
-  `tipo` varchar(50) DEFAULT NULL,
-  `referencia_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `ordem_trabalho`
---
-
-CREATE TABLE `ordem_trabalho` (
-  `id_ordem` int(11) NOT NULL,
-  `avaria_id` int(11) NOT NULL,
-  `tecnico_id` int(11) DEFAULT NULL,
-  `gestor_id` int(11) NOT NULL,
-  `fornecedor_id` int(11) DEFAULT NULL,
-  `estado_id` int(11) NOT NULL,
-  `data_inicio` datetime NOT NULL,
-  `data_fim` datetime DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+CREATE TABLE `material_espaco` (
+  `id` int(11) NOT NULL,
+  `material` varchar(100) NOT NULL,
+  `qtd` int(11) NOT NULL DEFAULT 0,
+  `preco_unitario` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `id_espaco` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -347,115 +205,76 @@ CREATE TABLE `ordem_trabalho` (
 --
 
 CREATE TABLE `pagamento` (
-  `id_pagamento` int(11) NOT NULL,
-  `quota_id` int(11) NOT NULL,
-  `utilizador_id` int(11) NOT NULL,
-  `valor_pago` decimal(10,2) NOT NULL,
-  `data_pagamento` date NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `perfil`
---
-
-CREATE TABLE `perfil` (
-  `id_perfil` int(11) NOT NULL,
-  `nome` varchar(50) NOT NULL,
-  `descricao` mediumtext DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `perfil`
---
-
-INSERT INTO `perfil` (`id_perfil`, `nome`, `descricao`, `status`) VALUES
-(1, 'visitante', 'Acesso a informacao publica do condominio', 1),
-(2, 'condomino', 'Consulta quotas, faz reservas e reporta avarias', 1),
-(3, 'gestor', 'Responsavel pela gestao operacional e financeira do condominio', 1),
-(4, 'tecnico', 'Executa e acompanha ordens de trabalho', 1),
-(5, 'administrador', 'Responsavel pela administracao da plataforma e backoffice', 1);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `quota`
---
-
-CREATE TABLE `quota` (
-  `id_quota` int(11) NOT NULL,
-  `fracao_id` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `id_apartamento` int(11) NOT NULL,
+  `mes` char(7) NOT NULL,
   `valor` decimal(10,2) NOT NULL,
-  `mes_referencia` date NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `data_i` datetime NOT NULL,
+  `data_p` datetime DEFAULT NULL,
+  `estado` tinyint(1) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `reserva`
+-- Estrutura da tabela `parceiro`
 --
 
-CREATE TABLE `reserva` (
-  `id_reserva` int(11) NOT NULL,
-  `utilizador_id` int(11) NOT NULL,
-  `espaco_id` int(11) NOT NULL,
-  `aprovador_id` int(11) DEFAULT NULL,
-  `estado_id` int(11) NOT NULL,
-  `data_inicio` datetime NOT NULL,
-  `data_fim` datetime NOT NULL,
-  `status` int(11) NOT NULL DEFAULT 1,
-  `data_aprovacao` datetime DEFAULT NULL,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+CREATE TABLE `parceiro` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `servico` varchar(100) DEFAULT NULL,
+  `localizacao` varchar(100) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `id_admin` int(11) NOT NULL,
+  `site` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `utilizador`
+-- Estrutura da tabela `registo_avaria`
 --
 
-CREATE TABLE `utilizador` (
-  `id_utilizador` int(11) NOT NULL,
-  `perfil_id` int(11) NOT NULL,
-  `nome` varchar(200) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `password_hash` varchar(255) NOT NULL,
-  `telemovel` varchar(20) DEFAULT NULL,
-  `nif` varchar(20) DEFAULT NULL,
-  `lingua` varchar(5) NOT NULL DEFAULT 'pt',
-  `status` int(11) NOT NULL DEFAULT 1,
-  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `email_verificado` tinyint(1) NOT NULL DEFAULT 0
+CREATE TABLE `registo_avaria` (
+  `id` int(11) NOT NULL,
+  `id_condomino` int(11) NOT NULL,
+  `zona` varchar(100) NOT NULL,
+  `descricao` varchar(255) DEFAULT NULL,
+  `data_registo` datetime NOT NULL,
+  `id_edificio` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Extraindo dados da tabela `utilizador`
---
-
-INSERT INTO `utilizador` (`id_utilizador`, `perfil_id`, `nome`, `email`, `password_hash`, `telemovel`, `nif`, `lingua`, `status`, `created_at`, `email_verificado`) VALUES
-(1, 5, 'Gustavo Marques', '1211405@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '937062814', '257430011', 'pt', 1, '2026-05-21 00:30:23', 0),
-(2, 5, 'Guilherme Soares', '1220847@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '937212433', NULL, 'pt', 1, '2026-05-21 00:30:23', 0),
-(3, 5, 'Rodrigo Fernandes', '1211070@isep.ipp.pt', '$2b$12$QeLHDR.2E6M5JWeRQ2GD1.YiIWr9ud62fIWr9ud62fKtSFveJ2MFlZ1PXDTX1O', '944888710', NULL, 'pt', 1, '2026-05-21 00:30:23', 0),
-(13, 3, 'Gustavo Marques', 'gustavooliveiramarques10@gmail.com', '$2b$12$ms1mS3M0LgzdGButhc5keuXpNU.tMb3irX4RFk3RvDNYCwIlgEq..', '937062814', '123456789', 'pt', 0, '2026-05-22 11:44:05', 0);
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `utilizador_fracao`
+-- Estrutura da tabela `resolucao_avaria`
 --
 
-CREATE TABLE `utilizador_fracao` (
-  `id_utilizador_fracao` int(11) NOT NULL,
-  `utilizador_id` int(11) NOT NULL,
-  `fracao_id` int(11) NOT NULL,
-  `data_inicio` date NOT NULL,
-  `data_fim` date DEFAULT NULL,
-  `status` int(11) NOT NULL DEFAULT 1
+CREATE TABLE `resolucao_avaria` (
+  `id` int(11) NOT NULL,
+  `id_registo_avaria` int(11) NOT NULL,
+  `id_tecnico` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `data_resolucao` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `tecnico`
+--
+
+CREATE TABLE `tecnico` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(100) NOT NULL,
+  `funcao` varchar(50) DEFAULT NULL,
+  `email` varchar(150) NOT NULL,
+  `pw` varchar(255) NOT NULL,
+  `id_gestor` int(11) NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -463,376 +282,226 @@ CREATE TABLE `utilizador_fracao` (
 --
 
 --
--- Índices para tabela `avaria`
+-- Índices para tabela `admin`
 --
-ALTER TABLE `avaria`
-  ADD PRIMARY KEY (`id_avaria`),
-  ADD KEY `idx_avaria_utilizador` (`utilizador_id`),
-  ADD KEY `idx_avaria_edificio` (`edificio_id`),
-  ADD KEY `idx_avaria_fracao` (`fracao_id`),
-  ADD KEY `idx_avaria_categoria` (`categoria_id`);
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_admin_email` (`email`);
 
 --
--- Índices para tabela `categoria_avaria`
+-- Índices para tabela `aluguer_espaco`
 --
-ALTER TABLE `categoria_avaria`
-  ADD PRIMARY KEY (`id_categoria`);
+ALTER TABLE `aluguer_espaco`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_aluguer_espaco_condomino` (`id_condomino`),
+  ADD KEY `fk_aluguer_espaco_espaco` (`id_espaco`);
 
 --
--- Índices para tabela `categoria_despesa`
+-- Índices para tabela `aluguer_material`
 --
-ALTER TABLE `categoria_despesa`
-  ADD PRIMARY KEY (`id_categoria`);
+ALTER TABLE `aluguer_material`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_aluguer_material_material_espaco` (`id_material_espaco`),
+  ADD KEY `fk_aluguer_material_condomino` (`id_condomino`);
 
 --
--- Índices para tabela `despesa`
+-- Índices para tabela `apartamento`
 --
-ALTER TABLE `despesa`
-  ADD PRIMARY KEY (`id_despesa`),
-  ADD KEY `idx_despesa_edificio` (`edificio_id`),
-  ADD KEY `idx_despesa_gestor` (`gestor_id`),
-  ADD KEY `idx_despesa_fornecedor` (`fornecedor_id`),
-  ADD KEY `idx_despesa_categoria` (`categoria_id`);
+ALTER TABLE `apartamento`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_apartamento_edificio` (`id_edificio`);
+
+--
+-- Índices para tabela `condomino`
+--
+ALTER TABLE `condomino`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `uq_condomino_telemovel` (`telemovel`),
+  ADD KEY `fk_condomino_apartamento` (`id_apartamento`);
+
+--
+-- Índices para tabela `contrato`
+--
+ALTER TABLE `contrato`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_contrato_licenca_gestor` (`id_licenca`,`id_gestor`),
+  ADD KEY `fk_contrato_gestor` (`id_gestor`);
 
 --
 -- Índices para tabela `edificio`
 --
 ALTER TABLE `edificio`
-  ADD PRIMARY KEY (`id_edificio`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `iban` (`iban`),
+  ADD KEY `fk_edificio_gestor` (`id_gestor`);
 
 --
--- Índices para tabela `espaco_comum`
+-- Índices para tabela `espaco`
 --
-ALTER TABLE `espaco_comum`
-  ADD PRIMARY KEY (`id_espaco`),
-  ADD KEY `idx_espaco_edificio` (`edificio_id`);
+ALTER TABLE `espaco`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_espaco_edificio` (`id_edificio`);
 
 --
--- Índices para tabela `estado_ordem_trabalho`
+-- Índices para tabela `gestor`
 --
-ALTER TABLE `estado_ordem_trabalho`
-  ADD PRIMARY KEY (`id_estado`);
+ALTER TABLE `gestor`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `telemovel` (`telemovel`),
+  ADD UNIQUE KEY `uq_gestor_email` (`email`);
 
 --
--- Índices para tabela `estado_reserva`
+-- Índices para tabela `licenca`
 --
-ALTER TABLE `estado_reserva`
-  ADD PRIMARY KEY (`id_estado`);
+ALTER TABLE `licenca`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Índices para tabela `fornecedor`
+-- Índices para tabela `material_espaco`
 --
-ALTER TABLE `fornecedor`
-  ADD PRIMARY KEY (`id_fornecedor`);
-
---
--- Índices para tabela `fracao`
---
-ALTER TABLE `fracao`
-  ADD PRIMARY KEY (`id_fracao`),
-  ADD KEY `idx_fracao_edificio` (`edificio_id`);
-
---
--- Índices para tabela `gestor_edificio`
---
-ALTER TABLE `gestor_edificio`
-  ADD PRIMARY KEY (`id_gestor_edificio`),
-  ADD KEY `idx_ge_gestor` (`gestor_id`),
-  ADD KEY `idx_ge_edificio` (`edificio_id`);
-
---
--- Índices para tabela `log_acesso`
---
-ALTER TABLE `log_acesso`
-  ADD PRIMARY KEY (`id_log`),
-  ADD KEY `idx_log_acesso_utilizador` (`utilizador_id`);
-
---
--- Índices para tabela `notificacao`
---
-ALTER TABLE `notificacao`
-  ADD PRIMARY KEY (`id_notificacao`),
-  ADD KEY `idx_notificacao_utilizador` (`utilizador_id`);
-
---
--- Índices para tabela `ordem_trabalho`
---
-ALTER TABLE `ordem_trabalho`
-  ADD PRIMARY KEY (`id_ordem`),
-  ADD KEY `idx_ot_avaria` (`avaria_id`),
-  ADD KEY `idx_ot_tecnico` (`tecnico_id`),
-  ADD KEY `idx_ot_gestor` (`gestor_id`),
-  ADD KEY `idx_ot_fornecedor` (`fornecedor_id`),
-  ADD KEY `idx_ot_estado` (`estado_id`);
+ALTER TABLE `material_espaco`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_material_espaco_espaco` (`id_espaco`);
 
 --
 -- Índices para tabela `pagamento`
 --
 ALTER TABLE `pagamento`
-  ADD PRIMARY KEY (`id_pagamento`),
-  ADD KEY `idx_pagamento_quota` (`quota_id`),
-  ADD KEY `idx_pagamento_utilizador` (`utilizador_id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_pagamento` (`id_apartamento`,`mes`);
 
 --
--- Índices para tabela `perfil`
+-- Índices para tabela `parceiro`
 --
-ALTER TABLE `perfil`
-  ADD PRIMARY KEY (`id_perfil`);
+ALTER TABLE `parceiro`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_parceiro_admin` (`id_admin`);
 
 --
--- Índices para tabela `quota`
+-- Índices para tabela `registo_avaria`
 --
-ALTER TABLE `quota`
-  ADD PRIMARY KEY (`id_quota`),
-  ADD KEY `idx_quota_fracao` (`fracao_id`);
+ALTER TABLE `registo_avaria`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_registo_avaria_condomino` (`id_condomino`),
+  ADD KEY `fk_registo_avaria_edificio` (`id_edificio`);
 
 --
--- Índices para tabela `reserva`
+-- Índices para tabela `resolucao_avaria`
 --
-ALTER TABLE `reserva`
-  ADD PRIMARY KEY (`id_reserva`),
-  ADD KEY `idx_reserva_utilizador` (`utilizador_id`),
-  ADD KEY `idx_reserva_espaco` (`espaco_id`),
-  ADD KEY `idx_reserva_aprovador` (`aprovador_id`),
-  ADD KEY `idx_reserva_estado` (`estado_id`);
+ALTER TABLE `resolucao_avaria`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_resolucao_avaria_registo` (`id_registo_avaria`),
+  ADD KEY `fk_resolucao_avaria_tecnico` (`id_tecnico`);
 
 --
--- Índices para tabela `utilizador`
+-- Índices para tabela `tecnico`
 --
-ALTER TABLE `utilizador`
-  ADD PRIMARY KEY (`id_utilizador`),
-  ADD UNIQUE KEY `uq_utilizador_email` (`email`),
-  ADD KEY `idx_utilizador_perfil` (`perfil_id`);
-
---
--- Índices para tabela `utilizador_fracao`
---
-ALTER TABLE `utilizador_fracao`
-  ADD PRIMARY KEY (`id_utilizador_fracao`),
-  ADD KEY `idx_uf_utilizador` (`utilizador_id`),
-  ADD KEY `idx_uf_fracao` (`fracao_id`);
+ALTER TABLE `tecnico`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `uq_tecnico_email` (`email`),
+  ADD KEY `fk_tecnico_gestor` (`id_gestor`);
 
 --
 -- AUTO_INCREMENT de tabelas despejadas
 --
 
---
--- AUTO_INCREMENT de tabela `avaria`
---
-ALTER TABLE `avaria`
-  MODIFY `id_avaria` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `admin`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `categoria_avaria`
---
-ALTER TABLE `categoria_avaria`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+ALTER TABLE `aluguer_espaco`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `categoria_despesa`
---
-ALTER TABLE `categoria_despesa`
-  MODIFY `id_categoria` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+ALTER TABLE `aluguer_material`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `despesa`
---
-ALTER TABLE `despesa`
-  MODIFY `id_despesa` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `apartamento`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `edificio`
---
+ALTER TABLE `condomino`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `contrato`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 ALTER TABLE `edificio`
-  MODIFY `id_edificio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `espaco_comum`
---
-ALTER TABLE `espaco_comum`
-  MODIFY `id_espaco` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `espaco`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `estado_ordem_trabalho`
---
-ALTER TABLE `estado_ordem_trabalho`
-  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `gestor`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `estado_reserva`
---
-ALTER TABLE `estado_reserva`
-  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `licenca`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
---
--- AUTO_INCREMENT de tabela `fornecedor`
---
-ALTER TABLE `fornecedor`
-  MODIFY `id_fornecedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+ALTER TABLE `material_espaco`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `fracao`
---
-ALTER TABLE `fracao`
-  MODIFY `id_fracao` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `gestor_edificio`
---
-ALTER TABLE `gestor_edificio`
-  MODIFY `id_gestor_edificio` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `log_acesso`
---
-ALTER TABLE `log_acesso`
-  MODIFY `id_log` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
-
---
--- AUTO_INCREMENT de tabela `notificacao`
---
-ALTER TABLE `notificacao`
-  MODIFY `id_notificacao` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `ordem_trabalho`
---
-ALTER TABLE `ordem_trabalho`
-  MODIFY `id_ordem` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT de tabela `pagamento`
---
 ALTER TABLE `pagamento`
-  MODIFY `id_pagamento` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `perfil`
---
-ALTER TABLE `perfil`
-  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+ALTER TABLE `parceiro`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `quota`
---
-ALTER TABLE `quota`
-  MODIFY `id_quota` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `registo_avaria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `reserva`
---
-ALTER TABLE `reserva`
-  MODIFY `id_reserva` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `resolucao_avaria`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
---
--- AUTO_INCREMENT de tabela `utilizador`
---
-ALTER TABLE `utilizador`
-  MODIFY `id_utilizador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT de tabela `utilizador_fracao`
---
-ALTER TABLE `utilizador_fracao`
-  MODIFY `id_utilizador_fracao` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `tecnico`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para despejos de tabelas
 --
 
---
--- Limitadores para a tabela `avaria`
---
-ALTER TABLE `avaria`
-  ADD CONSTRAINT `fk_avaria_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categoria_avaria` (`id_categoria`),
-  ADD CONSTRAINT `fk_avaria_edificio` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`id_edificio`),
-  ADD CONSTRAINT `fk_avaria_fracao` FOREIGN KEY (`fracao_id`) REFERENCES `fracao` (`id_fracao`),
-  ADD CONSTRAINT `fk_avaria_utilizador` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `aluguer_espaco`
+  ADD CONSTRAINT `fk_aluguer_espaco_condomino` FOREIGN KEY (`id_condomino`) REFERENCES `condomino` (`id`),
+  ADD CONSTRAINT `fk_aluguer_espaco_espaco` FOREIGN KEY (`id_espaco`) REFERENCES `espaco` (`id`);
 
---
--- Limitadores para a tabela `despesa`
---
-ALTER TABLE `despesa`
-  ADD CONSTRAINT `fk_despesa_categoria` FOREIGN KEY (`categoria_id`) REFERENCES `categoria_despesa` (`id_categoria`),
-  ADD CONSTRAINT `fk_despesa_edificio` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`id_edificio`),
-  ADD CONSTRAINT `fk_despesa_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedor` (`id_fornecedor`),
-  ADD CONSTRAINT `fk_despesa_gestor` FOREIGN KEY (`gestor_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `aluguer_material`
+  ADD CONSTRAINT `fk_aluguer_material_condomino` FOREIGN KEY (`id_condomino`) REFERENCES `condomino` (`id`),
+  ADD CONSTRAINT `fk_aluguer_material_material_espaco` FOREIGN KEY (`id_material_espaco`) REFERENCES `material_espaco` (`id`);
 
---
--- Limitadores para a tabela `espaco_comum`
---
-ALTER TABLE `espaco_comum`
-  ADD CONSTRAINT `fk_espaco_comum_edificio` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`id_edificio`);
+ALTER TABLE `apartamento`
+  ADD CONSTRAINT `fk_apartamento_edificio` FOREIGN KEY (`id_edificio`) REFERENCES `edificio` (`id`) ON UPDATE CASCADE;
 
---
--- Limitadores para a tabela `fracao`
---
-ALTER TABLE `fracao`
-  ADD CONSTRAINT `fk_fracao_edificio` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`id_edificio`);
+ALTER TABLE `condomino`
+  ADD CONSTRAINT `fk_condomino_apartamento` FOREIGN KEY (`id_apartamento`) REFERENCES `apartamento` (`id`);
 
---
--- Limitadores para a tabela `gestor_edificio`
---
-ALTER TABLE `gestor_edificio`
-  ADD CONSTRAINT `fk_ge_edificio` FOREIGN KEY (`edificio_id`) REFERENCES `edificio` (`id_edificio`),
-  ADD CONSTRAINT `fk_ge_gestor` FOREIGN KEY (`gestor_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `contrato`
+  ADD CONSTRAINT `fk_contrato_gestor` FOREIGN KEY (`id_gestor`) REFERENCES `gestor` (`id`),
+  ADD CONSTRAINT `fk_contrato_licenca` FOREIGN KEY (`id_licenca`) REFERENCES `licenca` (`id`);
 
---
--- Limitadores para a tabela `log_acesso`
---
-ALTER TABLE `log_acesso`
-  ADD CONSTRAINT `fk_log_acesso_util` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`) ON DELETE SET NULL;
+ALTER TABLE `edificio`
+  ADD CONSTRAINT `fk_edificio_gestor` FOREIGN KEY (`id_gestor`) REFERENCES `gestor` (`id`);
 
---
--- Limitadores para a tabela `notificacao`
---
-ALTER TABLE `notificacao`
-  ADD CONSTRAINT `fk_notificacao_utilizador` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `espaco`
+  ADD CONSTRAINT `fk_espaco_edificio` FOREIGN KEY (`id_edificio`) REFERENCES `edificio` (`id`) ON UPDATE CASCADE;
 
---
--- Limitadores para a tabela `ordem_trabalho`
---
-ALTER TABLE `ordem_trabalho`
-  ADD CONSTRAINT `fk_ordem_trabalho_avaria` FOREIGN KEY (`avaria_id`) REFERENCES `avaria` (`id_avaria`),
-  ADD CONSTRAINT `fk_ordem_trabalho_estado` FOREIGN KEY (`estado_id`) REFERENCES `estado_ordem_trabalho` (`id_estado`),
-  ADD CONSTRAINT `fk_ordem_trabalho_fornecedor` FOREIGN KEY (`fornecedor_id`) REFERENCES `fornecedor` (`id_fornecedor`),
-  ADD CONSTRAINT `fk_ordem_trabalho_gestor` FOREIGN KEY (`gestor_id`) REFERENCES `utilizador` (`id_utilizador`),
-  ADD CONSTRAINT `fk_ordem_trabalho_tecnico` FOREIGN KEY (`tecnico_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `material_espaco`
+  ADD CONSTRAINT `fk_material_espaco_espaco` FOREIGN KEY (`id_espaco`) REFERENCES `espaco` (`id`);
 
---
--- Limitadores para a tabela `pagamento`
---
 ALTER TABLE `pagamento`
-  ADD CONSTRAINT `fk_pagamento_quota` FOREIGN KEY (`quota_id`) REFERENCES `quota` (`id_quota`),
-  ADD CONSTRAINT `fk_pagamento_utilizador` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`);
+  ADD CONSTRAINT `fk_pagamento_apartamento` FOREIGN KEY (`id_apartamento`) REFERENCES `apartamento` (`id`);
 
---
--- Limitadores para a tabela `quota`
---
-ALTER TABLE `quota`
-  ADD CONSTRAINT `fk_quota_fracao` FOREIGN KEY (`fracao_id`) REFERENCES `fracao` (`id_fracao`);
+ALTER TABLE `parceiro`
+  ADD CONSTRAINT `fk_parceiro_admin` FOREIGN KEY (`id_admin`) REFERENCES `admin` (`id`);
 
---
--- Limitadores para a tabela `reserva`
---
-ALTER TABLE `reserva`
-  ADD CONSTRAINT `fk_reserva_aprovador` FOREIGN KEY (`aprovador_id`) REFERENCES `utilizador` (`id_utilizador`),
-  ADD CONSTRAINT `fk_reserva_espaco` FOREIGN KEY (`espaco_id`) REFERENCES `espaco_comum` (`id_espaco`),
-  ADD CONSTRAINT `fk_reserva_estado` FOREIGN KEY (`estado_id`) REFERENCES `estado_reserva` (`id_estado`),
-  ADD CONSTRAINT `fk_reserva_utilizador` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `registo_avaria`
+  ADD CONSTRAINT `fk_registo_avaria_condomino` FOREIGN KEY (`id_condomino`) REFERENCES `condomino` (`id`),
+  ADD CONSTRAINT `fk_registo_avaria_edificio` FOREIGN KEY (`id_edificio`) REFERENCES `edificio` (`id`);
 
---
--- Limitadores para a tabela `utilizador`
---
-ALTER TABLE `utilizador`
-  ADD CONSTRAINT `fk_utilizador_perfil` FOREIGN KEY (`perfil_id`) REFERENCES `perfil` (`id_perfil`);
+ALTER TABLE `resolucao_avaria`
+  ADD CONSTRAINT `fk_resolucao_avaria_registo` FOREIGN KEY (`id_registo_avaria`) REFERENCES `registo_avaria` (`id`),
+  ADD CONSTRAINT `fk_resolucao_avaria_tecnico` FOREIGN KEY (`id_tecnico`) REFERENCES `tecnico` (`id`);
 
---
--- Limitadores para a tabela `utilizador_fracao`
---
-ALTER TABLE `utilizador_fracao`
-  ADD CONSTRAINT `fk_utilizador_fracao_fracao` FOREIGN KEY (`fracao_id`) REFERENCES `fracao` (`id_fracao`),
-  ADD CONSTRAINT `fk_utilizador_fracao_utilizador` FOREIGN KEY (`utilizador_id`) REFERENCES `utilizador` (`id_utilizador`);
+ALTER TABLE `tecnico`
+  ADD CONSTRAINT `fk_tecnico_gestor` FOREIGN KEY (`id_gestor`) REFERENCES `gestor` (`id`);
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

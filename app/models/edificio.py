@@ -1,16 +1,32 @@
-from sqlalchemy import Column, Integer, String, Numeric
+from sqlalchemy import Column, Integer, String, Numeric, SmallInteger, ForeignKey
+from sqlalchemy.orm import relationship
 from app.core.db_connect import Base
 
 
 class Edificio(Base):
     __tablename__ = "edificio"
 
+    id = Column(Integer, primary_key=True, autoincrement=True)
 
-    id_edificio = Column(Integer, primary_key=True, autoincrement=True)
-    nome = Column(String(200), nullable=False)
-    morada = Column(String(255), nullable=False)
-    codigo_postal = Column(String(10))
-    cidade = Column(String(100))
-    latitude = Column(Numeric(10, 7), nullable=True)
-    longitude = Column(Numeric(10, 7), nullable=True)
-    status = Column(Integer, nullable=False, default=1)
+    rua = Column(String(100), nullable=False)
+
+    cp = Column(String(100), nullable=False)
+
+    cidade = Column(String(80), nullable=True)
+
+    lat = Column(Numeric(10, 7), nullable=False)
+
+    lng = Column(Numeric(10, 7), nullable=False)
+
+    iban = Column(String(100), nullable=False, unique=True)
+
+    valor_base_mensal = Column(Numeric(10, 2), nullable=False) # A definir pelo gestor
+
+    id_gestor = Column(Integer, ForeignKey("gestor.id"), nullable=False)
+
+    status = Column(SmallInteger, nullable=False, default=1)
+
+    gestor = relationship("Gestor", back_populates="edificios")#fk
+    apartamentos = relationship("Apartamento", back_populates="edificio")
+    espacos = relationship("Espaco", back_populates="edificio")
+    avarias = relationship("RegistoAvaria", back_populates="edificio")

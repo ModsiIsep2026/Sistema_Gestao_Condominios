@@ -1,19 +1,21 @@
-from app.models.perfil import Perfil
-from app.models.utilizador import Utilizador
-from app.models.fornecedor import Fornecedor
-from app.models.log_acesso import LogAcesso
+from app.models.admin import Admin
+from app.models.licenca import Licenca
+from app.models.gestor import Gestor
+from app.models.contrato import Contrato
 from app.models.edificio import Edificio
-from app.models.fracao import Fracao
-from app.models.utilizador_fracao import UtilizadorFracao
-from app.models.quota import Quota
+from app.models.apartamento import Apartamento
+from app.models.condomino import Condomino
+from app.models.tecnico import Tecnico
+from app.models.parceiro import Parceiro
+from app.models.espaco import Espaco
+from app.models.material_espaco import MaterialEspaco
+from app.models.aluguer_espaco import AluguerEspaco
+from app.models.aluguer_material import AluguerMaterial
 from app.models.pagamento import Pagamento
-from app.models.espaco_comum import EspacoComum
-from app.models.estado_reserva import EstadoReserva
-from app.models.reserva import Reserva
-from app.models.categoria_avaria import CategoriaAvaria
-from app.models.avaria import Avaria
-from app.models.estado_ordem_trabalho import EstadoOrdemTrabalho
-from app.models.ordem_trabalho import OrdemTrabalho
-from app.models.categoria_despesa import CategoriaDespesa
-from app.models.despesa import Despesa
-from app.models.notificacao import Notificacao
+from app.models.registo_avaria import RegistoAvaria
+from app.models.resolucao_avaria import ResolucaoAvaria
+
+
+
+
+# Modelos representam a tabelas da base de dados;
