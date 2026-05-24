@@ -22,8 +22,11 @@ def autenticar(db: Session, email: str, pw: str, tipo: str):
     return utilizador
 
 
+
+# Procura o utilizador em todos os perfis do sistema (admin, gestor, condómino, técnico).
+# Se encontrar um utilizador com o email fornecido e a password correta,
+# autentica-o e devolve o utilizador juntamente com o tipo de perfil.
 def autenticar_auto(db: Session, email: str, pw: str):
-    """Tenta todas as tabelas por ordem e devolve (utilizador, tipo)."""
     for tipo, modelo in PERFIS.items():
         u = db.query(modelo).filter(modelo.email == email, modelo.status == 1).first()
         if u and verificar_pw(pw, u.pw):

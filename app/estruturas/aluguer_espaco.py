@@ -1,20 +1,12 @@
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
 
+from app.estruturas.aluguer_base import AluguerBase
 
-class CriarAluguerEspaco(BaseModel):
+
+class CriarAluguerEspaco(AluguerBase):
     id_espaco: int
-    data_inicio: datetime
-    data_fim: datetime
-
-    @model_validator(mode="after")
-    def datas_validas(self):
-        if self.data_fim <= self.data_inicio:
-            raise ValueError("A data de fim tem de ser posterior à data de início.")
-        if self.data_inicio < datetime.now():
-            raise ValueError("Não é possível adicionar datas do passado")
-        return self
 
 
 class LerAluguerEspaco(BaseModel):

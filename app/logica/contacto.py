@@ -1,14 +1,8 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-
 from app.configs.config import get_configs
+from app.configs.email import enviar_email
 from app.estruturas.contacto import MensagemContacto
 
 _cfg = get_configs()
-
-DESTINO = "sgc2026i@gmail.com"
-
 
 def enviar_contacto(dados: MensagemContacto) -> None:
 
@@ -47,16 +41,4 @@ def enviar_contacto(dados: MensagemContacto) -> None:
     </div>
     """
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"[Contacto SGC] {dados.nome}"
-    msg["From"]    = f"{_cfg.SMTP_FROM_NAME} <{_cfg.SMTP_FROM_EMAIL}>"
-    msg["To"]      = DESTINO
-    msg["Reply-To"] = dados.email
-
-    msg.attach(MIMEText(corpo_html, "html", "utf-8"))
-
-    with smtplib.SMTP(_cfg.SMTP_HOST, _cfg.SMTP_PORT) as smtp:
-        smtp.ehlo()
-        smtp.starttls()
-        smtp.login(_cfg.SMTP_USER, _cfg.SMTP_PASSWORD)
-        smtp.sendmail(_cfg.SMTP_FROM_EMAIL, DESTINO, msg.as_string())
+    enviar_email(_cfg.SMTP_FROM_EMAIL, f"[Contacto] {dados.nome}", corpo_html)

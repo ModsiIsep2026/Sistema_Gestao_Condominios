@@ -71,7 +71,7 @@ app.include_router(relatorios.router)
 app.include_router(contacto.router)
 
 
-# Frontend 
+
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"
 

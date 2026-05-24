@@ -39,8 +39,8 @@ def criar(db: Session, dados, id_condomino: int):
         id_edificio=dados.id_edificio,
         data_registo=datetime.utcnow(),
     )
-    db.add(avaria)
-    db.commit()
+    db.add(avaria) 
+    db.commit() #adiciona à BD
     db.refresh(avaria)
     return avaria
 

@@ -1,12 +1,12 @@
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import field_validator
 from datetime import datetime
 
+from app.estruturas.aluguer_base import AluguerBase
 
-class CriarAluguerMaterial(BaseModel):
+
+class CriarAluguerMaterial(AluguerBase):
     id_material_espaco: int
     qtd_alugada: int = 1
-    data_inicio: datetime
-    data_fim: datetime
 
     @field_validator("qtd_alugada")
     @classmethod
@@ -14,14 +14,6 @@ class CriarAluguerMaterial(BaseModel):
         if quantidade < 1:
             raise ValueError("A quantidade alugada tem de ser pelo menos 1.")
         return quantidade
-
-    @model_validator(mode="after")
-    def datas_validas(self):
-        if self.data_fim <= self.data_inicio:
-            raise ValueError("A data de fim tem de ser posterior à data de início.")
-        if self.data_inicio < datetime.now():
-            raise ValueError("Não é possível adicionar datas do passado")
-        return self
 
 
 class LerAluguerMaterial(BaseModel):

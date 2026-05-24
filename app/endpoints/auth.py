@@ -1,8 +1,5 @@
-import smtplib
 from collections import defaultdict
 from datetime import datetime, timedelta
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 import threading
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -11,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.configs.config import get_configs
 from app.configs.db_connect import get_db
+from app.configs.email import enviar_email
 from app.configs.seguranca import criar_token, token_atual, verificar_pw, pw_encript
 from app.estruturas.auth import Login, Token, AlterarPassword
 from app.logica import auth as servico
@@ -198,14 +196,4 @@ def _enviar_email_confirmacao(email_destino: str, nome: str, link: str) -> None:
       </div>
     </div>
     """
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = "Confirme a alteração da sua password — Gestão de Condomínios"
-    msg["From"]    = f"{_cfg.SMTP_FROM_NAME} <{_cfg.SMTP_FROM_EMAIL}>"
-    msg["To"]      = email_destino
-    msg.attach(MIMEText(corpo_html, "html", "utf-8"))
-
-    with smtplib.SMTP(_cfg.SMTP_HOST, _cfg.SMTP_PORT) as smtp:
-        smtp.ehlo()
-        smtp.starttls()
-        smtp.login(_cfg.SMTP_USER, _cfg.SMTP_PASSWORD)
-        smtp.sendmail(_cfg.SMTP_FROM_EMAIL, email_destino, msg.as_string())
+    enviar_email(email_destino, "Confirme a alteração da sua password — Gestão de Condomínios", corpo_html)
