@@ -8,7 +8,7 @@ from app.logica import admin as servico
 router = APIRouter(prefix="/admin", tags=["Admin"])
 
 # (GET) /admin  - Perfil do admin autenticado
-# (PUT) /admin  - Atualiza perfil do admin
+# (PUT) /admin  - Atualizar perfil do admin
 
 
 @router.get("", response_model=LerAdmin)

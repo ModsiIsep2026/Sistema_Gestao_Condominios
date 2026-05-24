@@ -8,12 +8,24 @@ from app.logica import condomino as servico
 
 router = APIRouter(prefix="/condominos", tags=["Condóminos"])
 
-# (GET)    /condominos               - Lista por apartamento
-# (GET)    /condominos/{id}          - Obtém condómino
-# (POST)   /condominos               - Cria condómino
-# (PUT)    /condominos/{id}          - Atualiza condómino
-# (DELETE) /condominos/{id}          - Remove condómino
+# (GET)    /condominos
+# Lista os condóminos de um apartamento.
 
+
+# (GET)    /condominos/{id}
+# Mostra os dados de um condómino.
+
+
+# (POST)   /condominos
+# Cria um novo condómino.
+
+
+# (PUT)    /condominos/{id}
+# Atualiza os dados de um condómino.
+
+
+# (DELETE) /condominos/{id}
+# Remove um condómino.
 
 @router.get("", response_model=List[LerCondomino])
 def listar(id_apartamento: int, _=Depends(verificar_g), db: Session = Depends(get_db)):

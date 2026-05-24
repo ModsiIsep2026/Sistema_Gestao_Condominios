@@ -12,13 +12,28 @@ from app.logica import contrato as servico
 
 router = APIRouter(prefix="/contratos", tags=["Contratos"])
 
-# (GET)  /contratos           - Lista todos os contratos  (admin)
-# (GET)  /contratos/gestor    - Contrato do gestor        (gestor)
-# (POST) /contratos           - Cria contrato             (admin)
-# (PUT)  /contratos/meu       - Atualiza contrato próprio (gestor)
-# (POST) /contratos/iniciar   - Inicia pagamento Stripe   (público)
-# (POST) /contratos/concluir  - Conclui pagamento e cria conta (público)
+# (GET)  /contratos
+# Lista todos os contratos.
 
+
+# (GET)  /contratos/gestor
+# Mostra o contrato do gestor autenticado.
+
+
+# (POST) /contratos
+# Cria um novo contrato.
+
+
+# (PUT)  /contratos/meu
+# Atualiza o contrato do gestor.
+
+
+# (POST) /contratos/iniciar
+# Inicia o processo de pagamento do contrato.
+
+
+# (POST) /contratos/concluir
+# Conclui o pagamento e finaliza a criação do contrato.
 
 @router.get("", response_model=List[LerContrato])
 def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):

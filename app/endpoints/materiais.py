@@ -8,12 +8,24 @@ from app.logica import material_espaco as servico
 
 router = APIRouter(prefix="/materiais", tags=["Materiais"])
 
-# (GET)    /materiais              - Lista materiais de um espaço 
-# (GET)    /materiais/{id}         - Obtém material                             
-# (POST)   /materiais              - Cria material                               (gestor)
-# (PUT)    /materiais/{id}         - Atualiza material                           (gestor)
-# (DELETE) /materiais/{id}         - Remove material                             (gestor)
+# (GET)    /materiais
+# Lista os materiais de um espaço.
 
+
+# (GET)    /materiais/{id}
+# Mostra os dados de um material.
+
+
+# (POST)   /materiais
+# Cria um novo material.
+
+
+# (PUT)    /materiais/{id}
+# Atualiza um material.
+
+
+# (DELETE) /materiais/{id}
+# Remove um material.
 
 @router.get("", response_model=List[LerMaterialEspaco])
 def listar(id_espaco: int, _=Depends(token_atual), db: Session = Depends(get_db)):

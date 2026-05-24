@@ -1,5 +1,3 @@
-#ainda nao está feito
-
 import httpx
 from urllib.parse import quote
 from fastapi import APIRouter, Depends, Request
@@ -11,152 +9,153 @@ from app.configs.config import get_configs
 from app.configs.seguranca import criar_token
 
 router = APIRouter(prefix="/auth", tags=["OAuth"])
+cfg = get_configs()
 
-_configs = get_configs()
 
+# (GET) /auth/{service}/inicio
+# Inicia o login através de um serviço externo (Google, GitHub ou Microsoft) e redireciona o utilizador para autenticação.
 
+# (GET) /auth/{service}/callback
+# Finaliza o login externo, valida o utilizador e cria sessão no sistema ou encaminha para registo caso não exista conta.
 try:
     from authlib.integrations.starlette_client import OAuth, OAuthError
-    _oauth = OAuth()
 
-    if _configs.GOOGLE_CLIENT_ID and _configs.GOOGLE_CLIENT_SECRET:
-        _oauth.register(
+    oauth = OAuth()
+
+    if cfg.GOOGLE_CLIENT_ID and cfg.GOOGLE_CLIENT_SECRET:
+        oauth.register(
             name="google",
-            client_id=_configs.GOOGLE_CLIENT_ID,
-            client_secret=_configs.GOOGLE_CLIENT_SECRET,
+            client_id=cfg.GOOGLE_CLIENT_ID,
+            client_secret=cfg.GOOGLE_CLIENT_SECRET,
             server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
             client_kwargs={"scope": "openid email profile"},
         )
 
-    if _configs.GITHUB_CLIENT_ID and _configs.GITHUB_CLIENT_SECRET:
-        _oauth.register(
+    if cfg.GITHUB_CLIENT_ID and cfg.GITHUB_CLIENT_SECRET:
+        oauth.register(
             name="github",
-            client_id=_configs.GITHUB_CLIENT_ID,
-            client_secret=_configs.GITHUB_CLIENT_SECRET,
+            client_id=cfg.GITHUB_CLIENT_ID,
+            client_secret=cfg.GITHUB_CLIENT_SECRET,
             access_token_url="https://github.com/login/oauth/access_token",
             authorize_url="https://github.com/login/oauth/authorize",
             api_base_url="https://api.github.com/",
             client_kwargs={"scope": "user:email"},
         )
 
-    if _configs.MICROSOFT_CLIENT_ID and _configs.MICROSOFT_CLIENT_SECRET:
-        _oauth.register(
+    if cfg.MICROSOFT_CLIENT_ID and cfg.MICROSOFT_CLIENT_SECRET:
+        oauth.register(
             name="microsoft",
-            client_id=_configs.MICROSOFT_CLIENT_ID,
-            client_secret=_configs.MICROSOFT_CLIENT_SECRET,
+            client_id=cfg.MICROSOFT_CLIENT_ID,
+            client_secret=cfg.MICROSOFT_CLIENT_SECRET,
             server_metadata_url="https://login.microsoftonline.com/common/v2.0/.well-known/openid-configuration",
             client_kwargs={"scope": "openid email profile"},
         )
 
-    _SERVICOS_ATIVOS = set(getattr(_oauth, "_clients", {}).keys())
-    _AUTHLIB_OK = True
+    active_services = set(oauth._clients.keys())
+    oauth_enabled = True
 
 except ImportError:
-    _oauth = None
-    _SERVICOS_ATIVOS = set()
-    _AUTHLIB_OK = False
+    oauth = None
+    active_services = set()
+    oauth_enabled = False
 
 
-# ── Helpers ────────────────────────────────────────────────────────────────────
-def _redirect_uri(request: Request, servico: str) -> str:
-    return f"{_configs.OAUTH_REDIRECT_BASE}/auth/{servico}/callback"
+
+def redirect_login(token: str):
+    return RedirectResponse(f"/website_C/login.html#token={token}")
 
 
-def _para_frontend(token: str) -> RedirectResponse:
-    return RedirectResponse(url=f"/website_C/login.html#token={token}")
+def redirect_register(email: str, msg: str = ""):
+    url = f"/website_C/registo_gestor.html?email={quote(email)}"
+    if msg:
+        url += f"&aviso={quote(msg)}"
+    return RedirectResponse(url)
 
 
-def _para_registo(email: str, motivo: str = "") -> RedirectResponse:
-    params = f"?email={quote(email)}"
-    if motivo:
-        params += f"&aviso={quote(motivo)}"
-    return RedirectResponse(url=f"/website_C/registo_gestor.html{params}")
+def redirect_error(msg: str):
+    return RedirectResponse(f"/website_C/login.html?erro={quote(msg)}")
 
 
-def _para_erro(mensagem: str) -> RedirectResponse:
-    return RedirectResponse(url=f"/website_C/login.html?erro={quote(mensagem)}")
+def callback_url(service: str):
+    return f"{cfg.OAUTH_REDIRECT_BASE}/auth/{service}/callback"
 
 
-async def _obter_email_e_nome(servico: str, token: dict) -> tuple[str | None, str | None]:
-    """Extrai email e nome do token conforme o serviço."""
-    if servico in ("google", "microsoft"):
-        info = token.get("userinfo") or await _oauth.create_client(servico).userinfo(token=token)
-        return (info or {}).get("email"), (info or {}).get("name")
-
-    if servico == "github":
-        headers = {"Authorization": f"Bearer {token['access_token']}"}
-        async with httpx.AsyncClient() as http:
-            r = await http.get("https://api.github.com/user", headers=headers)
-            user = r.json() if r.status_code == 200 else {}
-            nome  = user.get("name") or user.get("login")
-            email = user.get("email")
-            if not email:
-                re = await http.get("https://api.github.com/user/emails", headers=headers)
-                if re.status_code == 200:
-                    lista = re.json()
-                    principal = next((e for e in lista if e.get("primary") and e.get("verified")), None)
-                    email = principal["email"] if principal else (lista[0]["email"] if lista else None)
-        return email, nome
-
-    return None, None
-
-
-def _procurar_utilizador(db: Session, email: str):
-    """Procura o email nas tabelas condomino e gestor. Devolve (objeto, tipo)."""
+def get_user(db: Session, email: str):
     from app.tabelas_bd.condomino import Condomino
     from app.tabelas_bd.gestor import Gestor
 
-    c = db.query(Condomino).filter(Condomino.email == email, Condomino.status == 1).first()
-    if c:
-        return c, "condomino"
+    user = db.query(Condomino).filter_by(email=email, status=1).first()
+    if user:
+        return user, "condomino"
 
-    g = db.query(Gestor).filter(Gestor.email == email, Gestor.status == 1).first()
-    if g:
-        return g, "gestor"
+    user = db.query(Gestor).filter_by(email=email, status=1).first()
+    if user:
+        return user, "gestor"
 
     return None, None
 
 
-# ── Endpoints ──────────────────────────────────────────────────────────────────
-SERVICOS_VALIDOS = {"google", "github", "microsoft"}
+async def get_email(service: str, token: dict):
+    if service in ("google", "microsoft"):
+        client = oauth.create_client(service)
+        info = token.get("userinfo") or await client.userinfo(token=token)
+        return info.get("email"), info.get("name")
+
+    if service == "github":
+        headers = {"Authorization": f"Bearer {token['access_token']}"}
+
+        async with httpx.AsyncClient() as http:
+            user = (await http.get("https://api.github.com/user", headers=headers)).json()
+
+            email = user.get("email")
+            name = user.get("name") or user.get("login")
+
+            if not email:
+                emails = (await http.get("https://api.github.com/user/emails", headers=headers)).json()
+                primary = next((e for e in emails if e.get("primary") and e.get("verified")), None)
+                email = primary["email"] if primary else (emails[0]["email"] if emails else None)
+
+        return email, name
+
+    return None, None
 
 
-@router.get("/{servico}/inicio")
-async def oauth_inicio(servico: str, request: Request):
-    if servico not in SERVICOS_VALIDOS:
-        return _para_erro("Serviço de login desconhecido.")
-    if not _AUTHLIB_OK:
-        return _para_erro("OAuth não está disponível (instale authlib).")
-    if servico not in _SERVICOS_ATIVOS:
-        return _para_erro(f"Login com {servico.capitalize()} ainda não está configurado.")
-
-    cliente = _oauth.create_client(servico)
-    return await cliente.authorize_redirect(request, _redirect_uri(request, servico))
+SERVICES = {"google", "github", "microsoft"}
 
 
-@router.get("/{servico}/callback")
-async def oauth_callback(servico: str, request: Request, db: Session = Depends(get_db)):
-    if not _AUTHLIB_OK or servico not in _SERVICOS_ATIVOS:
-        return _para_erro(f"Serviço {servico} indisponível.")
+@router.get("/{service}/inicio")
+async def login(service: str, request: Request):
+    if service not in SERVICES:
+        return redirect_error("Serviço inválido")
 
-    cliente = _oauth.create_client(servico)
+    if not oauth_enabled or service not in active_services:
+        return redirect_error("OAuth indisponível")
+
+    client = oauth.create_client(service)
+    return await client.authorize_redirect(request, callback_url(service))
+
+
+@router.get("/{service}/callback")
+async def callback(service: str, request: Request, db: Session = Depends(get_db)):
+    if not oauth_enabled or service not in active_services:
+        return redirect_error("Serviço indisponível")
+
+    client = oauth.create_client(service)
+
     try:
-        token = await cliente.authorize_access_token(request)
-    except OAuthError as e:
-        return _para_erro(f"Falha na autenticação: {e.description or e.error}")
+        token = await client.authorize_access_token(request)
+    except OAuthError:
+        return redirect_error("Falha no login")
 
-    email, _nome = await _obter_email_e_nome(servico, token)
+    email, _ = await get_email(service, token)
+
     if not email:
-        return _para_erro("Não foi possível obter o email da conta.")
+        return redirect_error("Email não encontrado")
 
-    utilizador, tipo = _procurar_utilizador(db, email)
+    user, role = get_user(db, email)
 
-    if not utilizador:
-        # Conta não existe → redirecionar para registo com email pré-preenchido
-        return _para_registo(
-            email,
-            motivo=f"Não existe conta associada a {email}. Complete o registo abaixo.",
-        )
+    if not user:
+        return redirect_register(email, "Conta não existe")
 
-    jwt = criar_token(utilizador.id, tipo)
-    return _para_frontend(jwt)
+    jwt = criar_token(user.id, role)
+    return redirect_login(jwt)

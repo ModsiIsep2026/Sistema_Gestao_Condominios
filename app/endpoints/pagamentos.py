@@ -11,11 +11,24 @@ from app.logica import pagamento as servico
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 
-# (GET)  /pagamentos              - Gestor lista pagamentos por apartamento
-# (GET)  /pagamentos/meus         - Condómino lista os seus pagamentos
-# (POST) /pagamentos              - Gestor gera pagamento mensal 
-# (POST) /pagamentos/{id}/pagar   - Condómino paga a sua quota
+# (GET)  /pagamentos
+# Lista os pagamentos de um apartamento (acesso do gestor).
 
+
+# (GET)  /pagamentos/gestor
+# Lista todos os pagamentos associados aos edifícios do gestor autenticado.
+
+
+# (GET)  /pagamentos/condomino
+# Lista os pagamentos do condómino autenticado.
+
+
+# (POST) /pagamentos
+# Gera novos pagamentos (quotas mensais) para os apartamentos (ação do gestor).
+
+
+# (POST) /pagamentos/{id}/pagar
+# Regista o pagamento de uma quota por parte do condómino.
 
 @router.get("", response_model=List[LerPagamento])
 def listar(id_apartamento: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
@@ -35,7 +48,7 @@ def listar_gestor(gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return db.query(Pagamento).filter(Pagamento.id_apartamento.in_(apt_ids), Pagamento.status == 1).all()
 
 
-@router.get("/meus", response_model=List[LerPagamento])
+@router.get("/condominio", response_model=List[LerPagamento])
 def listar_meus(condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.listar(db, condomino.id_apartamento)
 

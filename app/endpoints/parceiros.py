@@ -8,12 +8,24 @@ from app.logica import parceiro as servico
 
 router = APIRouter(prefix="/parceiros", tags=["Parceiros"])
 
-# (GET)    /parceiros       - Lista parceiros
-# (GET)    /parceiros/{id}  - Obtém parceiro
-# (POST)   /parceiros       - Cria parceiro  (admin)
-# (PUT)    /parceiros/{id}  - Atualiza       (admin)
-# (DELETE) /parceiros/{id}  - Remove         (admin)
+# (GET)    /parceiros
+# Lista todos os parceiros.
 
+
+# (GET)    /parceiros/{id}
+# Mostra os dados de um parceiro.
+
+
+# (POST)   /parceiros
+# Cria um novo parceiro (apenas admin).
+
+
+# (PUT)    /parceiros/{id}
+# Atualiza os dados de um parceiro (apenas admin).
+
+
+# (DELETE) /parceiros/{id}
+# Remove um parceiro (apenas admin).
 
 @router.get("", response_model=List[LerParceiro])
 def listar(db: Session = Depends(get_db)):

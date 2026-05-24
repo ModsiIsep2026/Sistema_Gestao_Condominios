@@ -8,13 +8,28 @@ from app.logica import edificio as servico
 
 router = APIRouter(prefix="/edificios", tags=["Edifícios"])
 
-# (GET)    /edificios          - Lista edifícios do gestor autenticado     (gestor)
-# (GET)    /edificios/todos    - Lista todos os edifícios da plataforma    (admin)
-# (GET)    /edificios/{id}     - Obtém edifício
-# (POST)   /edificios          - Cria edifício                             (gestor)
-# (PUT)    /edificios/{id}     - Atualiza edifício                         (gestor)
-# (DELETE) /edificios/{id}     - Remove edifício                           (gestor)
+# (GET)    /edificios
+# Lista os edifícios do gestor autenticado.
 
+
+# (GET)    /edificios/todos
+# Lista todos os edifícios do sistema.
+
+
+# (GET)    /edificios/{id}
+# Mostra os dados de um edifício específico.
+
+
+# (POST)   /edificios
+# Cria um novo edifício.
+
+
+# (PUT)    /edificios/{id}
+# Atualiza um edifício.
+
+
+# (DELETE) /edificios/{id}
+# Remove um edifício.
 
 @router.get("", response_model=List[LerEdificio])
 def listar(gestor=Depends(verificar_g), db: Session = Depends(get_db)):

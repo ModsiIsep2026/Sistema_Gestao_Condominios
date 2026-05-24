@@ -8,12 +8,24 @@ from app.logica import espaco as servico
 
 router = APIRouter(prefix="/espacos", tags=["Espaços"])
 
-# (GET)    /espacos              - Lista espaços de um edifício
-# (GET)    /espacos/{id}         - Obtém espaço                                 
-# (POST)   /espacos              - Cria espaço                                   (gestor)
-# (PUT)    /espacos/{id}         - Atualiza espaço                               (gestor)
-# (DELETE) /espacos/{id}         - Remove espaço                                 (gestor)
+# (GET)    /espacos
+# Lista os espaços de um edifício.
 
+
+# (GET)    /espacos/{id}
+# Mostra os dados de um espaço.
+
+
+# (POST)   /espacos
+# Cria um novo espaço.
+
+
+# (PUT)    /espacos/{id}
+# Atualiza um espaço.
+
+
+# (DELETE) /espacos/{id}
+# Remove um espaço.
 
 @router.get("", response_model=List[LerEspaco])
 def listar(id_edificio: int, _=Depends(token_atual), db: Session = Depends(get_db)):

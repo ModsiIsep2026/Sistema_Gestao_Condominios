@@ -8,10 +8,20 @@ from app.logica import aluguer_material as servico
 
 router = APIRouter(prefix="/alugueres-material", tags=["Alugueres de Material"])
 
-# (GET)  /alugueres-material        -   Gestor lista todos
-# (GET)  /alugueres-material/condomino   - Condómino lista os seus
-# (POST) /alugueres-material       -    Condómino aluga material
-# (DELETE) /alugueres-material/{id}  -  Condómino cancela o seu aluguer
+# (GET)    /alugueres-material
+# Lista todos os alugueres de material.
+
+
+# (GET)    /alugueres-material/condomino
+# Lista os alugueres de material do condómino autenticado.
+
+
+# (POST)   /alugueres-material
+# Cria um novo aluguer de material.
+
+
+# (DELETE) /alugueres-material/{id}
+# Cancela um aluguer de material.
 
 @router.get("", response_model=List[LerAluguerMaterial])
 def listar(_=Depends(verificar_g), db: Session = Depends(get_db)):

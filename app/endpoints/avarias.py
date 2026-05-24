@@ -10,14 +10,36 @@ from app.logica import avaria as servico
 router = APIRouter(prefix="/avarias", tags=["Avarias"])
 
 
-# (GET)  /avarias                     - Gestor lista por edifício
-# (GET)  /avarias/condomino             - Condómino lista as suas
-# (GET)  /avarias/{id}                - Obtém avaria
-# (POST) /avarias                     - Condómino reporta avaria
-# (PUT)  /avarias/{id}                - Gestor atualiza avaria
-# (POST) /avarias/{id}/resolucao      - Gestor aloca técnico
-# (PUT)  /avarias/{id}/resolucao      - Técnico atualiza estado
+# (GET)  /avarias
+# Lista as avarias de um edifício.
 
+
+# (GET)  /avarias/tecnico
+# Lista as avarias atribuídas ao técnico autenticado.
+
+
+# (GET)  /avarias/condomino
+# Lista as avarias reportadas pelo condómino autenticado.
+
+
+# (GET)  /avarias/{id}
+# Mostra os detalhes de uma avaria específica.
+
+
+# (POST) /avarias
+# Cria um novo registo de avaria.
+
+
+# (PUT)  /avarias/{id}
+# Atualiza uma avaria.
+
+
+# (POST) /avarias/{id}/resolucao
+# Atribui um técnico para resolver a avaria.
+
+
+# (PUT)  /avarias/{id}/resolucao
+# Atualiza o estado da resolução da avaria.
 
 @router.get("", response_model=List[LerRegistoAvaria])
 def listar(id_edificio: int, _=Depends(verificar_g), db: Session = Depends(get_db)):

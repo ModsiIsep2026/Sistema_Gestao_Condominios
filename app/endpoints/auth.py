@@ -18,6 +18,26 @@ from app.logica import auth as servico
 router = APIRouter(prefix="/auth", tags=["Auth"])
 _cfg = get_configs()
 
+
+
+# (POST) /auth/login
+# Faz login do utilizador e devolve um token de acesso.
+
+
+# (GET) /auth/conta
+# Mostra os dados da conta do utilizador autenticado.
+
+
+# (PUT) /auth/alterar-password
+# Envia um email para confirmar a alteração da password.
+
+
+# (POST) /auth/confirmar-nova-password
+# Confirma e aplica a nova password através do link recebido por email.
+
+
+
+
 # Rate limiting — máx 5 tentativas por IP em 5 min
 _tentativas: dict = defaultdict(list)
 _lock = threading.Lock()
@@ -28,7 +48,7 @@ def verificar_rl(ip: str):
     with _lock:
         _tentativas[ip] = [t for t in _tentativas[ip] if t > limite]
         if len(_tentativas[ip]) >= 5:
-            raise HTTPException(429, "Demasiadas tentativas. Aguarde alguns minutos.")
+            raise HTTPException(429, "Demasiadas tentativas. Tente mais tarde.")
 
 def registar_falha(ip: str):
     with _lock:
@@ -59,7 +79,7 @@ def _obter_utilizador(tipo: str, uid: int, db: Session):
     return None
 
 
-# ── Login ────────────────────────────────────────────────────────────────────
+
 
 @router.post("/login", response_model=Token)
 def login(dados: Login, request: Request, db: Session = Depends(get_db)):
@@ -78,11 +98,11 @@ def login(dados: Login, request: Request, db: Session = Depends(get_db)):
     return Token(access_token=token, token_type="bearer", perfil_utilizador=tipo, id=utilizador.id)
 
 
-# ── Conta ────────────────────────────────────────────────────────────────────
+
 
 @router.get("/conta")
 def me(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
-    tipo = dados["tipo"]
+    tipo = dados["tipo"] #tipo de utilizador
     uid  = dados["id"]
     utilizador = _obter_utilizador(tipo, uid, db)
     if not utilizador:
@@ -90,11 +110,9 @@ def me(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
     return {"id": utilizador.id, "nome": utilizador.nome, "email": utilizador.email, "tipo": tipo}
 
 
-# ── Alterar password — envia email de confirmação ────────────────────────────
 
 @router.put("/alterar-password")
-def alterar_password(dados: AlterarPassword, token: dict = Depends(token_atual), db: Session = Depends(get_db)):
-    """Valida a password atual e envia um link de confirmação por email."""
+def alterar_pw(dados: AlterarPassword, token: dict = Depends(token_atual), db: Session = Depends(get_db)):
     tipo = token["tipo"]
     uid  = token["id"]
 
@@ -105,7 +123,7 @@ def alterar_password(dados: AlterarPassword, token: dict = Depends(token_atual),
     if not verificar_pw(dados.pw_atual, utilizador.pw):
         raise HTTPException(400, "A password atual está incorreta.")
 
-    # Gerar token assinado com a nova password já em hash (válido 1 h)
+    
     pw_hash = pw_encript(dados.pw_nova)
     token_conf = _serializer().dumps(
         {"id": uid, "tipo": tipo, "pw": pw_hash},
@@ -119,11 +137,9 @@ def alterar_password(dados: AlterarPassword, token: dict = Depends(token_atual),
     return {"mensagem": f"Enviámos um email de confirmação para {utilizador.email}. Clique no link para concluir a alteração."}
 
 
-# ── Confirmar nova password — chamado ao clicar no link ──────────────────────
 
 @router.post("/confirmar-nova-password")
-def confirmar_nova_password(body: dict, db: Session = Depends(get_db)):
-    """Recebe o token do link de confirmação e aplica a nova password."""
+def confirmar_npw(body: dict, db: Session = Depends(get_db)):
     token_conf = body.get("token", "")
     try:
         payload = _serializer().loads(
@@ -148,7 +164,7 @@ def confirmar_nova_password(body: dict, db: Session = Depends(get_db)):
     return {"mensagem": "Password alterada com sucesso! Já pode fazer login."}
 
 
-# ── Email de confirmação ──────────────────────────────────────────────────────
+
 
 def _enviar_email_confirmacao(email_destino: str, nome: str, link: str) -> None:
     corpo_html = f"""

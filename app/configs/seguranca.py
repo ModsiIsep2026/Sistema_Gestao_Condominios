@@ -34,7 +34,7 @@ def verificar_pw(pw: str, pw_hash: str) -> bool:
     except UnknownHashError:
         return False
 
-
+# O gestor paga e recebe uma pw aleatória no seu email
 def random_pw(tamanho: int = 12) -> str:
     letras = [ch for ch in (string.ascii_letters + string.digits) if ch not in IGNORAR_C]
 

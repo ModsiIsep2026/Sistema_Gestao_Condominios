@@ -8,11 +8,24 @@ from app.logica import aluguer_espaco as servico
 
 router = APIRouter(prefix="/alugueres-espaco", tags=["Alugueres de Espaço"])
 
-# (GET)    /alugueres-espaco        -   Gestor lista todos os alugueres-espaco
-# (GET)    /alugueres-espaco/condomino   - Condómino lista os seus
-# (POST)   /alugueres-espaco        - Condómino reserva espaço
-# (DELETE) /alugueres-espaco/{id}   - Cancela aluguer  (gestor)
+# (GET)    /alugueres-espaco
+# Lista todos os alugueres de espaços.
 
+
+# (GET)    /alugueres-espaco/espaco/{id_espaco}
+# Lista os alugueres de um espaço específico.
+
+
+# (GET)    /alugueres-espaco/condomino
+# Lista os alugueres do condómino autenticado.
+
+
+# (POST)   /alugueres-espaco
+# Cria uma nova reserva de espaço.
+
+
+# (DELETE) /alugueres-espaco/{id}
+# Cancela um aluguer de espaço.
 
 @router.get("", response_model=List[LerAluguerEspaco])
 def listar(_=Depends(verificar_g), db: Session = Depends(get_db)):
