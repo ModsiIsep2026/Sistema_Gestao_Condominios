@@ -2,23 +2,36 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Edificio(BaseModel):
+# Usado apenas para leitura (inclui id_gestor que vem da BD)
+class LerEdificio(BaseModel):
+    id: int
     rua: str
-    cp: str
+    cp: Optional[str] = None
+    cidade: Optional[str] = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None
+    iban: Optional[str] = None
+    valor_base_mensal: Optional[float] = None
+    id_gestor: int
+    status: int
+
+    class Config:
+        from_attributes = True
+
+
+
+class CriarEdificio(BaseModel):
+    rua: str
+    cp: Optional[str] = None
     cidade: Optional[str] = None
     lat: float
     lng: float
-    iban: str
-    valor_base_mensal: float
-    id_gestor: int
-
-
-class CriarEdificio(Edificio):
-    pass
+    iban: Optional[str] = None
+    valor_base_mensal: Optional[float] = None
 
 
 class AtualizarEdificio(BaseModel):
-    rua: Optional[str] = None    # O utilizador apenas atualiza a coluna que pretender
+    rua: Optional[str] = None
     cp: Optional[str] = None
     cidade: Optional[str] = None
     lat: Optional[float] = None
@@ -26,11 +39,3 @@ class AtualizarEdificio(BaseModel):
     iban: Optional[str] = None
     valor_base_mensal: Optional[float] = None
     status: Optional[int] = None
-
-
-class LerEdificio(Edificio):
-    id: int
-    status: int
-
-    class Config:
-        from_attributes = True

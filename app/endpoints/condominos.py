@@ -1,35 +1,22 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from app.configs.db_connect import get_db
-from app.configs.seguranca import verificar_g
+from app.configs.seguranca import verificar_g, verificar_c
 from app.estruturas.condomino import CriarCondomino, AtualizarCondomino, LerCondomino
 from app.logica import condomino as servico
 
 router = APIRouter(prefix="/condominos", tags=["Condóminos"])
 
-# (GET)    /condominos
-# Lista os condóminos de um apartamento.
-
-
-# (GET)    /condominos/{id}
-# Mostra os dados de um condómino.
-
-
-# (POST)   /condominos
-# Cria um novo condómino.
-
-
-# (PUT)    /condominos/{id}
-# Atualiza os dados de um condómino.
-
-
-# (DELETE) /condominos/{id}
-# Remove um condómino.
 
 @router.get("", response_model=List[LerCondomino])
-def listar(id_apartamento: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
-    return servico.listar(db, id_apartamento)
+def listar(id_apartamento: Optional[int] = None, _=Depends(verificar_g), db: Session = Depends(get_db)):
+    return servico.listar_todos(db) if id_apartamento is None else servico.listar(db, id_apartamento)
+
+
+@router.put("/me", response_model=LerCondomino)
+def atualizar_proprio_perfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+    return servico.atualizar(db, condomino.id, dados)
 
 
 @router.get("/{id}", response_model=LerCondomino)
@@ -38,8 +25,9 @@ def obter(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerCondomino, status_code=201)
-def criar(dados: CriarCondomino, _=Depends(verificar_g), db: Session = Depends(get_db)):
-    return servico.criar(db, dados)
+def criar(dados: CriarCondomino, background: BackgroundTasks,
+          _=Depends(verificar_g), db: Session = Depends(get_db)):
+    return servico.criar(db, dados, background)
 
 
 @router.put("/{id}", response_model=LerCondomino)

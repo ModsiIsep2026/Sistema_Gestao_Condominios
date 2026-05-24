@@ -2,15 +2,11 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
-class Tecnico(BaseModel):
+class CriarTecnico(BaseModel):
     nome: str
     funcao: Optional[str] = None
     email: EmailStr
-    id_gestor: int
 
-
-class CriarTecnico(Tecnico):
-    pw: str
 
 
 class AtualizarTecnico(BaseModel):
@@ -20,8 +16,12 @@ class AtualizarTecnico(BaseModel):
     status: Optional[int] = None
 
 
-class LerTecnico(Tecnico):
+class LerTecnico(BaseModel):
     id: int
+    nome: str
+    funcao: Optional[str] = None
+    email: EmailStr
+    id_gestor: int
     status: int
 
     class Config:

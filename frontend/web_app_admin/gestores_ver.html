@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestores — Sistema de Gestão de Condomínios</title>
+<link rel="stylesheet" href="../visuais/css/tokens.css">
+<link rel="stylesheet" href="../visuais/css/base.css">
+<link rel="stylesheet" href="../visuais/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Gestores</h1>
+                    <p>Gestores registados na plataforma.</p>
+                </div>
+            </div>
+
+            <div class="app-filtros">
+                <input type="search" placeholder="Procurar por nome ou email..." data-pesquisa>
+                <select id="filtro-estado">
+                    <option value="todos">Todos os estados</option>
+                    <option value="ativos" selected>Apenas ativos</option>
+                    <option value="inativos">Apenas inativos</option>
+                </select>
+            </div>
+
+            <div class="painel">
+                <table class="app-tabela">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Telemóvel</th>
+                            <th>Empresa</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-tabela="gestores-ver"><tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="../visuais/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/gestores_ver.js"></script>
+</body>
+</html>

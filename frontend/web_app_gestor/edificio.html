@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edifício — Gestão de Condomínios</title>
+<link rel="stylesheet" href="../visuais/css/tokens.css">
+<link rel="stylesheet" href="../visuais/css/base.css">
+<link rel="stylesheet" href="../visuais/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    .tabs            { display:flex; gap:0; border-bottom:2px solid var(--cor-borda); margin-bottom:var(--esp-5); }
+    .tab-btn         { padding:10px 24px; background:none; border:none; font-size:14px; font-weight:600;
+                       color:var(--cor-texto-secundario); cursor:pointer; border-bottom:2px solid transparent;
+                       margin-bottom:-2px; transition:.15s; }
+    .tab-btn.ativo   { color:var(--cor-primaria); border-bottom-color:var(--cor-primaria); }
+    .tab-painel      { display:none; }
+    .tab-painel.ativo{ display:block; }
+</style>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <a href="edificios.html" style="font-size:13px;color:var(--cor-texto-secundario);
+                       text-decoration:none;display:inline-block;margin-bottom:4px;">
+                        ← Edifícios
+                    </a>
+                    <h1 id="titulo-edificio">Edifício</h1>
+                    <p id="subtitulo-edificio" style="color:var(--cor-texto-secundario);"></p>
+                </div>
+                <div class="app-cabecalho__acoes" id="acoes-cabecalho"></div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn ativo" data-tab="apartamentos">Apartamentos</button>
+                <button class="tab-btn" data-tab="condominos">Condóminos</button>
+            </div>
+
+            <!-- Tab: Apartamentos -->
+            <div class="tab-painel ativo" id="tab-apartamentos">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:var(--esp-4);">
+                    <button type="button" class="btn btn--primario" id="btn-novo-apt">Adicionar apartamento</button>
+                </div>
+                <div class="painel">
+                    <table class="app-tabela">
+                        <thead>
+                            <tr>
+                                <th>Fração</th>
+                                <th>Andar</th>
+                                <th>Permilagem</th>
+                                <th>Condómino</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody data-tabela="apartamentos">
+                            <tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab: Condóminos -->
+            <div class="tab-painel" id="tab-condominos">
+                <div style="display:flex;justify-content:flex-end;margin-bottom:var(--esp-4);">
+                    <button type="button" class="btn btn--primario" id="btn-novo-cond">Adicionar condómino</button>
+                </div>
+                <div class="painel">
+                    <table class="app-tabela">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Telemóvel</th>
+                                <th>Fração</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody data-tabela="condominos">
+                            <tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal: adicionar apartamento -->
+<div class="modal-overlay" id="modal-apt" hidden>
+    <div class="modal" style="max-width:440px;">
+        <div class="modal__cabecalho">
+            <h3 id="modal-apt-titulo">Adicionar apartamento</h3>
+            <button type="button" class="modal__fechar" data-fechar-apt>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-apt" class="login-erro" style="display:none;margin-bottom:var(--esp-3);"></div>
+            <form id="form-apt">
+                <input type="hidden" id="apt-id">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
+                    <div class="campo">
+                        <label for="apt-fracao">Fração</label>
+                        <input type="text" id="apt-fracao" placeholder="Ex: A, B, 1A" required>
+                    </div>
+                    <div class="campo">
+                        <label for="apt-andar">Andar</label>
+                        <input type="number" id="apt-andar" min="0" placeholder="0">
+                    </div>
+                </div>
+                <div class="campo">
+                    <label for="apt-permilagem">Permilagem</label>
+                    <input type="number" id="apt-permilagem" min="0" step="0.01" placeholder="100.00" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-apt>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-guardar-apt">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: adicionar condómino -->
+<div class="modal-overlay" id="modal-cond" hidden>
+    <div class="modal" style="max-width:480px;">
+        <div class="modal__cabecalho">
+            <h3>Adicionar condómino</h3>
+            <button type="button" class="modal__fechar" data-fechar-cond>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-cond" class="login-erro" style="display:none;margin-bottom:var(--esp-3);"></div>
+            <form id="form-cond">
+                <div class="campo">
+                    <label for="cond-nome">Nome completo</label>
+                    <input type="text" id="cond-nome" required>
+                </div>
+                <div class="campo">
+                    <label for="cond-email">Email</label>
+                    <input type="email" id="cond-email" required>
+                </div>
+                <div class="campo">
+                    <label for="cond-tel">Telemóvel</label>
+                    <input type="tel" id="cond-tel" required>
+                </div>
+                <div class="campo">
+                    <label for="cond-apt">Apartamento / Fração</label>
+                    <select id="cond-apt" required>
+                        <option value="">Selecionar fração...</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-cond>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-guardar-cond">Adicionar</button>
+        </div>
+    </div>
+</div>
+
+<script src="../visuais/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/edificio.js"></script>
+</body>
+</html>

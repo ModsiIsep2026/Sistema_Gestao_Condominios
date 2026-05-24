@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avarias — Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .av-tipo-btns { display:flex; gap:var(--esp-2); margin-bottom:var(--esp-4); }
+        .av-tipo-btn  { flex:1; padding:10px 14px; border:2px solid var(--cor-borda);
+                        background:#fff; border-radius:6px; cursor:pointer; font-size:13px;
+                        font-weight:600; color:var(--cor-texto-secundario); transition:.15s; }
+        .av-tipo-btn.ativo { border-color:var(--cor-primaria); color:var(--cor-primaria);
+                             background:color-mix(in srgb, var(--cor-primaria) 8%, #fff); }
+        .av-painel-interno, .av-painel-externo { display:none; }
+        .av-painel-interno.visivel, .av-painel-externo.visivel { display:block; }
+        .estado--nova      { background:#EEF2FF; color:#3730A3; font-size:11px; font-weight:600;
+                             padding:3px 8px; border-radius:4px; }
+        .estado--prog      { background:#FFF7ED; color:#C2410C; font-size:11px; font-weight:600;
+                             padding:3px 8px; border-radius:4px; }
+        .estado--ok        { background:#F0FDF4; color:#15803D; font-size:11px; font-weight:600;
+                             padding:3px 8px; border-radius:4px; }
+        .estado--ext       { background:#F5F3FF; color:#7C3AED; font-size:11px; font-weight:600;
+                             padding:3px 8px; border-radius:4px; }
+        .av-desc-completa  { font-size:13px; color:var(--cor-texto-secundario);
+                             white-space:pre-wrap; max-height:120px; overflow:auto; }
+    </style>
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Avarias</h1>
+                    <p>Avarias reportadas pelos condóminos.</p>
+                </div>
+            </div>
+
+            <div class="app-filtros">
+                <select id="filtro-edificio">
+                    <option value="">— Selecione um edifício —</option>
+                </select>
+                <input type="search" placeholder="Procurar por zona ou descrição..." data-pesquisa>
+                <select id="filtro-estado">
+                    <option value="">Todos os estados</option>
+                    <option value="nova">Abertas</option>
+                    <option value="prog">Em progresso</option>
+                    <option value="ext">Serviço externo</option>
+                    <option value="ok">Resolvidas</option>
+                </select>
+            </div>
+
+            <div class="painel">
+                <table class="app-tabela">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Zona</th>
+                            <th>Descrição</th>
+                            <th>Estado</th>
+                            <th>Atribuído a</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody data-tabela="avarias">
+                        <tr><td colspan="6" class="app-vazio"><p>Selecione um edifício para ver as avarias.</p></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-alocar" hidden>
+    <div class="modal" style="max-width:520px;">
+        <div class="modal__cabecalho">
+            <h3>Atribuir avaria</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal-alocar>&times;</button>
+        </div>
+        <div class="modal__corpo">
+    
+            <div id="av-resumo" style="background:var(--cor-fundo);padding:12px 14px;border-radius:6px;margin-bottom:var(--esp-4);">
+                <p style="font-size:12px;color:var(--cor-texto-secundario);margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;">Avaria</p>
+                <p id="av-resumo-zona"  style="font-weight:700;margin:0 0 2px;"></p>
+                <p id="av-resumo-desc" class="av-desc-completa"></p>
+            </div>
+
+            <div id="erro-alocar" class="login-erro" style="display:none;margin-bottom:var(--esp-3);"></div>
+
+          
+            <div class="av-tipo-btns">
+                <button type="button" class="av-tipo-btn ativo" id="btn-tipo-interno" data-tipo="interno">
+                    👷 Técnico da equipa
+                </button>
+                <button type="button" class="av-tipo-btn" id="btn-tipo-externo" data-tipo="externo">
+                    🏢 Serviço externo
+                </button>
+            </div>
+
+  
+            <div class="av-painel-interno visivel" id="painel-interno">
+                <div class="campo">
+                    <label for="sel-tecnico">Técnico</label>
+                    <select id="sel-tecnico">
+                        <option value="">A carregar técnicos…</option>
+                    </select>
+                </div>
+            </div>
+
+
+            <div class="av-painel-externo" id="painel-externo">
+                <div class="campo">
+                    <label for="inp-empresa">Nome da empresa / serviço</label>
+                    <input type="text" id="inp-empresa" placeholder="Ex: Electro Sul, Lda." maxlength="120">
+                </div>
+                <div class="campo">
+                    <label for="inp-contacto">Contacto (opcional)</label>
+                    <input type="text" id="inp-contacto" placeholder="Telefone ou email" maxlength="80">
+                </div>
+            </div>
+
+            <div class="campo" style="margin-top:var(--esp-3);">
+                <label for="inp-nota">Nota / observação (opcional)</label>
+                <textarea id="inp-nota" rows="2" placeholder="Informação adicional para o técnico ou empresa…"
+                          style="resize:vertical;" maxlength="200"></textarea>
+            </div>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal-alocar>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-confirmar-alocar">Confirmar atribuição</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal-overlay" id="modal-detalhe" hidden>
+    <div class="modal" style="max-width:500px;">
+        <div class="modal__cabecalho">
+            <h3>Detalhe da avaria</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal-detalhe>&times;</button>
+        </div>
+        <div class="modal__corpo" id="detalhe-corpo" style="font-size:14px;line-height:1.7;">
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal-detalhe>Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script src="../visuais/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/avarias.js"></script>
+</body>
+</html>

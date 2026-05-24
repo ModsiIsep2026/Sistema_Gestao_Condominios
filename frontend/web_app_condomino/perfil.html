@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O meu perfil — Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+    <div class="app-shell">
+        <aside class="app-sidebar"></aside>
+
+        <div>
+            <header class="app-topbar"></header>
+            <main class="app-main">
+
+                <div class="app-cabecalho">
+                    <div class="app-cabecalho__titulo">
+                        <h1>O meu perfil</h1>
+                        <p>Configure os seus dados pessoais e password de acesso.</p>
+                    </div>
+                </div>
+
+                <div class="dois-paineis">
+
+              
+                    <div class="painel">
+                        <div class="painel__cabecalho">
+                            <h2>Dados pessoais</h2>
+                        </div>
+                        <div class="painel__corpo">
+                            <div id="msg-perfil" class="login-sucesso" style="display:none;margin-bottom:var(--esp-3);"></div>
+                            <form id="form-perfil">
+                                <div class="campo">
+                                    <label for="perfil-nome">Nome completo</label>
+                                    <input type="text" id="perfil-nome" required>
+                                </div>
+                                <div class="campo">
+                                    <label for="perfil-email">Email</label>
+                                    <input type="email" id="perfil-email" required>
+                                </div>
+                                <div class="campo">
+                                    <label for="perfil-telemovel">Telemóvel</label>
+                                    <input type="tel" id="perfil-telemovel">
+                                </div>
+                                <button type="submit" class="btn btn--primario">Guardar alterações</button>
+                            </form>
+                        </div>
+                    </div>
+
+              
+                    <div class="painel">
+                        <div class="painel__cabecalho">
+                            <h2>Alterar password</h2>
+                        </div>
+                        <div class="painel__corpo">
+                            <div id="msg-pw" class="login-sucesso" style="display:none;margin-bottom:var(--esp-3);"></div>
+                            <form id="form-pw">
+                                <div class="campo">
+                                    <label for="pw-atual">Password atual</label>
+                                    <input type="password" id="pw-atual" required autocomplete="current-password">
+                                </div>
+                                <div class="campo">
+                                    <label for="pw-nova">Nova password</label>
+                                    <input type="password" id="pw-nova" required autocomplete="new-password"
+                                           placeholder="Mínimo 8 caracteres, maiúscula e número">
+                                </div>
+                                <div class="campo">
+                                    <label for="pw-confirma">Confirmar nova password</label>
+                                    <input type="password" id="pw-confirma" required autocomplete="new-password">
+                                </div>
+                                <button type="submit" class="btn btn--primario">Alterar password</button>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="../visuais/js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/perfil.js"></script>
+</body>
+</html>

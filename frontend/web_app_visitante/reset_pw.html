@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar password — Gestão de Condomínios</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-body">
+
+    <div class="login-fundo">
+        <img src="../visuais/img/predios.jpg" alt="">
+        <div class="login-fundo__overlay"></div>
+    </div>
+
+    <main class="login-conteudo">
+        <a href="login.html" class="login-voltar">&larr; Voltar ao início</a>
+
+        <div class="login-card">
+
+            <div class="login-card__topo">
+                <a href="index.html" class="login-logo">
+                    <img src="../visuais/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                </a>
+                <h1>Recuperar password</h1>
+                <p>Insira o seu email e enviaremos um link para redefinir a password.</p>
+            </div>
+
+            <div id="reset-erro"   class="login-erro"    hidden></div>
+            <div id="reset-sucesso" class="login-sucesso" hidden></div>
+
+            <form id="form-recuperar" class="login-form" novalidate>
+                <div class="campo">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           autocomplete="email"
+                           placeholder="o.seu@email.com" required>
+                </div>
+
+                <button type="submit" class="btn btn--primario btn--bloco" id="btn-enviar">
+                    Enviar link de recuperação
+                </button>
+            </form>
+
+            <p class="login-rodape">
+                Lembrou-se da password? <a href="login.html">Entrar</a>
+            </p>
+
+        </div>
+    </main>
+
+    <script src="../visuais/js/api.js"></script>
+    <script>
+    (function () {
+        const form    = document.getElementById("form-recuperar");
+        const btnEnviar = document.getElementById("btn-enviar");
+        const erroEl  = document.getElementById("reset-erro");
+        const sucEl   = document.getElementById("reset-sucesso");
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            erroEl.hidden = true;
+            sucEl.hidden  = true;
+
+            const email = document.getElementById("email").value.trim();
+            if (!email) {
+                erroEl.textContent = "Indique o seu email.";
+                erroEl.hidden = false;
+                return;
+            }
+
+            btnEnviar.disabled    = true;
+            btnEnviar.textContent = "A enviar...";
+
+            try {
+                const res = await window.api.post("/auth/recuperar-password", { email });
+                sucEl.textContent = res?.mensagem || "Se o email existir, receberá um link em breve.";
+                sucEl.hidden = false;
+                form.reset();
+            } catch (err) {
+                erroEl.textContent = err.message || "Ocorreu um erro. Tente mais tarde.";
+                erroEl.hidden = false;
+            } finally {
+                btnEnviar.disabled    = false;
+                btnEnviar.textContent = "Enviar link de recuperação";
+            }
+        });
+    })();
+    </script>
+</body>
+</html>

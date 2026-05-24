@@ -11,8 +11,8 @@ def listar(db: Session):
 
 
 def listar_todos(db: Session):
-    from app.logica.contrato import verificar_expirados
-    verificar_expirados(db)
+    from app.logica.contrato import v_contrato_expirados
+    v_contrato_expirados(db)
 
     gestores = db.query(Gestor).all()
     resultado = []
@@ -52,11 +52,13 @@ def criar(db: Session, dados):
 
 
 def atualizar(db: Session, id: int, dados):
-    gestor = obter(db, id)
+    gestor = db.query(Gestor).filter(Gestor.id == id).first()
+    if not gestor:
+        raise HTTPException(404, "Gestor não encontrado")
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
         setattr(gestor, campo, valor)
-    
+
     db.commit()
     db.refresh(gestor)
     return gestor

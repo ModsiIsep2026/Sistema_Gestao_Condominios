@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatórios — Gestão de Condomínios</title>
+<link rel="stylesheet" href="../visuais/css/tokens.css">
+<link rel="stylesheet" href="../visuais/css/base.css">
+<link rel="stylesheet" href="../visuais/css/componentes.css">
+<link rel="stylesheet" href="css/app.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
+
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Relatórios</h1>
+                    <p>Exporte dados financeiros e operacionais do seu condomínio.</p>
+                </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:var(--esp-5);">
+
+         
+                <div class="painel">
+                    <div class="painel__cabecalho">
+                        <h2>Financeiro</h2>
+                    </div>
+                    <div class="painel__corpo">
+                        <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
+                            Resumo de pagamentos, quotas pagas e em dívida por período.
+                        </p>
+                        <div style="display:flex;gap:var(--esp-2);flex-wrap:wrap;">
+                            <a id="btn-rel-excel"
+                               href="/relatorios/excel"
+                               target="_blank"
+                               class="btn btn--primario">
+                                Exportar Excel
+                            </a>
+                            <a id="btn-rel-pdf"
+                               href="/relatorios/pdf"
+                               target="_blank"
+                               class="btn btn--outline">
+                                Exportar PDF
+                            </a>
+                        </div>
+                        <div id="rel-erro" class="login-erro" hidden style="margin-top:var(--esp-3);"></div>
+                    </div>
+                </div>
+
+               
+                <div class="painel">
+                    <div class="painel__cabecalho">
+                        <h2>Avarias</h2>
+                    </div>
+                    <div class="painel__corpo">
+                        <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
+                            Listagem de avarias reportadas e o seu estado de resolução.
+                        </p>
+                        <div id="kpis-avarias" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
+                            <div class="kpi" style="margin-bottom:0;">
+                                <div class="kpi__rotulo">Abertas</div>
+                                <div class="kpi__valor kpi--alerta" id="kpi-av-abertas">—</div>
+                            </div>
+                            <div class="kpi kpi--ok" style="margin-bottom:0;">
+                                <div class="kpi__rotulo">Resolvidas</div>
+                                <div class="kpi__valor" id="kpi-av-resolvidas">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script src="../visuais/js/api.js"></script>
+<script src="js/app.js"></script>
+<script>
+(async function () {
+    await new Promise((r) => setTimeout(r, 200));
+
+    try {
+        const edificios = await window.api.get("/edificios");
+        if (!edificios.length) return;
+        const avarias = await window.api.get(`/avarias?id_edificio=${edificios[0].id}`);
+        document.getElementById("kpi-av-abertas").textContent    = avarias.filter((a) => !a.resolucao || a.resolucao.status !== 1).length;
+        document.getElementById("kpi-av-resolvidas").textContent = avarias.filter((a) => a.resolucao?.status === 1).length;
+    } catch {}
+
+
+    const token = sessionStorage.getItem("condo_token");
+    if (token) {
+        document.querySelectorAll("[id^='btn-rel-']").forEach((a) => {
+            const url = new URL(a.href, window.location.origin);
+            url.searchParams.set("token", token);
+            a.href = url.toString();
+        });
+    }
+})();
+</script>
+</body>
+</html>

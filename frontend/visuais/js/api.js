@@ -35,7 +35,19 @@ async function pedido(metodo, endpoint, corpo = null) {
     const dados = tipo.includes("application/json") ? await resposta.json() : null;
 
     if (!resposta.ok) {
-        const mensagem = (dados && (dados.detail || dados.detalhe)) || "Erro na chamada à API";
+        let mensagem = "Erro na chamada à API";
+        if (dados) {
+            const detalhe = dados.detail || dados.detalhe;
+            if (typeof detalhe === "string") {
+                mensagem = detalhe;
+            } else if (Array.isArray(detalhe)) {
+                // Erros de validação Pydantic (422) — mostrar o primeiro erro de forma legível
+                mensagem = detalhe.map((e) => {
+                    const campo = (e.loc || []).slice(1).join(" → ") || "campo";
+                    return `${campo}: ${e.msg}`;
+                }).join(" | ");
+            }
+        }
         throw new Error(mensagem);
     }
     return dados;

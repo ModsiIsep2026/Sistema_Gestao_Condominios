@@ -10,7 +10,7 @@ class Condomino(BaseModel):
 
 
 class CriarCondomino(Condomino):
-    pw: str
+    pass   # pw gerada automaticamente no backend
 
 
 class AtualizarCondomino(BaseModel):

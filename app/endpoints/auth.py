@@ -128,7 +128,7 @@ def alterar_pw(dados: AlterarPassword, token: dict = Depends(token_atual), db: S
         salt="confirmar-nova-pw"
     )
 
-    link = f"{_cfg.APP_URL}/website_C/confirmar_pw.html?token={token_conf}"
+    link = f"{_cfg.APP_URL}/web_app_visitante/confirmar_pw.html?token={token_conf}"
 
     _enviar_email_confirmacao(utilizador.email, utilizador.nome, link)
 
@@ -164,6 +164,70 @@ def confirmar_npw(body: dict, db: Session = Depends(get_db)):
 
 
 
+@router.post("/recuperar-password")
+def recuperar_pw(body: dict, db: Session = Depends(get_db)):
+
+    email = (body.get("email") or "").strip().lower()
+    if not email:
+        raise HTTPException(400, "Indique o email.")
+
+    # Procurar o utilizador em todas as tabelas
+    utilizador = None
+    tipo_encontrado = None
+    from app.logica.auth import autenticar_auto
+    from app.tabelas_bd.admin    import Admin
+    from app.tabelas_bd.gestor   import Gestor
+    from app.tabelas_bd.condomino import Condomino
+    from app.tabelas_bd.tecnico  import Tecnico
+
+    for modelo, tipo in [(Admin, "admin"), (Gestor, "gestor"),
+                         (Condomino, "condomino"), (Tecnico, "tecnico")]:
+        u = db.query(modelo).filter(modelo.email == email).first()
+        if u:
+            utilizador = u
+            tipo_encontrado = tipo
+            break
+
+ 
+    if not utilizador:
+        return {"mensagem": "Um link foi enviado para o seu email."}
+
+    token_reset = _serializer().dumps(
+        {"id": utilizador.id, "tipo": tipo_encontrado},
+        salt="recuperar-password"
+    )
+    link = f"{_cfg.APP_URL}/web_app_visitante/reset_pw2.html?token={token_reset}"
+    _enviar_email_reset(utilizador.email, utilizador.nome, link)
+
+    return {"mensagem": "Um link foi enviado para o seu email."}
+
+
+@router.post("/reset-password")
+def reset_pw(body: dict, db: Session = Depends(get_db)):
+    token_reset = body.get("token", "")
+    password    = body.get("password", "")
+
+    if not password or len(password) < 8:
+        raise HTTPException(400, "A password tem de ter pelo menos 8 caracteres.")
+
+    try:
+        payload = _serializer().loads(
+            token_reset, salt="recuperar-password", max_age=3600
+        )
+    except SignatureExpired:
+        raise HTTPException(400, "O link expirou. Solicite um novo reset.")
+    except BadSignature:
+        raise HTTPException(400, "Link inválido.")
+
+    utilizador = _obter_utilizador(payload["tipo"], payload["id"], db)
+    if not utilizador:
+        raise HTTPException(404, "Utilizador não encontrado.")
+
+    utilizador.pw = pw_encript(password)
+    db.commit()
+    return {"mensagem": "Password redefinida com sucesso! Já pode fazer login."}
+
+
 def _enviar_email_confirmacao(email_destino: str, nome: str, link: str) -> None:
     corpo_html = f"""
     <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;">
@@ -197,3 +261,38 @@ def _enviar_email_confirmacao(email_destino: str, nome: str, link: str) -> None:
     </div>
     """
     enviar_email(email_destino, "Confirme a alteração da sua password — Gestão de Condomínios", corpo_html)
+
+
+def _enviar_email_reset(email_destino: str, nome: str, link: str) -> None:
+    corpo_html = f"""
+    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;">
+      <div style="background:#0B2240;padding:24px 32px;">
+        <p style="color:#fff;font-size:18px;font-weight:700;margin:0;">
+          Recuperação de password
+        </p>
+      </div>
+      <div style="background:#F4F3F1;padding:32px;">
+        <p style="font-size:15px;color:#1A1A1A;margin:0 0 16px;">Olá, <strong>{nome}</strong>!</p>
+        <p style="font-size:14px;color:#1A1A1A;margin:0 0 24px;">
+          Recebemos um pedido de recuperação de password para a sua conta.<br>
+          Clique no botão abaixo para definir uma nova password.<br>
+          <strong>O link expira em 60 minutos.</strong>
+        </p>
+        <a href="{link}"
+           style="display:inline-block;background:#F08A24;color:#fff;padding:14px 28px;
+                  font-weight:700;font-size:14px;text-decoration:none;border-radius:4px;">
+          Redefinir password
+        </a>
+        <p style="font-size:12px;color:#6B6860;margin:24px 0 0;">
+          Se não foi você a solicitar esta recuperação, ignore este email —
+          a sua password permanece inalterada.
+        </p>
+      </div>
+      <div style="background:#E2E0DC;padding:12px 32px;">
+        <p style="font-size:11px;color:#6B6860;margin:0;">
+          © 2026 Sistema de Gestão de Condomínios — Email gerado automaticamente.
+        </p>
+      </div>
+    </div>
+    """
+    enviar_email(email_destino, "Recuperação de password — Gestão de Condomínios", corpo_html)

@@ -61,3 +61,8 @@ def criar(dados: CriarPagamento, _=Depends(verificar_g), db: Session = Depends(g
 @router.post("/{id}/pagar", response_model=LerPagamento)
 def pagar(id: int, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.pagamento_feito(db, id)
+
+
+@router.post("/{id}/marcar-paga", response_model=LerPagamento)
+def marcar_paga(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+    return servico.pagamento_feito(db, id)

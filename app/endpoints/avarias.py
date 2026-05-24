@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
@@ -77,5 +77,9 @@ def criar_resolucao(id: int, dados: CriarResolucaoAvaria, _=Depends(verificar_g)
 
 
 @router.put("/{id}/resolucao", response_model=LerResolucaoAvaria)
-def atualizar_resolucao(id: int, dados: AtualizarResolucaoAvaria, _=Depends(verificar_t), db: Session = Depends(get_db)):
+def atualizar_resolucao(id: int, dados: AtualizarResolucaoAvaria,token: dict = Depends(token_atual), db: Session = Depends(get_db)):
+
+
+    if token["tipo"] not in ("gestor", "tecnico"):
+        raise HTTPException(403, "Sem permissão.")
     return servico.atualizar_resolucao(db, id, dados)

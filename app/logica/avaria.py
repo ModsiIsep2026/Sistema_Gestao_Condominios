@@ -1,30 +1,51 @@
 from datetime import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
 from app.tabelas_bd.registo_avaria import RegistoAvaria
 from app.tabelas_bd.resolucao_avaria import ResolucaoAvaria
 
 
+def _com_resolucao():
+    return joinedload(RegistoAvaria.resolucao).joinedload(ResolucaoAvaria.tecnico)
+
 
 def listar_ptecnico(db: Session, id_tecnico: int):
-
     resolucoes = db.query(ResolucaoAvaria).filter(ResolucaoAvaria.id_tecnico == id_tecnico).all()
-    
     ids = [r.id_registo_avaria for r in resolucoes]
-    return db.query(RegistoAvaria).filter(RegistoAvaria.id.in_(ids), RegistoAvaria.status == 1).all()
+    return (
+        db.query(RegistoAvaria)
+        .options(_com_resolucao())
+        .filter(RegistoAvaria.id.in_(ids), RegistoAvaria.status == 1)
+        .all()
+    )
 
 
 def listar_pcondomino(db: Session, id_condomino: int):
-    return db.query(RegistoAvaria).filter(RegistoAvaria.id_condomino == id_condomino, RegistoAvaria.status == 1).all()
+    return (
+        db.query(RegistoAvaria)
+        .options(_com_resolucao())
+        .filter(RegistoAvaria.id_condomino == id_condomino, RegistoAvaria.status == 1)
+        .all()
+    )
 
 
 def listar_pedificio(db: Session, id_edificio: int):
-
-    return db.query(RegistoAvaria).filter(RegistoAvaria.id_edificio == id_edificio, RegistoAvaria.status == 1).all()
+    return (
+        db.query(RegistoAvaria)
+        .options(_com_resolucao())
+        .filter(RegistoAvaria.id_edificio == id_edificio, RegistoAvaria.status == 1)
+        .order_by(RegistoAvaria.data_registo.desc())
+        .all()
+    )
 
 
 def obter(db: Session, id: int):
-    avaria = db.query(RegistoAvaria).filter(RegistoAvaria.id == id, RegistoAvaria.status == 1).first()
+    avaria = (
+        db.query(RegistoAvaria)
+        .options(_com_resolucao())
+        .filter(RegistoAvaria.id == id, RegistoAvaria.status == 1)
+        .first()
+    )
 
     if not avaria:
         raise HTTPException(404, "Avaria não encontrada no sistema")

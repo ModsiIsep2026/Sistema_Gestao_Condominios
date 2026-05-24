@@ -16,7 +16,26 @@ class CriarRegistoAvaria(RegistoAvaria):
 class AtualizarRegistoAvaria(BaseModel):
     zona: Optional[str] = None
     descricao: Optional[str] = None
-    status: Optional[int] = None                         
+    status: Optional[int] = None
+
+
+class LerTecnicoResumo(BaseModel):
+    id: int
+    nome: str
+
+    class Config:
+        from_attributes = True
+
+
+class LerResolucaoInfo(BaseModel):
+    id: int
+    id_tecnico: Optional[int] = None
+    status: int                              # 0=pendente  1=resolvida
+    data_resolucao: Optional[datetime] = None
+    tecnico: Optional[LerTecnicoResumo] = None
+
+    class Config:
+        from_attributes = True
 
 
 class LerRegistoAvaria(RegistoAvaria):
@@ -24,6 +43,7 @@ class LerRegistoAvaria(RegistoAvaria):
     id_condomino: int
     data_registo: datetime
     status: int
+    resolucao: Optional[LerResolucaoInfo] = None
 
     class Config:
         from_attributes = True

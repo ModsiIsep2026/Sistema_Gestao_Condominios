@@ -24,7 +24,7 @@ router = APIRouter(prefix="/contratos", tags=["Contratos"])
 # Cria um novo contrato.
 
 
-# (PUT)  /contratos/meu
+# (PUT)  /contratos/gestor
 # Atualiza o contrato do gestor.
 
 
@@ -50,7 +50,7 @@ def criar(dados: CriarContrato, _=Depends(verificar_a), db: Session = Depends(ge
     return servico.criar(db, dados)
 
 
-@router.put("/meu", response_model=LerContrato)
+@router.put("/gestor", response_model=LerContrato)
 def atualizar(dados: AtualizarContrato, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.atualizar(db, gestor.id, dados)
 

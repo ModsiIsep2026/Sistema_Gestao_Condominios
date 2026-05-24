@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
-from app.configs.seguranca import verificar_a
+from app.configs.seguranca import verificar_a, verificar_g
 from app.estruturas.gestor import CriarGestor, AtualizarGestor, LerGestor
 from app.logica import gestor as servico
 
@@ -14,13 +14,13 @@ def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.listar_todos(db)
 
 
+@router.put("/conta", response_model=LerGestor)
+def atualizar_pperfil(dados: AtualizarGestor, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    return servico.atualizar(db, gestor.id, dados)
+
+
 @router.get("/adesoes")
-def adesoes(
-    dias: int = Query(default=30, ge=1, le=365),
-    _=Depends(verificar_a),
-    db: Session = Depends(get_db),
-):
-    """Devolve o nº de gestores que aderiram por dia nos últimos N dias."""
+def adesoes(dias: int = Query(default=30, ge=1, le=365),_=Depends(verificar_a),db: Session = Depends(get_db),):
     return servico.adesoes_por_dia(db, dias)
 
 
