@@ -590,6 +590,19 @@ body.app-body {
 }
 
 
+/* ── Botões de período no gráfico ── */
+.btn-periodo {
+    font-size: var(--tam-xs);
+    padding: 4px 12px;
+    border-radius: 20px;
+    transition: background .15s, color .15s;
+}
+.btn-periodo.ativo-periodo {
+    background-color: var(--cor-acento);
+    color: #fff;
+    border-color: var(--cor-acento);
+}
+
 @media (max-width: 968px) {
     .app-shell { grid-template-columns: 1fr; }
     .app-sidebar { display: none; }

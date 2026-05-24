@@ -1,3 +1,6 @@
+import logging
+logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
@@ -42,7 +45,7 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=_configs.APP_SECRET_KEY)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],
+    allow_origins=["http://localhost:8080"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
     allow_headers=["Authorization", "Content-Type"],)
@@ -75,7 +78,7 @@ app.include_router(contacto.router)
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"
 
-app.mount("/shared",    StaticFiles(directory=_frontend / "visuais"),              name="shared")
+app.mount("/visuais",   StaticFiles(directory=_frontend / "visuais"),              name="visuais")
 app.mount("/website_C", StaticFiles(directory=_frontend / "website_C", html=True), name="website_C")
 app.mount("/webapp_AG", StaticFiles(directory=_frontend / "webapp_AG", html=True), name="webapp_AG")
 app.mount("/webapp_C",  StaticFiles(directory=_frontend / "webapp_C",  html=True), name="webapp_C")

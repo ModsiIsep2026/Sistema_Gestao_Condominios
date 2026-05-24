@@ -45,7 +45,7 @@
         const email = sessionStorage.getItem("registo_email");
         if (email) {
             document.getElementById("msg-email").textContent =
-                `Enviámos as credenciais para ${email}. Verifica também a pasta de spam.`;
+                `Enviámos as credenciais para ${email}.`;
             sessionStorage.removeItem("registo_email");
         }
     </script>

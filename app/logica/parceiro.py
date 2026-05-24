@@ -7,6 +7,10 @@ def listar(db: Session):
     return db.query(Parceiro).filter(Parceiro.status == 1).all()
 
 
+def listar_todos(db: Session):
+    return db.query(Parceiro).all()
+
+
 def obter(db: Session, id: int):
     parceiro = db.query(Parceiro).filter(Parceiro.id == id, Parceiro.status == 1).first()
 
@@ -24,11 +28,13 @@ def criar(db: Session, dados, id_admin: int):
 
 
 def atualizar(db: Session, id: int, dados):
-    parceiro = obter(db, id)
+    parceiro = db.query(Parceiro).filter(Parceiro.id == id).first()
+    if not parceiro:
+        raise HTTPException(404, "Parceiro externo não encontrado")
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
         setattr(parceiro, campo, valor)
-    
+
     db.commit()
     db.refresh(parceiro)
     return parceiro

@@ -1,0 +1,64 @@
+/* ── Página de Adesões (AngularJS) ───────────────────────── */
+
+.periodo-btns {
+    display: flex;
+    gap: var(--esp-2);
+    flex-wrap: wrap;
+}
+
+.btn-periodo {
+    font-size: var(--tam-xs);
+    padding: 5px 14px;
+    border-radius: 20px;
+    transition: background .15s, color .15s, border-color .15s;
+}
+
+.btn-periodo.ativo-periodo {
+    background-color: var(--cor-acento);
+    color: #fff;
+    border-color: var(--cor-acento);
+}
+
+/* Spinner */
+.estado-carregando {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+    padding: var(--esp-6) 0;
+    color: var(--cor-texto-suave);
+    font-size: var(--tam-sm);
+    justify-content: center;
+}
+
+.spinner {
+    width: 22px;
+    height: 22px;
+    border: 3px solid var(--cor-borda);
+    border-top-color: var(--cor-acento);
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Barra de proporção na tabela */
+.barra-proporcao {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-2);
+}
+
+.barra-proporcao__fill {
+    height: 8px;
+    min-width: 4px;
+    background-color: var(--cor-acento);
+    border-radius: 4px;
+    transition: width .4s ease;
+    max-width: 160px;
+}
+
+.barra-proporcao span {
+    font-size: var(--tam-xs);
+    color: var(--cor-texto-suave);
+    white-space: nowrap;
+}

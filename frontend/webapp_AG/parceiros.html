@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Parceiros — Gestão de Condomínios</title>
-<link rel="stylesheet" href="../shared/css/tokens.css">
-<link rel="stylesheet" href="../shared/css/base.css">
-<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="../visuais/css/tokens.css">
+<link rel="stylesheet" href="../visuais/css/base.css">
+<link rel="stylesheet" href="../visuais/css/componentes.css">
 <link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -87,7 +87,24 @@
     </div>
 </div>
 
-<script src="../shared/js/api.js"></script>
+<!-- Modal de confirmação -->
+<div class="modal-overlay" id="modal-confirmar" hidden>
+    <div class="modal" style="max-width:400px;">
+        <div class="modal__cabecalho">
+            <h3>Confirmar ação</h3>
+            <button type="button" class="modal__fechar" id="confirmar-cancelar">&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <p id="confirmar-texto"></p>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" id="confirmar-cancelar2">Cancelar</button>
+            <button type="button" class="btn btn--perigo" id="confirmar-ok">Confirmar</button>
+        </div>
+    </div>
+</div>
+
+<script src="../visuais/js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/fornecedores.js"></script>
 </body>

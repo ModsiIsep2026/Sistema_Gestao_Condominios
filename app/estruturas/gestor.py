@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import date
 
 
 class Gestor(BaseModel):
@@ -24,6 +25,7 @@ class AtualizarGestor(BaseModel):
 class LerGestor(Gestor):
     id: int
     status: int
+    data_fim: Optional[date] = None   # data de fim do contrato
 
     class Config:
         from_attributes = True

@@ -12,13 +12,30 @@
     }
 
     let dados         = [];
-    let filtroEstado  = "ativos";
+    let filtroEstado  = "todos";
     let filtroPesquisa = "";
 
     function badge(status) {
         return status === 1
             ? `<span class="estado estado--ok">Ativo</span>`
             : `<span class="estado estado--erro">Inativo</span>`;
+    }
+
+    function formatarData(iso) {
+        if (!iso) return "—";
+        const [ano, mes, dia] = iso.split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    function badgeValidade(dataFim, status) {
+        if (!dataFim) return "—";
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const fim  = new Date(dataFim);
+        const dias = Math.ceil((fim - hoje) / 86400000);
+        if (status !== 1) return `<span style="color:var(--cor-erro);">${formatarData(dataFim)}</span>`;
+        if (dias <= 15)   return `<span style="color:#d97706;font-weight:600;">${formatarData(dataFim)} <small>(${dias}d)</small></span>`;
+        return formatarData(dataFim);
     }
 
     function aplicarFiltros() {
@@ -40,10 +57,10 @@
 
         if (!lista.length) {
             tbody.innerHTML = `
-                <tr><td colspan="5">
+                <tr><td colspan="6">
                     <div class="app-vazio">
                         <h3>Sem gestores</h3>
-                        <p>${filtroEstado === "ativos" ? "Adicione o primeiro gestor." : "Sem registos para este filtro."}</p>
+                        <p>${filtroEstado === "ativos" ? "Nenhum gestor ativo." : "Sem registos para este filtro."}</p>
                     </div>
                 </td></tr>`;
             return;
@@ -51,16 +68,14 @@
 
         tbody.innerHTML = lista.map((g) => {
             const ativo = g.status === 1;
-            const btnEstado = ativo
-                ? `<button class="perigo" data-acao="desativar" data-id="${g.id}">Desativar</button>`
-                : `<button data-acao="ativar" data-id="${g.id}">Ativar</button>`;
             return `
-                <tr style="${ativo ? "" : "opacity:0.55;"}">
+                <tr style="${ativo ? "" : "opacity:0.45;"}">
                     <td><strong>${g.nome}</strong></td>
                     <td>${g.empresa || "—"}</td>
                     <td>${g.email}</td>
+                    <td>${g.telemovel || "—"}</td>
+                    <td>${badgeValidade(g.data_fim, g.status)}</td>
                     <td>${badge(g.status)}</td>
-                    <td class="app-tabela__acoes">${btnEstado}</td>
                 </tr>`;
         }).join("");
     }
@@ -71,7 +86,7 @@
             renderizar();
         } catch (e) {
             document.querySelector('[data-tabela="gestores"]').innerHTML =
-                `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+                `<tr><td colspan="6" class="app-vazio"><p>Erro ao carregar: ${e.message}</p></td></tr>`;
         }
     }
 
@@ -84,47 +99,6 @@
     document.getElementById("filtro-estado")?.addEventListener("change", (e) => {
         filtroEstado = e.target.value;
         renderizar();
-    });
-
-    // ── Modal criar gestor ────────────────────────────────────────────────────
-    const modal    = document.getElementById("modal-gestor");
-    const erroModal = document.getElementById("erro-gestor");
-
-    function abrirModal() {
-        erroModal.hidden = true;
-        document.getElementById("form-gestor").reset();
-        modal.hidden = false;
-    }
-    function fecharModal() { modal.hidden = true; }
-
-    document.getElementById("btn-novo-gestor").addEventListener("click", abrirModal);
-    document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
-        el.addEventListener("click", fecharModal)
-    );
-    modal.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
-
-    document.getElementById("btn-criar-gestor").addEventListener("click", async () => {
-        erroModal.hidden = true;
-
-        const nome     = document.getElementById("g-nome").value.trim();
-        const empresa  = document.getElementById("g-empresa").value.trim()   || null;
-        const email    = document.getElementById("g-email").value.trim();
-        const telemovel = document.getElementById("g-telemovel").value.trim();
-        const pw       = document.getElementById("g-pw").value.trim();
-
-        if (!nome)     { erroModal.textContent = "Indique o nome.";     erroModal.hidden = false; return; }
-        if (!email)    { erroModal.textContent = "Indique o email.";    erroModal.hidden = false; return; }
-        if (!telemovel){ erroModal.textContent = "Indique o telemóvel.";erroModal.hidden = false; return; }
-        if (!pw)       { erroModal.textContent = "Defina uma password.";erroModal.hidden = false; return; }
-
-        try {
-            await window.api.post("/gestores", { nome, empresa, email, telemovel, pw });
-            fecharModal();
-            await carregar();
-        } catch (e) {
-            erroModal.textContent = e.message || "Não foi possível criar o gestor.";
-            erroModal.hidden = false;
-        }
     });
 
     // ── Ativar / Desativar ────────────────────────────────────────────────────

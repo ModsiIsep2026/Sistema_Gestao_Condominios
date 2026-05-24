@@ -101,11 +101,11 @@
     await carregar();
 
     // Admin só vê, não cria
-    if (eAdmin) {
-        const btnNovo = document.getElementById("btn-novo");
-        if (btnNovo) btnNovo.hidden = true;
-        return;
-    }
+    if (eAdmin) return;
+
+    // Gestor pode adicionar
+    const btnNovoEl = document.getElementById("btn-novo");
+    if (btnNovoEl) btnNovoEl.style.display = "";
 
     // ── Pesquisa ──────────────────────────────────────────────────────────────
     document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {

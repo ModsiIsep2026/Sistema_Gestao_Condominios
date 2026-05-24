@@ -32,6 +32,11 @@ def listar(db: Session = Depends(get_db)):
     return servico.listar(db)
 
 
+@router.get("/todos", response_model=List[LerParceiro])
+def listar_todos(_=Depends(verificar_a), db: Session = Depends(get_db)):
+    return servico.listar_todos(db)
+
+
 @router.get("/{id}", response_model=LerParceiro)
 def obter(id: int, db: Session = Depends(get_db)):
     return servico.obter(db, id)

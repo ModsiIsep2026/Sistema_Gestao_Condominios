@@ -1,4 +1,4 @@
-from pydantic import field_validator
+from pydantic import BaseModel, field_validator
 from datetime import datetime
 
 from app.estruturas.aluguer_base import AluguerBase

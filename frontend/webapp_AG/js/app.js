@@ -55,6 +55,7 @@
                     titulo: "Recursos",
                     links: [
                         { url: "gestores.html",    icone: iconeGestor(),     nome: "Gestores" },
+                        { url: "adesoes.html",     icone: iconeGrafico(),    nome: "Adesões" },
                         { url: "parceiros.html",   icone: iconeFornecedor(), nome: "Parceiros" },
                     ],
                 },
@@ -130,7 +131,7 @@
 
     // ── Páginas permitidas por tipo ───────────────────────────────────────────
     const PAGINAS_PERMITIDAS = {
-        admin:   ["index.html", "edificios.html", "mapa.html", "gestores.html", "parceiros.html", "perfil.html"],
+        admin:   ["index.html", "edificios.html", "mapa.html", "gestores.html", "adesoes.html", "parceiros.html", "perfil.html"],
         gestor:  ["index.html", "edificios.html", "mapa.html", "reservas.html", "avarias.html",
                   "quotas.html", "relatorios.html", "condominos.html", "tecnicos.html", "perfil.html"],
         tecnico: ["index.html", "avarias.html", "perfil.html"],
@@ -148,7 +149,7 @@
         const seccoes = obterNavegacao();
         let html = `
             <div class="app-sidebar__logo">
-                <img src="../shared/img/logo.png" alt="">
+                <img src="../visuais/img/logo.png" alt="">
                 <div class="app-sidebar__logo-texto">Gestão<br>Condomínios</div>
             </div>
             <nav class="app-sidebar__nav">
@@ -248,5 +249,6 @@
     function iconeMapa()       { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>'; }
     function iconeUtilizador() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; }
     function iconeGestor()     { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>'; }
+    function iconeGrafico()    { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>'; }
 
 })();

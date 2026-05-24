@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
@@ -8,28 +8,20 @@ from app.logica import gestor as servico
 
 router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
-# (GET)    /gestores
-# Lista os gestores do sistema.
-
-
-# (GET)    /gestores/{id}
-# Mostra os dados de um gestor.
-
-
-# (POST)   /gestores
-# Cria um novo gestor.
-
-
-# (PUT)    /gestores/{id}
-# Atualiza um gestor.
-
-
-# (DELETE) /gestores/{id}
-# Remove um gestor.
 
 @router.get("", response_model=List[LerGestor])
 def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):
-    return servico.listar(db)
+    return servico.listar_todos(db)
+
+
+@router.get("/adesoes")
+def adesoes(
+    dias: int = Query(default=30, ge=1, le=365),
+    _=Depends(verificar_a),
+    db: Session = Depends(get_db),
+):
+    """Devolve o nº de gestores que aderiram por dia nos últimos N dias."""
+    return servico.adesoes_por_dia(db, dias)
 
 
 @router.get("/{id}", response_model=LerGestor)

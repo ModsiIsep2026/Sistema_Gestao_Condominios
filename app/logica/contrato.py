@@ -14,6 +14,21 @@ from app.tabelas_bd.gestor import Gestor
 cfg = get_configs()
 
 
+def verificar_expirados(db: Session) -> None:
+    """Marca como inativos os contratos cuja data_fim já passou e sincroniza gestor.status."""
+    hoje = date.today()
+    expirados = db.query(Contrato).filter(
+        Contrato.status == 1,
+        Contrato.data_fim < hoje,
+    ).all()
+    for c in expirados:
+        c.status = 0
+        if c.gestor:
+            c.gestor.status = 0
+    if expirados:
+        db.commit()
+
+
 #pagamentos pelo stripe
 
 def stripe_client():

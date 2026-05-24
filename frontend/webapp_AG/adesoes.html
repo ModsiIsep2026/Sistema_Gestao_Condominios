@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt" ng-app="appAdesoes">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adesões de Gestores — Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/adesoes.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+
+    <div ng-controller="AdesoesCtrl">
+        <header class="app-topbar"></header>
+
+        <main class="app-main">
+
+            <!-- Cabeçalho -->
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Adesões de Gestores</h1>
+                    <p>Acompanhe quantos gestores aderiram à plataforma ao longo do tempo.</p>
+                </div>
+            </div>
+
+            
+            <div class="kpis" style="grid-template-columns: repeat(3,1fr); margin-bottom: var(--esp-5);">
+                <div class="kpi kpi--ok">
+                    <div class="kpi__rotulo">No período selecionado</div>
+                    <div class="kpi__valor">{{ totalPeriodo }}</div>
+                    <div class="kpi__sub">{{ labelPeriodo }}</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__rotulo">Hoje</div>
+                    <div class="kpi__valor">{{ totalHoje }}</div>
+                    <div class="kpi__sub">Novas adesões</div>
+                </div>
+                <div class="kpi kpi--alerta">
+                    <div class="kpi__rotulo">Total na plataforma</div>
+                    <div class="kpi__valor">{{ totalGeral }}</div>
+                    <div class="kpi__sub">Todos os gestores</div>
+                </div>
+            </div>
+
+            
+            <div class="painel">
+                <div class="painel__cabecalho" style="flex-wrap:wrap; gap:var(--esp-3);">
+                    <h2>Adesões por dia</h2>
+                    <div class="periodo-btns">
+                        <button
+                            ng-repeat="p in periodos"
+                            class="btn btn--outline btn-periodo"
+                            ng-class="{'ativo-periodo': p.dias === periodoAtivo}"
+                            ng-click="selecionarPeriodo(p.dias)">
+                            {{ p.label }}
+                        </button>
+                    </div>
+                </div>
+                <div class="painel__corpo">
+                    <div ng-if="carregando" class="estado-carregando">
+                        <div class="spinner"></div>
+                        <span>A carregar dados...</span>
+                    </div>
+                    <div ng-if="!carregando && totalPeriodo === 0" class="app-vazio" style="padding: var(--esp-6) 0;">
+                        <h3>Sem adesões</h3>
+                        <p>Não houve novas adesões {{ labelPeriodo.toLowerCase() }}.</p>
+                    </div>
+                    <div ng-if="!carregando" style="position:relative; height:320px;">
+                        <canvas id="grafico-adesoes"></canvas>
+                    </div>
+                </div>
+            </div>
+
+
+        </main>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="../visuais/js/api.js"></script>
+<script src="js/app.js"></script>
+<script src="js/adesoes.js"></script>
+</body>
+</html>

@@ -50,7 +50,7 @@
 
         let html = `
             <div class="app-sidebar__logo">
-                <img src="../shared/img/logo.png" alt="">
+                <img src="../visuais/img/logo.png" alt="">
                 <div class="app-sidebar__logo-texto">Gestão<br>Condomínios</div>
             </div>
             <nav class="app-sidebar__nav">`;

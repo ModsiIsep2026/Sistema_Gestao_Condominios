@@ -4,6 +4,32 @@
 
     let dados = [];
 
+    // ── Modal de confirmação ──────────────────────────────────────────────────
+    function confirmar(texto) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById("modal-confirmar");
+            document.getElementById("confirmar-texto").textContent = texto;
+            overlay.hidden = false;
+
+            function fechar(resultado) {
+                overlay.hidden = true;
+                btnOk.removeEventListener("click", onOk);
+                btnCancelar.removeEventListener("click", onCancelar);
+                btnCancelar2.removeEventListener("click", onCancelar);
+                resolve(resultado);
+            }
+            const btnOk       = document.getElementById("confirmar-ok");
+            const btnCancelar  = document.getElementById("confirmar-cancelar");
+            const btnCancelar2 = document.getElementById("confirmar-cancelar2");
+            const onOk       = () => fechar(true);
+            const onCancelar = () => fechar(false);
+            btnOk.addEventListener("click", onOk);
+            btnCancelar.addEventListener("click", onCancelar);
+            btnCancelar2.addEventListener("click", onCancelar);
+        });
+    }
+
+    // ── Renderização ─────────────────────────────────────────────────────────
     function renderizar(lista) {
         const tbody = document.querySelector('[data-tabela="fornecedores"]');
         if (!lista.length) {
@@ -17,29 +43,31 @@
             return;
         }
         tbody.innerHTML = lista.map((p) => {
+            const ativo = p.status === 1;
             const site = p.site
                 ? `<a href="${p.site.startsWith("http") ? p.site : "https://" + p.site}"
                        target="_blank" rel="noopener noreferrer" style="color:var(--cor-primaria);">
                        ${p.site.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                    </a>`
                 : "—";
+            const acoes = ativo
+                ? `<button data-acao="editar"  data-id="${p.id}">Editar</button>
+                   <button class="perigo" data-acao="desativar" data-id="${p.id}" data-nome="${p.nome}">Remover</button>`
+                : `<button data-acao="ativar" data-id="${p.id}">Ativar</button>`;
             return `
-                <tr>
+                <tr style="${ativo ? "" : "opacity:0.45;"}">
                     <td><strong>${p.nome}</strong></td>
                     <td>${p.servico ? `<span class="estado estado--neutro">${p.servico}</span>` : "—"}</td>
                     <td>${p.localizacao || "—"}</td>
                     <td>${site}</td>
-                    <td class="app-tabela__acoes">
-                        <button data-acao="editar" data-id="${p.id}">Editar</button>
-                        <button class="perigo" data-acao="remover" data-id="${p.id}">Remover</button>
-                    </td>
+                    <td class="app-tabela__acoes">${acoes}</td>
                 </tr>`;
         }).join("");
     }
 
     async function carregar() {
         try {
-            dados = await window.api.get("/parceiros");
+            dados = await window.api.get("/parceiros/todos");
             renderizar(dados);
         } catch (e) {
             document.querySelector('[data-tabela="fornecedores"]').innerHTML =
@@ -49,6 +77,7 @@
 
     await carregar();
 
+    // ── Pesquisa ─────────────────────────────────────────────────────────────
     document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
         const termo = e.target.value.toLowerCase().trim();
         if (!termo) return renderizar(dados);
@@ -59,9 +88,10 @@
         ));
     });
 
-    const modal    = document.getElementById("modal-fornecedor");
-    const erro     = document.getElementById("erro-fornecedor");
-    const titulo   = document.getElementById("modal-titulo");
+    // ── Modal criar/editar ────────────────────────────────────────────────────
+    const modal  = document.getElementById("modal-fornecedor");
+    const erro   = document.getElementById("erro-fornecedor");
+    const titulo = document.getElementById("modal-titulo");
 
     function abrirModal(parceiro = null) {
         erro.hidden = true;
@@ -107,13 +137,11 @@
             ? (siteRaw.startsWith("http") ? siteRaw : `https://${siteRaw}`)
             : null;
 
-        const dadosParaEnviar = { nome, servico, localizacao, site };
-
         try {
             if (id) {
-                await window.api.put(`/parceiros/${id}`, dadosParaEnviar);
+                await window.api.put(`/parceiros/${id}`, { nome, servico, localizacao, site });
             } else {
-                await window.api.post("/parceiros", dadosParaEnviar);
+                await window.api.post("/parceiros", { nome, servico, localizacao, site });
             }
             fecharModal();
             await carregar();
@@ -123,19 +151,25 @@
         }
     });
 
+    // ── Ações na tabela ───────────────────────────────────────────────────────
     document.querySelector('[data-tabela="fornecedores"]').addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
         if (!btn) return;
         const id      = parseInt(btn.dataset.id);
         const parceiro = dados.find((p) => p.id === id);
 
-        if (btn.dataset.acao === "editar")  { abrirModal(parceiro); }
-        if (btn.dataset.acao === "remover") {
-            if (!confirm(`Remover o parceiro "${parceiro?.nome}"?`)) return;
-            try {
-                await window.api.delete(`/parceiros/${id}`);
-                await carregar();
-            } catch (err) { alert(err.message); }
+        if (btn.dataset.acao === "editar") {
+            abrirModal(parceiro);
+        }
+
+        if (btn.dataset.acao === "desativar") {
+            try { await window.api.delete(`/parceiros/${id}`); } catch (_) {}
+            await carregar();
+        }
+
+        if (btn.dataset.acao === "ativar") {
+            try { await window.api.put(`/parceiros/${id}`, { status: 1 }); } catch (_) {}
+            await carregar();
         }
     });
 

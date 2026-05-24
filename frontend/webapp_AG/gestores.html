@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestores — Gestão de Condomínios</title>
-<link rel="stylesheet" href="../shared/css/tokens.css">
-<link rel="stylesheet" href="../shared/css/base.css">
-<link rel="stylesheet" href="../shared/css/componentes.css">
+<link rel="stylesheet" href="../visuais/css/tokens.css">
+<link rel="stylesheet" href="../visuais/css/base.css">
+<link rel="stylesheet" href="../visuais/css/componentes.css">
 <link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
@@ -21,16 +21,13 @@
                     <h1>Gestores</h1>
                     <p>Gestores de condomínio registados na plataforma.</p>
                 </div>
-                <div class="app-cabecalho__acoes">
-                    <button type="button" class="btn btn--primario" id="btn-novo-gestor">Adicionar gestor</button>
-                </div>
             </div>
 
             <div class="app-filtros">
                 <input type="search" placeholder="Procurar por nome ou email..." data-pesquisa>
                 <select id="filtro-estado">
-                    <option value="todos">Todos os estados</option>
-                    <option value="ativos" selected>Apenas ativos</option>
+                    <option value="todos" selected>Todos os estados</option>
+                    <option value="ativos">Apenas ativos</option>
                     <option value="inativos">Apenas inativos</option>
                 </select>
             </div>
@@ -42,11 +39,12 @@
                             <th>Nome</th>
                             <th>Empresa</th>
                             <th>Email</th>
+                            <th>Telemóvel</th>
+                            <th>Validade do contrato</th>
                             <th>Estado</th>
-                            <th></th>
                         </tr>
                     </thead>
-                    <tbody data-tabela="gestores"><tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
+                    <tbody data-tabela="gestores"><tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
                 </table>
             </div>
 
@@ -54,46 +52,8 @@
     </div>
 </div>
 
-<!-- Modal: criar gestor -->
-<div class="modal-overlay" id="modal-gestor" hidden>
-    <div class="modal">
-        <div class="modal__cabecalho">
-            <h3>Adicionar gestor</h3>
-            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
-        </div>
-        <div class="modal__corpo">
-            <div id="erro-gestor" class="login-erro" hidden></div>
-            <form id="form-gestor">
-                <div class="campo">
-                    <label for="g-nome">Nome completo</label>
-                    <input type="text" id="g-nome" required>
-                </div>
-                <div class="campo">
-                    <label for="g-empresa">Empresa</label>
-                    <input type="text" id="g-empresa" placeholder="Opcional">
-                </div>
-                <div class="campo">
-                    <label for="g-email">Email</label>
-                    <input type="email" id="g-email" required>
-                </div>
-                <div class="campo">
-                    <label for="g-telemovel">Telemóvel</label>
-                    <input type="tel" id="g-telemovel" required>
-                </div>
-                <div class="campo">
-                    <label for="g-pw">Password inicial</label>
-                    <input type="password" id="g-pw" required autocomplete="new-password">
-                </div>
-            </form>
-        </div>
-        <div class="modal__rodape">
-            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
-            <button type="button" class="btn btn--primario" id="btn-criar-gestor">Criar gestor</button>
-        </div>
-    </div>
-</div>
 
-<script src="../shared/js/api.js"></script>
+<script src="../visuais/js/api.js"></script>
 <script src="js/app.js"></script>
 <script src="js/listagem.js"></script>
 <script src="js/gestores.js"></script>
