@@ -71,7 +71,7 @@ ul, ol {
     list-style: none;
 }
 
-/* Container central */
+
 .container {
     width: 100%;
     max-width: var(--largura-max);
@@ -79,7 +79,7 @@ ul, ol {
     padding: 0 var(--esp-5);
 }
 
-/* Secções com respiração */
+
 .seccao {
     padding: var(--esp-9) 0;
 }
@@ -100,7 +100,7 @@ ul, ol {
     color: #FFFFFF;
 }
 
-/* Utilidades */
+
 .texto-centro { text-align: center; }
 .texto-acento { color: var(--cor-acento); }
 .texto-suave { color: var(--cor-texto-suave); }

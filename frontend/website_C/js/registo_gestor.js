@@ -16,7 +16,6 @@
     let licencaSelecionada = null;
     let mesesSelecionados  = null;
 
-    // ── Utilitários ─────────────────────────────────────────────────────────
 
     function mostrarErro(txt) {
         msgErro.textContent = txt;
@@ -30,7 +29,7 @@
             .format(centimos / 100);
     }
 
-    // ── Carregar licenças ───────────────────────────────────────────────────
+
 
     async function carregarLicencas() {
         try {
@@ -64,26 +63,24 @@
         }
     }
 
-    // ── Escolher plano ───────────────────────────────────────────────────────
+
 
     function aoEscolherPlano(card, lic) {
         document.querySelectorAll(".licenca-card").forEach(c => c.classList.remove("selecionado"));
         card.classList.add("selecionado");
         licencaSelecionada = lic;
 
-        // Mostrar seletor de meses (reseta meses)
         mesesSelecionados = null;
         document.querySelectorAll(".mes-btn").forEach(b => b.classList.remove("selecionado"));
         mesesSecao.style.display = "block";
 
-        // Esconder stripe até selecionar meses
+   
         stripeSec.classList.add("oculto");
         if (cardElement) { cardElement.unmount(); cardElement = null; stripe = null; }
         clientSecret = null;
         limparErro();
     }
 
-    // ── Escolher meses → chamar /contratos/iniciar ──────────────────────────
 
     document.querySelectorAll(".mes-btn").forEach(btn => {
         btn.addEventListener("click", () => aoEscolherMeses(btn));
@@ -96,7 +93,7 @@
         btn.classList.add("selecionado");
         mesesSelecionados = parseInt(btn.dataset.meses, 10);
 
-        // Esconder stripe enquanto chama API
+
         stripeSec.classList.add("oculto");
         if (cardElement) { cardElement.unmount(); cardElement = null; stripe = null; }
         clientSecret = null;
@@ -123,7 +120,7 @@
 
             clientSecret = dados.client_secret;
 
-            // Preencher resumo
+       
             const nEd = licencaSelecionada.num_edificios;
             document.getElementById("resumo-edificios").textContent = nEd;
             document.getElementById("resumo-label-ed").textContent  = `edifício${nEd > 1 ? "s" : ""}`;
@@ -132,7 +129,7 @@
             document.getElementById("resumo-detalhe").textContent   =
                 `${fmt(dados.preco_mensal_centimos)} × ${dados.num_meses} mês${dados.num_meses > 1 ? "es" : ""} = total`;
 
-            // Montar Stripe
+         
             stripe = Stripe(dados.publishable_key);
             const elements = stripe.elements();
             cardElement = elements.create("card", {
@@ -159,7 +156,7 @@
         }
     }
 
-    // ── Passo 1 → Passo 2 ────────────────────────────────────────────────────
+
 
     formDados.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -186,7 +183,7 @@
         if (!licencasBox.querySelector(".licencas-grid")) await carregarLicencas();
     });
 
-    // ── Voltar ao passo 1 ────────────────────────────────────────────────────
+
 
     document.getElementById("btn-voltar").addEventListener("click", () => {
         limparErro();
@@ -205,7 +202,7 @@
         document.querySelectorAll(".mes-btn").forEach(b => b.classList.remove("selecionado"));
     });
 
-    // ── Confirmar pagamento ──────────────────────────────────────────────────
+
 
     document.getElementById("form-pagamento").addEventListener("submit", async (e) => {
         e.preventDefault();

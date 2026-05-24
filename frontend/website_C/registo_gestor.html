@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aderir à plataforma — Sistema de Gestão de Condomínios</title>
-    <link rel="stylesheet" href="../shared/css/tokens.css">
-    <link rel="stylesheet" href="../shared/css/base.css">
-    <link rel="stylesheet" href="../shared/css/componentes.css">
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
     <link rel="stylesheet" href="css/login.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
-        /* Passos */
+       
         .passos { display:flex; gap:var(--esp-3); margin-bottom:var(--esp-6); }
         .passo { flex:1; padding:var(--esp-2) var(--esp-3); border-radius:4px; font-size:var(--tam-sm); font-weight:600; text-align:center; background:var(--cor-fundo-alt); color:var(--cor-texto-suave); }
         .passo--ativo { background:var(--cor-primaria); color:#fff; }
         .passo--feito { background:var(--cor-acento); color:#fff; }
 
-        /* Cartões de licença */
+        
         .licencas-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
         .licenca-card {
             border:2px solid var(--cor-borda); border-radius:6px;
@@ -31,13 +31,13 @@
         .licenca-card__preco { font-size:14px; font-weight:700; }
         .licenca-card__preco small { font-size:11px; font-weight:400; opacity:.8; }
 
-        /* Stripe */
+     
         #stripe-card { border:1px solid var(--cor-borda); border-radius:4px; padding:12px; background:#fff; }
 
-        /* Secção de carregamento */
+      
         .a-carregar-txt { text-align:center; color:var(--cor-texto-suave); font-size:13px; padding:20px 0; }
 
-        /* Seletor de meses */
+        
         .meses-grid { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
         .mes-btn {
             flex:1; min-width:70px; padding:10px 8px; text-align:center;
@@ -50,7 +50,7 @@
         .mes-btn.selecionado { border-color:var(--cor-primaria); background:var(--cor-primaria); color:#fff; }
         .mes-btn__desconto { display:block; font-size:10px; font-weight:500; margin-top:2px; opacity:.8; }
 
-        /* Stripe section fade-in */
+     
         #stripe-secao { transition: opacity .25s; }
         #stripe-secao.oculto { opacity:0; pointer-events:none; height:0; overflow:hidden; }
     </style>
@@ -58,7 +58,7 @@
 <body class="login-body">
 
     <div class="login-fundo">
-        <img src="../shared/img/predios.jpg" alt="">
+        <img src="../visuais/img/predios.jpg" alt="">
         <div class="login-fundo__overlay"></div>
     </div>
 
@@ -69,7 +69,7 @@
 
             <div class="login-card__topo">
                 <a href="index.html" class="login-logo">
-                    <img src="../shared/img/logo.png" alt="Sistema de Gestão de Condomínios">
+                    <img src="../visuais/img/logo.png" alt="Sistema de Gestão de Condomínios">
                 </a>
                 <h1>Crie a sua conta de gestor em 2 passos.</h1>
             </div>
@@ -81,7 +81,7 @@
 
             <div id="msg-erro" class="login-erro" hidden></div>
 
-            <!-- ── Passo 1: Dados pessoais ─────────────────────────────────── -->
+
             <form id="form-dados" class="login-form" novalidate>
                 <div class="campo">
                     <label for="nome">Nome completo</label>
@@ -106,10 +106,10 @@
                 </button>
             </form>
 
-            <!-- ── Passo 2: Plano + Pagamento ─────────────────────────────── -->
+
             <div id="secao-pagamento" style="display:none;">
 
-                <!-- Seletor de planos -->
+             
                 <p style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--cor-texto);">
                     Escolha o seu plano
                 </p>
@@ -117,7 +117,6 @@
                     <div class="a-carregar-txt">A carregar planos…</div>
                 </div>
 
-                <!-- Seletor de meses (aparece depois de escolher plano) -->
                 <div id="meses-secao" style="display:none;">
                     <p style="font-size:13px;font-weight:600;margin:4px 0 10px;color:var(--cor-texto);">
                         Duração do contrato
@@ -133,7 +132,7 @@
                 <div id="stripe-secao" class="oculto">
                     <hr style="border:none;border-top:1px solid var(--cor-borda);margin:20px 0;">
 
-                    <!-- Resumo do plano selecionado -->
+  
                     <div id="resumo-plano" style="
                         display:flex; align-items:center; gap:16px;
                         background:var(--cor-fundo-alt); border:2px solid var(--cor-primaria);
@@ -149,10 +148,6 @@
                             <div id="resumo-detalhe" style="font-size:12px;color:var(--cor-texto-suave);"></div>
                         </div>
                     </div>
-
-                    <p style="font-size:12px;color:var(--cor-texto-suave);margin-bottom:14px;">
-                        🔒 Pagamento seguro pelo Stripe. Os dados do cartão não são armazenados nos nossos servidores.
-                    </p>
 
                     <form id="form-pagamento" class="login-form">
                         <div class="campo">
@@ -173,7 +168,7 @@
         </div>
     </main>
 
-    <script src="../shared/js/api.js"></script>
+    <script src="../visuais/js/api.js"></script>
     <script src="js/registo_gestor.js"></script>
 </body>
 </html>

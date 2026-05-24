@@ -34,7 +34,6 @@
             min-height: 100vh;
         }
 
-        /* ── Painel esquerdo — imagem ──────────────────────────────────────── */
         .painel-imagem {
             position: relative;
             overflow: hidden;
@@ -78,7 +77,7 @@
             font-size: 13px; opacity: .6;
         }
 
-        /* ── Painel direito — formulário ───────────────────────────────────── */
+ 
         .painel-form {
             display: flex; flex-direction: column;
             justify-content: center; align-items: center;
@@ -107,7 +106,6 @@
             font-size: 14px; color: var(--suave); margin-bottom: 32px;
         }
 
-        /* ── Selector de perfil ─────────────────────────────────────────────── */
         .perfil-tabs {
             display: grid; grid-template-columns: repeat(4, 1fr);
             gap: 6px; margin-bottom: 24px;
@@ -125,7 +123,7 @@
             border-color: var(--azul); background: var(--azul); color: #fff;
         }
 
-        /* ── Campos ────────────────────────────────────────────────────────── */
+   
         .campo { margin-bottom: 18px; }
         .campo label {
             display: block; font-size: 13px; font-weight: 500;
@@ -153,7 +151,7 @@
         .campo__link { font-size: 12px; color: var(--acento); text-decoration: none; }
         .campo__link:hover { text-decoration: underline; }
 
-        /* ── Botão principal ────────────────────────────────────────────────── */
+
         .btn-entrar {
             width: 100%; padding: 13px;
             background: var(--azul); color: #fff;
@@ -165,14 +163,13 @@
         .btn-entrar:hover { background: #0d2d52; }
         .btn-entrar:disabled { opacity: .6; cursor: not-allowed; }
 
-        /* ── Erro ───────────────────────────────────────────────────────────── */
         #login-erro {
             background: #FEF2F2; border-left: 3px solid var(--erro);
             padding: 10px 14px; font-size: 13px; color: var(--erro);
             margin-bottom: 18px;
         }
 
-        /* ── Separador ──────────────────────────────────────────────────────── */
+
         .separador {
             display: flex; align-items: center; gap: 12px;
             margin: 24px 0; font-size: 12px; color: var(--suave);
@@ -181,7 +178,7 @@
             content: ''; flex: 1; height: 1px; background: var(--borda);
         }
 
-        /* ── Botões OAuth ───────────────────────────────────────────────────── */
+
         .oauth-btns { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
         .btn-oauth {
             display: flex; align-items: center; gap: 12px;
@@ -200,7 +197,6 @@
         .rodape-form a { color: var(--azul); font-weight: 500; text-decoration: none; }
         .rodape-form a:hover { text-decoration: underline; }
 
-        /* ── Responsive ─────────────────────────────────────────────────────── */
         @media (max-width: 768px) {
             body { grid-template-columns: 1fr; }
             .painel-imagem { display: none; }
@@ -210,13 +206,13 @@
 </head>
 <body>
 
-    <!-- Painel esquerdo -->
+
     <div class="painel-imagem">
-        <img src="../shared/img/predios.jpg" alt="">
+        <img src="../visuais/img/predios.jpg" alt="">
         <div class="painel-imagem__overlay"></div>
         <div class="painel-imagem__conteudo">
             <a href="index.html" class="painel-imagem__logo">
-                <img src="../shared/img/logo.png" alt="Logo">
+                <img src="../visuais/img/logo.png" alt="Logo">
                 <span>Gestão de<br>Condomínios</span>
             </a>
             <p class="painel-imagem__frase">
@@ -227,7 +223,7 @@
         </div>
     </div>
 
-    <!-- Painel direito -->
+
     <div class="painel-form">
         <div class="painel-form__interior">
 
@@ -293,7 +289,7 @@
         </div>
     </div>
 
-    <script src="../shared/js/api.js"></script>
+    <script src="../visuais/js/api.js"></script>
     <script src="js/login.js"></script>
 </body>
 </html>

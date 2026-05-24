@@ -1,4 +1,3 @@
-/* Repor password — usa o token recebido por email (?token=...) */
 
 (function () {
 
@@ -8,7 +7,7 @@
     const inputPassword = document.getElementById("password");
     const inputConfirm = document.getElementById("confirm_password");
 
-    // Olho — alterna visibilidade dos campos password
+   
     document.querySelectorAll(".toggle-pass").forEach((botao) => {
         botao.addEventListener("click", () => {
             const alvo = document.getElementById(botao.dataset.target);

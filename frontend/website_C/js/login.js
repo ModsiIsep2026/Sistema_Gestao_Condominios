@@ -6,7 +6,7 @@
     const inputEmail = document.getElementById("email");
     const inputPw    = document.getElementById("password");
 
-    // ── Redirecionar conforme o tipo do JWT ───────────────────────────────────
+
     function decodificarToken(token) {
         try {
             return JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
@@ -23,7 +23,6 @@
         }
     }
 
-    // ── Utilitários ───────────────────────────────────────────────────────────
     function mostrarErro(msg) { erro.textContent = msg; erro.hidden = false; }
     function limparErro()     { erro.hidden = true; erro.textContent = ""; }
 
@@ -33,7 +32,7 @@
         sessionStorage.removeItem("aviso_login");
     }
 
-    // ── Toggle password ───────────────────────────────────────────────────────
+
     document.querySelectorAll(".toggle-pass").forEach((btn) => {
         btn.addEventListener("click", () => {
             const alvo = document.getElementById(btn.dataset.target);
@@ -45,7 +44,6 @@
         });
     });
 
-    // ── Submit ────────────────────────────────────────────────────────────────
     form?.addEventListener("submit", async (e) => {
         e.preventDefault();
         limparErro();
@@ -72,7 +70,7 @@
         }
     });
 
-    // ── Botões OAuth ──────────────────────────────────────────────────────────
+
     document.querySelectorAll(".btn-social").forEach((btn) => {
         btn.addEventListener("click", () => {
             const servico = btn.dataset.provider === "outlook" ? "microsoft" : btn.dataset.provider;
@@ -80,7 +78,7 @@
         });
     });
 
-    // ── Token via fragment (OAuth callback) ───────────────────────────────────
+
     if (window.location.hash.startsWith("#token=")) {
         const token = window.location.hash.slice("#token=".length);
         if (token) {
@@ -95,7 +93,7 @@
         }
     }
 
-    // ── Erro via query string (OAuth erro) ────────────────────────────────────
+
     const params = new URLSearchParams(window.location.search);
     if (params.has("erro"))  mostrarErro(decodeURIComponent(params.get("erro")));
     if (params.has("aviso")) mostrarErro(decodeURIComponent(params.get("aviso")));
