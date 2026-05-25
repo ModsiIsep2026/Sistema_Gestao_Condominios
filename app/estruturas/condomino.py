@@ -24,9 +24,29 @@ class AtualizarCondomino(BaseModel):
     status: Optional[int] = None
 
 
+class LerAptResumo(BaseModel):
+    id: int
+    fracao: str
+    andar: Optional[int] = None
+    id_edificio: int
+
+    class Config:
+        from_attributes = True
+
+
+class LerEdificioResumo(BaseModel):
+    id: int
+    rua: str
+    cidade: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
 class LerCondomino(Condomino):
     id: int
     status: int
+    apartamento: Optional[LerAptResumo] = None
 
     class Config:
         from_attributes = True

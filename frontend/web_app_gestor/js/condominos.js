@@ -18,16 +18,21 @@
                 </td></tr>`;
             return;
         }
-        tbody.innerHTML = lista.map((c) => `
+        tbody.innerHTML = lista.map((c) => {
+            const apt   = c.apartamento;
+            const aptTx = apt ? `Fração ${apt.fracao}${apt.andar != null ? " · " + apt.andar + "º" : ""}` : "—";
+            const tel   = (c.telemovel && !c.telemovel.startsWith("_p")) ? c.telemovel : "—";
+            return `
             <tr>
                 <td><strong>${c.nome}</strong></td>
                 <td>${c.email}</td>
-                <td>${c.telemovel || "—"}</td>
-                <td>${c.fracao ? `Fração ${c.fracao}` : `Apt. ${c.id_apartamento}`}</td>
+                <td>${tel}</td>
+                <td>${aptTx}</td>
                 <td class="app-tabela__acoes">
                     <button data-acao="remover" data-id="${c.id}" class="perigo">Remover</button>
                 </td>
-            </tr>`).join("");
+            </tr>`;
+        }).join("");
     }
 
     async function carregar() {
@@ -84,7 +89,10 @@
         }
 
         try {
-            const apts = await window.api.get(`/apartamentos?id_edificio=${idEdif}`);
+            const [apts, todosCondominos] = await Promise.all([
+                window.api.get(`/apartamentos?id_edificio=${idEdif}`),
+                window.api.get("/condominos").catch(() => []),
+            ]);
             if (!apts.length) {
                 selApt.innerHTML = `<option value="">Sem apartamentos neste edifício</option>`;
                 linkEdificio.innerHTML = `
@@ -96,14 +104,21 @@
                 linkEdificio.style.display = "";
                 return;
             }
-            selApt.innerHTML = `<option value="">Selecionar fração...</option>`;
-            apts.forEach((a) => {
-                const label = a.fracao
-                    ? `Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}`
-                    : `Apt. ${a.id}`;
-                selApt.innerHTML += `<option value="${a.id}">${label}</option>`;
-            });
-            selApt.disabled = false;
+            // Filtrar frações já ocupadas
+            const ocupados = new Set(todosCondominos.map((c) => c.id_apartamento));
+            const livres   = apts.filter((a) => !ocupados.has(a.id));
+
+            if (!livres.length) {
+                selApt.innerHTML = `<option value="">Todas as frações já têm condómino</option>`;
+                selApt.disabled  = true;
+            } else {
+                selApt.disabled  = false;
+                selApt.innerHTML = `<option value="">Selecionar fração...</option>`;
+                livres.forEach((a) => {
+                    const label = `Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}`;
+                    selApt.innerHTML += `<option value="${a.id}">${label}</option>`;
+                });
+            }
         } catch (err) {
             selApt.innerHTML = `<option value="">Erro ao carregar apartamentos</option>`;
         }

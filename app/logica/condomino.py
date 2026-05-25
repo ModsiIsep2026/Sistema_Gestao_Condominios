@@ -76,7 +76,6 @@ def obter(db: Session, id: int):
 
 def criar(db: Session, dados, background: BackgroundTasks = None):
     pw_temp = criar_pw_temp()
-    # Se o gestor não indicou telemóvel, guarda placeholder temporário único
     tel = dados.telemovel if dados.telemovel else f"_p{int(time.time() * 1000)}"
     condomino = Condomino(
         nome=dados.nome,

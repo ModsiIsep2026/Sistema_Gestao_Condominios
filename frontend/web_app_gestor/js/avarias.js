@@ -163,7 +163,6 @@
 
             selParceiro.addEventListener("change", () => {
                 const opt = selParceiro.options[selParceiro.selectedIndex];
-                const nomeEmpresa = document.getElementById("inp-empresa");
                 const contacto    = document.getElementById("inp-contacto");
                 if (opt?.value) {
                     if (nomeEmpresa) nomeEmpresa.value = opt.dataset.nome || "";
@@ -196,7 +195,7 @@
         erroAlocar.style.display = "none";
         document.getElementById("inp-nota").value     = "";
         document.getElementById("inp-empresa").value  = "";
-        document.getElementById("inp-contacto").value = "";
+   
         const sp = document.getElementById("sel-parceiro");
         if (sp) sp.value = "";
         const selTec = document.getElementById("sel-tecnico");
@@ -262,14 +261,7 @@
                     await window.api.put(`/avarias/${avariaSel.id}`, { descricao: descAtual.substring(0, 255) });
                 }
             } else {
-                const empresa = document.getElementById("inp-empresa").value.trim();
-                if (!empresa) {
-                    erroAlocar.textContent   = "Indique o nome da empresa ou serviço.";
-                    erroAlocar.style.display = "";
-                    return;
-                }
-                const contacto = document.getElementById("inp-contacto").value.trim();
-                const infoExt  = contacto ? `${empresa} (${contacto})` : empresa;
+
                 let descAtual  = (avariaSel.descricao || "").replace(/\[Externo:[^\]]*\]\n?/g, "").trim();
                 let novaDesc   = descAtual ? `${descAtual}\n[Externo: ${infoExt}]` : `[Externo: ${infoExt}]`;
                 if (nota) novaDesc += `\nNota: ${nota}`;

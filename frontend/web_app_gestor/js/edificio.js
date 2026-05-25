@@ -87,13 +87,15 @@
             return;
         }
         tbody.innerHTML = condominos.map((c) => {
-            const apt = apartamentos.find((a) => a.id === c.id_apartamento);
+            const apt   = c.apartamento || apartamentos.find((a) => a.id === c.id_apartamento);
+            const aptTx = apt ? `Fração ${apt.fracao}${apt.andar != null ? " · " + apt.andar + "º" : ""}` : "—";
+            const tel   = (c.telemovel && !c.telemovel.startsWith("_p")) ? c.telemovel : "—";
             return `
                 <tr>
                     <td><strong>${c.nome}</strong></td>
                     <td>${c.email}</td>
-                    <td>${c.telemovel || "—"}</td>
-                    <td>${apt ? `Fração ${apt.fracao}` : "—"}</td>
+                    <td>${tel}</td>
+                    <td>${aptTx}</td>
                     <td class="app-tabela__acoes">
                         <button data-acao-cond="remover" data-id="${c.id}" class="perigo">Remover</button>
                     </td>
@@ -124,13 +126,23 @@
         }
     }
 
-    // ── Actualizar select do modal de condómino ───────────────────────────────
+    // ── Actualizar select do modal de condómino (só frações livres) ──────────
     function popularSelectApt() {
         const sel = document.getElementById("cond-apt");
-        sel.innerHTML = `<option value="">Selecionar fração...</option>` +
-            apartamentos.map((a) =>
-                `<option value="${a.id}">Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}</option>`
-            ).join("");
+        // IDs de apartamentos já ocupados
+        const ocupados = new Set(condominos.map((c) => c.id_apartamento));
+        const livres   = apartamentos.filter((a) => !ocupados.has(a.id));
+
+        if (!livres.length) {
+            sel.innerHTML = `<option value="">Todas as frações já têm condómino</option>`;
+            sel.disabled  = true;
+        } else {
+            sel.disabled  = false;
+            sel.innerHTML = `<option value="">Selecionar fração...</option>` +
+                livres.map((a) =>
+                    `<option value="${a.id}">Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}</option>`
+                ).join("");
+        }
     }
 
     // ── Reload completo (fetch + render ambas as tabs) ────────────────────────
@@ -236,9 +248,9 @@
         const email = document.getElementById("cond-email").value.trim();
         const idApt = parseInt(document.getElementById("cond-apt").value);
 
-        if (!nome)        { erroCond.textContent = "Indique o nome.";          erroCond.style.display = ""; return; }
-        if (!email)       { erroCond.textContent = "Indique o email.";         erroCond.style.display = ""; return; }
-        if (isNaN(idApt)) { erroCond.textContent = "Selecione o apartamento."; erroCond.style.display = ""; return; }
+        if (!nome)        { erroCond.textContent = "Indique o nome.";          erroCond.style.display = "block"; return; }
+        if (!email)       { erroCond.textContent = "Indique o email.";         erroCond.style.display = "block"; return; }
+        if (isNaN(idApt)) { erroCond.textContent = "Selecione o apartamento."; erroCond.style.display = "block"; return; }
 
         const btn = document.getElementById("btn-guardar-cond");
         btn.disabled = true;
@@ -249,7 +261,7 @@
             await recarregarTudo();
         } catch (e) {
             erroCond.textContent = e.message || "Erro ao criar condómino.";
-            erroCond.style.display = "";
+            erroCond.style.display = "block";
         } finally {
             btn.disabled = false;
             btn.textContent = "Adicionar";
