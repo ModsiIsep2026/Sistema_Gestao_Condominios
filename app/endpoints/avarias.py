@@ -5,6 +5,7 @@ from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_g, verificar_c, verificar_t, token_atual, verificar_a
 from app.estruturas.registo_avaria import CriarRegistoAvaria, AtualizarRegistoAvaria, LerRegistoAvaria
 from app.estruturas.resolucao_avaria import CriarResolucaoAvaria, AtualizarResolucaoAvaria, LerResolucaoAvaria
+from app.logica import acesso_gestor
 from app.logica import avaria as servico
 
 router = APIRouter(prefix="/avarias", tags=["Avarias"])
@@ -42,7 +43,8 @@ router = APIRouter(prefix="/avarias", tags=["Avarias"])
 # Atualiza o estado da resolução da avaria.
 
 @router.get("", response_model=List[LerRegistoAvaria])
-def listar(id_edificio: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def listar(id_edificio: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_edificio(db, id_edificio, gestor.id)
     return servico.listar_pedificio(db, id_edificio)
 
 
@@ -63,16 +65,23 @@ def obter(id: int, _=Depends(token_atual), db: Session = Depends(get_db)):
 
 @router.post("", response_model=LerRegistoAvaria, status_code=201)
 def criar(dados: CriarRegistoAvaria, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+
+    id_edificio_condomino = condomino.apartamento.id_edificio if condomino.apartamento else None
+    
+    if id_edificio_condomino is None or dados.id_edificio != id_edificio_condomino:
+        raise HTTPException(403, "A avaria tem de ser reportada no seu edifício.")
     return servico.criar(db, dados, condomino.id)
 
 
 @router.put("/{id}", response_model=LerRegistoAvaria)
-def atualizar(id: int, dados: AtualizarRegistoAvaria, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarRegistoAvaria, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_avaria(db, id, gestor.id)
     return servico.atualizar(db, id, dados)
 
 
 @router.post("/{id}/resolucao", response_model=LerResolucaoAvaria, status_code=201)
-def criar_resolucao(id: int, dados: CriarResolucaoAvaria, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def criar_resolucao(id: int, dados: CriarResolucaoAvaria, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_avaria(db, id, gestor.id)
     return servico.criar_resolucao(db, id, dados.id_tecnico)
 
 

@@ -77,13 +77,15 @@ app.include_router(contacto.router)
 
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"
-
-app.mount("/visuais",   StaticFiles(directory=_frontend / "visuais"),              name="visuais")
-app.mount("/website_C", StaticFiles(directory=_frontend / "website_C", html=True), name="website_C")
-app.mount("/webapp_AG", StaticFiles(directory=_frontend / "webapp_AG", html=True), name="webapp_AG")
-app.mount("/webapp_C",  StaticFiles(directory=_frontend / "webapp_C",  html=True), name="webapp_C")
+app.mount("/visuais", StaticFiles(directory=_frontend / "visuais"), name="visuais")
+app.mount("/web_app_visitante", StaticFiles(directory=_frontend / "web_app_visitante", html=True), name="web_app_visitante")
+app.mount("/website_C", StaticFiles(directory=_frontend / "web_app_visitante", html=True), name="website_C_legacy")
+app.mount("/web_app_admin", StaticFiles(directory=_frontend / "web_app_admin", html=True), name="web_app_admin")
+app.mount("/web_app_gestor", StaticFiles(directory=_frontend / "web_app_gestor", html=True), name="web_app_gestor")
+app.mount("/web_app_condomino", StaticFiles(directory=_frontend / "web_app_condomino", html=True), name="web_app_condomino")
+app.mount("/web_app_tecnico", StaticFiles(directory=_frontend / "web_app_tecnico", html=True), name="web_app_tecnico")
 
 
 @app.get("/", include_in_schema=False)
 def raiz():
-    return RedirectResponse(url="/website_C/")
+    return RedirectResponse(url="/web_app_visitante/")

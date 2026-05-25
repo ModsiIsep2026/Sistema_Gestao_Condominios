@@ -1,5 +1,5 @@
 
-const API_BASE = "http://localhost:8080";
+const API_BASE = "";
 const CHAVE_TOKEN = "condo_token";
 
 function obterToken() {
@@ -28,7 +28,7 @@ async function pedido(metodo, endpoint, corpo = null) {
         limparToken();
     }
 
-    // 204 No Content — sem corpo, não tentar fazer .json()
+   
     if (resposta.status === 204) return null;
 
     const tipo = resposta.headers.get("content-type") || "";
@@ -41,7 +41,7 @@ async function pedido(metodo, endpoint, corpo = null) {
             if (typeof detalhe === "string") {
                 mensagem = detalhe;
             } else if (Array.isArray(detalhe)) {
-                // Erros de validação Pydantic (422) — mostrar o primeiro erro de forma legível
+
                 mensagem = detalhe.map((e) => {
                     const campo = (e.loc || []).slice(1).join(" → ") || "campo";
                     return `${campo}: ${e.msg}`;

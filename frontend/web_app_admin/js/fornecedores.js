@@ -9,10 +9,10 @@
         return new Promise((resolve) => {
             const overlay = document.getElementById("modal-confirmar");
             document.getElementById("confirmar-texto").textContent = texto;
-            overlay.hidden = false;
+            overlay.style.display = "";
 
             function fechar(resultado) {
-                overlay.hidden = true;
+                overlay.style.display = "none";
                 btnOk.removeEventListener("click", onOk);
                 btnCancelar.removeEventListener("click", onCancelar);
                 btnCancelar2.removeEventListener("click", onCancelar);
@@ -35,6 +35,7 @@
             tbody.innerHTML = `
                 <tr><td colspan="5">
                     <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                         <h3>Sem parceiros</h3>
                         <p>Adicione o primeiro parceiro ao diretório de serviços externos.</p>
                     </div>
@@ -91,7 +92,7 @@
     const titulo = document.getElementById("modal-titulo");
 
     function abrirModal(parceiro = null) {
-        erro.hidden = true;
+        erro.style.display = "none";
         document.getElementById("form-fornecedor").reset();
         if (parceiro) {
             titulo.textContent = "Editar parceiro";
@@ -104,10 +105,10 @@
             titulo.textContent = "Adicionar parceiro";
             document.getElementById("f-id").value = "";
         }
-        modal.hidden = false;
+        modal.style.display = "";
     }
 
-    function fecharModal() { modal.hidden = true; }
+    function fecharModal() { modal.style.display = "none"; }
 
     document.getElementById("btn-novo").addEventListener("click", () => abrirModal());
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
@@ -116,7 +117,7 @@
     modal.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
 
     document.getElementById("btn-guardar").addEventListener("click", async () => {
-        erro.hidden = true;
+        erro.style.display = "none";
 
         const id          = document.getElementById("f-id").value;
         const nome        = document.getElementById("f-nome").value.trim();
@@ -126,7 +127,7 @@
 
         if (!nome || nome.length < 2) {
             erro.textContent = "Indique o nome da empresa.";
-            erro.hidden = false;
+            erro.style.display = "";
             return;
         }
 
@@ -144,7 +145,7 @@
             await carregar();
         } catch (e) {
             erro.textContent = e.message || "Não foi possível guardar.";
-            erro.hidden = false;
+            erro.style.display = "";
         }
     });
 

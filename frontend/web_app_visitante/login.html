@@ -38,7 +38,7 @@
             position: relative;
             overflow: hidden;
         }
-        .painel-imagem img {
+        .painel-imagem > img {
             width: 100%; height: 100%;
             object-fit: cover;
             display: block;
@@ -58,7 +58,7 @@
             display: flex; align-items: center; gap: 12px;
             text-decoration: none; color: #fff;
         }
-        .painel-imagem__logo img { height: 36px; width: auto; filter: brightness(0) invert(1); }
+        .painel-imagem__logo img { height: 36px; width: auto; }
         .painel-imagem__logo span {
             font-family: 'DM Sans', sans-serif;
             font-weight: 600; font-size: 14px; letter-spacing: .02em;
@@ -235,7 +235,7 @@
             <h1>Bem-vindo de volta</h1>
             <p class="subtitulo">Insira as suas credenciais para aceder à plataforma.</p>
 
-            <div id="login-erro" hidden></div>
+            <div id="login-erro" style="display:none"></div>
 
             <form id="login-form" novalidate>
                 <div class="campo">
@@ -290,6 +290,7 @@
     </div>
 
     <script src="../visuais/js/api.js"></script>
+    <script src="../visuais/js/toast.js"></script>
     <script src="js/login.js"></script>
 </body>
 </html>

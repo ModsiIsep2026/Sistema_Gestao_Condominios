@@ -7,7 +7,7 @@
     justify-content: center;
     gap: var(--esp-2);
     padding: 14px 28px;
-    font-size: var(--tam-base);
+    font-size: var(--tam-sm);
     font-weight: 600;
     line-height: 1;
     border: 2px solid transparent;
@@ -16,7 +16,6 @@
     transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    font-size: var(--tam-sm);
 }
 
 .btn--primario {
@@ -363,3 +362,226 @@
 .badge--aviso   { color: var(--cor-aviso);   border-color: var(--cor-aviso); }
 .badge--erro    { color: var(--cor-erro);    border-color: var(--cor-erro); }
 .badge--info    { color: var(--cor-primaria); border-color: var(--cor-primaria); }
+
+
+/* ══════════════════════════════════════════════════
+   MELHORIA 1 — Sistema de Toasts
+   ══════════════════════════════════════════════════ */
+
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+@keyframes toast-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes toast-saida {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 6px;
+    box-shadow: var(--sombra-media, 0 4px 16px rgba(0,0,0,.16));
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 360px;
+    min-width: 220px;
+    pointer-events: auto;
+    opacity: 0;
+    transform: translateY(16px);
+}
+
+.toast--visivel {
+    animation: toast-entrada 0.28s ease forwards;
+}
+
+.toast--saindo {
+    animation: toast-saida 0.28s ease forwards;
+}
+
+.toast--success {
+    background-color: #F0FDF4;
+    color: #15803D;
+    border: 1px solid #bbf7d0;
+}
+
+.toast--error {
+    background-color: #FEF2F2;
+    color: #B83227;
+    border: 1px solid #fecaca;
+}
+
+.toast--info {
+    background-color: #EFF6FF;
+    color: #0B2240;
+    border: 1px solid #bfdbfe;
+}
+
+.toast__icone {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.toast__msg {
+    line-height: 1.4;
+}
+
+
+/* ══════════════════════════════════════════════════
+   MELHORIA 2 — Skeleton Loading
+   ══════════════════════════════════════════════════ */
+
+@keyframes shimmer {
+    0%   { background-position: -600px 0; }
+    100% { background-position: 600px 0; }
+}
+
+.skeleton {
+    background: #e8e8e8;
+    background-image: linear-gradient(
+        90deg,
+        #e8e8e8 0px,
+        #f4f4f4 200px,
+        #e8e8e8 400px
+    );
+    background-size: 600px 100%;
+    animation: shimmer 1.4s infinite linear;
+    border-radius: 4px;
+}
+
+.skeleton-linha {
+    height: 14px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.skeleton-titulo {
+    height: 20px;
+    width: 40%;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+.skeleton-card {
+    padding: 20px;
+    border: 1px solid var(--cor-borda, #E5E7EB);
+    border-radius: 6px;
+}
+
+.skeleton-kpi {
+    height: 80px;
+    border-radius: 4px;
+}
+
+.skeleton-tabela-linha {
+    height: 44px;
+    border-radius: 0;
+    margin-bottom: 1px;
+}
+
+
+/* ══════════════════════════════════════════════════
+   MELHORIA 5 — Pipeline visual de avaria
+   ══════════════════════════════════════════════════ */
+
+.av-pipeline {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    padding: 16px 0;
+}
+
+.av-pipeline__passo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    position: relative;
+}
+
+.av-pipeline__passo:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    width: 100%;
+    height: 2px;
+    background-color: #D1D5DB;
+    z-index: 0;
+}
+
+.av-pipeline__passo--feito:not(:last-child)::after,
+.av-pipeline__passo--ativo:not(:last-child)::after {
+    background-color: #0B2240;
+}
+
+.av-pipeline__circulo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #D1D5DB;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    font-size: 12px;
+    font-weight: 700;
+    color: #9CA3AF;
+}
+
+.av-pipeline__passo--feito .av-pipeline__circulo {
+    background-color: #15803D;
+    border-color: #15803D;
+    color: #FFFFFF;
+}
+
+.av-pipeline__passo--ativo .av-pipeline__circulo {
+    background-color: #0B2240;
+    border-color: #0B2240;
+    color: #FFFFFF;
+}
+
+.av-pipeline__rotulo {
+    margin-top: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #9CA3AF;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.av-pipeline__passo--feito .av-pipeline__rotulo,
+.av-pipeline__passo--ativo .av-pipeline__rotulo {
+    color: #0B2240;
+}

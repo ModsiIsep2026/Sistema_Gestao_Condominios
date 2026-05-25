@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatórios — Gestão de Condomínios</title>
+<title>Relatorios - Gestao de Condominios</title>
 <link rel="stylesheet" href="../visuais/css/tokens.css">
 <link rel="stylesheet" href="../visuais/css/base.css">
 <link rel="stylesheet" href="../visuais/css/componentes.css">
@@ -18,62 +18,92 @@
 
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
-                    <h1>Relatórios</h1>
-                    <p>Exporte dados financeiros e operacionais do seu condomínio.</p>
+                    <h1>Relatorios</h1>
+                    <p>Exporte dados financeiros e acompanhe um resumo do periodo selecionado.</p>
+                </div>
+            </div>
+
+            <div class="painel">
+                <div class="painel__cabecalho">
+                    <h2>Periodo</h2>
+                </div>
+                <div class="painel__corpo">
+                    <div class="app-filtros" style="margin-bottom:var(--esp-4);">
+                        <input type="date" id="rel-data-inicio">
+                        <input type="date" id="rel-data-fim">
+                        <button type="button" class="btn btn--outline" data-periodo="mes-atual">Mes atual</button>
+                        <button type="button" class="btn btn--outline" data-periodo="30">Ultimos 30 dias</button>
+                        <button type="button" class="btn btn--outline" data-periodo="90">Ultimos 90 dias</button>
+                        <button type="button" class="btn btn--outline" id="btn-limpar-periodo">Limpar</button>
+                    </div>
+                    <div id="rel-periodo-desc" class="kpi__sub">A considerar todos os registos disponiveis.</div>
+                </div>
+            </div>
+
+            <div class="kpis" style="grid-template-columns:repeat(4,1fr);">
+                <div class="kpi">
+                    <div class="kpi__rotulo">Pagamentos</div>
+                    <div class="kpi__valor" id="kpi-pag-total">-</div>
+                    <div class="kpi__sub">Registos no periodo</div>
+                </div>
+                <div class="kpi kpi--ok">
+                    <div class="kpi__rotulo">Pagos</div>
+                    <div class="kpi__valor" id="kpi-pag-pagos">-</div>
+                    <div class="kpi__sub">Quotas liquidadas</div>
+                </div>
+                <div class="kpi kpi--alerta">
+                    <div class="kpi__rotulo">Pendentes</div>
+                    <div class="kpi__valor" id="kpi-pag-pendentes">-</div>
+                    <div class="kpi__sub">Quotas por receber</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__rotulo">Montante</div>
+                    <div class="kpi__valor" id="kpi-pag-montante">-</div>
+                    <div class="kpi__sub">Total do periodo</div>
                 </div>
             </div>
 
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:var(--esp-5);">
-
-         
                 <div class="painel">
                     <div class="painel__cabecalho">
                         <h2>Financeiro</h2>
                     </div>
                     <div class="painel__corpo">
                         <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
-                            Resumo de pagamentos, quotas pagas e em dívida por período.
+                            Exporte o resumo de pagamentos no periodo selecionado em Excel ou PDF.
                         </p>
                         <div style="display:flex;gap:var(--esp-2);flex-wrap:wrap;">
-                            <a id="btn-rel-excel"
-                               href="/relatorios/excel"
-                               target="_blank"
-                               class="btn btn--primario">
+                            <button id="btn-rel-excel" type="button" class="btn btn--primario">
                                 Exportar Excel
-                            </a>
-                            <a id="btn-rel-pdf"
-                               href="/relatorios/pdf"
-                               target="_blank"
-                               class="btn btn--outline">
+                            </button>
+                            <button id="btn-rel-pdf" type="button" class="btn btn--outline">
                                 Exportar PDF
-                            </a>
+                            </button>
                         </div>
-                        <div id="rel-erro" class="login-erro" hidden style="margin-top:var(--esp-3);"></div>
+                        <div id="rel-erro" class="login-erro" style="display:none;margin-top:var(--esp-3);"></div>
                     </div>
                 </div>
 
-               
                 <div class="painel">
                     <div class="painel__cabecalho">
                         <h2>Avarias</h2>
                     </div>
                     <div class="painel__corpo">
                         <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
-                            Listagem de avarias reportadas e o seu estado de resolução.
+                            Listagem de avarias reportadas e o seu estado de resolucao.
                         </p>
                         <div id="kpis-avarias" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
                             <div class="kpi" style="margin-bottom:0;">
                                 <div class="kpi__rotulo">Abertas</div>
-                                <div class="kpi__valor kpi--alerta" id="kpi-av-abertas">—</div>
+                                <div class="kpi__valor kpi--alerta" id="kpi-av-abertas">-</div>
                             </div>
                             <div class="kpi kpi--ok" style="margin-bottom:0;">
                                 <div class="kpi__rotulo">Resolvidas</div>
-                                <div class="kpi__valor" id="kpi-av-resolvidas">—</div>
+                                <div class="kpi__valor" id="kpi-av-resolvidas">-</div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </main>
@@ -82,28 +112,6 @@
 
 <script src="../visuais/js/api.js"></script>
 <script src="js/app.js"></script>
-<script>
-(async function () {
-    await new Promise((r) => setTimeout(r, 200));
-
-    try {
-        const edificios = await window.api.get("/edificios");
-        if (!edificios.length) return;
-        const avarias = await window.api.get(`/avarias?id_edificio=${edificios[0].id}`);
-        document.getElementById("kpi-av-abertas").textContent    = avarias.filter((a) => !a.resolucao || a.resolucao.status !== 1).length;
-        document.getElementById("kpi-av-resolvidas").textContent = avarias.filter((a) => a.resolucao?.status === 1).length;
-    } catch {}
-
-
-    const token = sessionStorage.getItem("condo_token");
-    if (token) {
-        document.querySelectorAll("[id^='btn-rel-']").forEach((a) => {
-            const url = new URL(a.href, window.location.origin);
-            url.searchParams.set("token", token);
-            a.href = url.toString();
-        });
-    }
-})();
-</script>
+<script src="js/relatorios.js"></script>
 </body>
 </html>

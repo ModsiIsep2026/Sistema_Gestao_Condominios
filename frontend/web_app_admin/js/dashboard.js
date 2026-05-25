@@ -1,4 +1,3 @@
-
 (async function () {
 
     for (let i = 0; i < 50 && window.tipoAtual == null; i++) {
@@ -6,7 +5,7 @@
     }
 
     const conteudo = document.getElementById("dashboard-conteudo");
-    const rotulo   = document.querySelector('[data-rotulo="dashboard"]');
+    const rotulo = document.querySelector('[data-rotulo="dashboard"]');
     if (rotulo) rotulo.textContent = "Visão geral da plataforma.";
 
     conteudo.innerHTML = `
@@ -29,7 +28,7 @@
             <div class="painel__corpo" style="display:flex;align-items:center;justify-content:space-between;gap:var(--esp-4);">
                 <div>
                     <div style="font-weight:700;font-size:var(--tam-base);margin-bottom:4px;">Análise de Adesões</div>
-                    <div style="color:var(--cor-texto-suave);font-size:var(--tam-sm);">Veja quantos gestores aderiram por período — hoje, 7, 15 ou 30 dias.</div>
+                    <div style="color:var(--cor-texto-suave);font-size:var(--tam-sm);">Veja quantos gestores aderiram por período na página dedicada.</div>
                 </div>
                 <a href="adesoes.html" class="btn btn--primario" style="white-space:nowrap;">Ver análise</a>
             </div>
@@ -50,14 +49,23 @@
             </div>
         </div>`;
 
-    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    const set = (id, valor) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const num = parseInt(valor, 10);
+        if (!isNaN(num) && window.countUp) {
+            window.countUp(el, num, 600);
+        } else {
+            el.textContent = valor;
+        }
+    };
 
     try {
         const edificios = await window.api.get("/edificios/todos");
         set("kpi-edificios", edificios.length);
         const tbody = document.getElementById("tabela-edificios");
         if (!edificios.length) {
-            tbody.innerHTML = `<tr><td colspan="3" class="app-vazio"><p>Sem edifícios.</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="3"><div class="app-vazio"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><h3>Sem edifícios</h3><p>Ainda não existem edifícios registados na plataforma.</p></div></td></tr>`;
         } else {
             tbody.innerHTML = edificios.slice(0, 10).map((e) => `
                 <tr>
@@ -66,90 +74,22 @@
                     <td>${e.id_gestor}</td>
                 </tr>`).join("");
         }
-    } catch { set("kpi-edificios", "0"); }
+    } catch {
+        set("kpi-edificios", "0");
+    }
 
     try {
         const gestores = await window.api.get("/gestores");
         set("kpi-gestores", gestores.length);
-    } catch { set("kpi-gestores", "0"); }
+    } catch {
+        set("kpi-gestores", "0");
+    }
 
     try {
         const parceiros = await window.api.get("/parceiros");
         set("kpi-parceiros", parceiros.length);
-    } catch { set("kpi-parceiros", "0"); }
-
-    let grafico = null;
-
-    async function carregarGrafico(dias) {
-        try {
-            const dados = await window.api.get(`/gestores/adesoes?dias=${dias}`);
-
-            const fmtLabel = (iso) => {
-                const [, m, d] = iso.split("-");
-                return dias === 1 ? "Hoje" : `${d}/${m}`;
-            };
-
-            const labels = dados.map((r) => fmtLabel(r.data));
-            const totais = dados.map((r) => r.total);
-            const total  = totais.reduce((a, b) => a + b, 0);
-
-            const titulo = document.querySelector(".painel__cabecalho h2");
-            if (titulo) titulo.textContent =
-                `Adesões de gestores — ${total} no${dias === 1 ? " dia de" : "s últimos"} ${dias === 1 ? "hoje" : dias + " dias"}`;
-
-            if (grafico) {
-                grafico.data.labels           = labels;
-                grafico.data.datasets[0].data = totais;
-                grafico.update();
-            } else {
-                const ctx = document.getElementById("grafico-adesoes")?.getContext("2d");
-                if (!ctx) return;
-                grafico = new Chart(ctx, {
-                    type: "bar",
-                    data: {
-                        labels,
-                        datasets: [{
-                            label: "Gestores",
-                            data:  totais,
-                            backgroundColor: "rgba(240,138,36,0.75)",
-                            borderColor:     "rgba(240,138,36,1)",
-                            borderWidth: 1,
-                            borderRadius: 4,
-                        }],
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: (ctx) => ` ${ctx.parsed.y} gestor${ctx.parsed.y !== 1 ? "es" : ""}`,
-                                },
-                            },
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: { stepSize: 1, precision: 0 },
-                                grid: { color: "rgba(0,0,0,.06)" },
-                            },
-                            x: { grid: { display: false } },
-                        },
-                    },
-                });
-            }
-        } catch { }
+    } catch {
+        set("kpi-parceiros", "0");
     }
-
-    await carregarGrafico(1);
-
-    document.querySelectorAll(".btn-periodo").forEach((btn) => {
-        btn.addEventListener("click", async () => {
-            document.querySelectorAll(".btn-periodo").forEach((b) => b.classList.remove("ativo-periodo"));
-            btn.classList.add("ativo-periodo");
-            await carregarGrafico(parseInt(btn.dataset.dias));
-        });
-    });
 
 })();

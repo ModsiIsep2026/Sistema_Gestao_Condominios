@@ -4,6 +4,7 @@ from typing import List
 from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_a, verificar_g
 from app.estruturas.edificio import CriarEdificio, AtualizarEdificio, LerEdificio
+from app.logica import acesso_gestor
 from app.logica import edificio as servico
 
 router = APIRouter(prefix="/edificios", tags=["Edifícios"])
@@ -42,7 +43,8 @@ def listar_todos(_=Depends(verificar_a), db: Session = Depends(get_db)):
 
 
 @router.get("/{id}", response_model=LerEdificio)
-def obter(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def obter(id: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_edificio(db, id, gestor.id)
     return servico.obter(db, id)
 
 
@@ -52,10 +54,12 @@ def criar(dados: CriarEdificio, gestor=Depends(verificar_g), db: Session = Depen
 
 
 @router.put("/{id}", response_model=LerEdificio)
-def atualizar(id: int, dados: AtualizarEdificio, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarEdificio, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_edificio(db, id, gestor.id)
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def remover(id: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_edificio(db, id, gestor.id)
     return servico.remover(db, id)

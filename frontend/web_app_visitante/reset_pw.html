@@ -34,8 +34,8 @@
                 <p>Insira o seu email e enviaremos um link para redefinir a password.</p>
             </div>
 
-            <div id="reset-erro"   class="login-erro"    hidden></div>
-            <div id="reset-sucesso" class="login-sucesso" hidden></div>
+            <div id="reset-erro"   class="login-erro"    style="display:none"></div>
+            <div id="reset-sucesso" class="login-sucesso" style="display:none"></div>
 
             <form id="form-recuperar" class="login-form" novalidate>
                 <div class="campo">
@@ -67,13 +67,13 @@
 
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
-            erroEl.hidden = true;
-            sucEl.hidden  = true;
+            erroEl.style.display = "none";
+            sucEl.style.display  = "none";
 
             const email = document.getElementById("email").value.trim();
             if (!email) {
                 erroEl.textContent = "Indique o seu email.";
-                erroEl.hidden = false;
+                erroEl.style.display = "";
                 return;
             }
 
@@ -83,11 +83,11 @@
             try {
                 const res = await window.api.post("/auth/recuperar-password", { email });
                 sucEl.textContent = res?.mensagem || "Se o email existir, receberá um link em breve.";
-                sucEl.hidden = false;
+                sucEl.style.display = "";
                 form.reset();
             } catch (err) {
                 erroEl.textContent = err.message || "Ocorreu um erro. Tente mais tarde.";
-                erroEl.hidden = false;
+                erroEl.style.display = "";
             } finally {
                 btnEnviar.disabled    = false;
                 btnEnviar.textContent = "Enviar link de recuperação";

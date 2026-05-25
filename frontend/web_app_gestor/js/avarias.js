@@ -41,8 +41,9 @@
             tbody.innerHTML = `
                 <tr><td colspan="6">
                     <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                         <h3>Sem avarias</h3>
-                        <p>Nenhuma avaria encontrada para este filtro.</p>
+                        <p>Sem ocorrências registadas. Bom trabalho!</p>
                     </div>
                 </td></tr>`;
             return;
@@ -168,10 +169,10 @@
         document.getElementById("painel-interno").classList.add("visivel");
         document.getElementById("painel-externo").classList.remove("visivel");
 
-        modalAlocar.hidden = false;
+        modalAlocar.style.display = "";
     }
 
-    function fecharModalAlocar() { modalAlocar.hidden = true; avariaSel = null; }
+    function fecharModalAlocar() { modalAlocar.style.display = "none"; avariaSel = null; }
 
     document.querySelectorAll("[data-fechar-modal-alocar]").forEach((el) =>
         el.addEventListener("click", fecharModalAlocar)
@@ -250,12 +251,49 @@
 
     const modalDetalhe = document.getElementById("modal-detalhe");
 
+    function calcularPassosGestor(avaria) {
+        // Passos: Reportada → Atribuída → Em progresso → Resolvida
+        const passos = ["Reportada", "Atribuída", "Em progresso", "Resolvida"];
+        let atual = 0;
+        if (avaria.resolucao) {
+            if (avaria.resolucao.status === 1) atual = 3;
+            else if (avaria.resolucao.id_tecnico != null) atual = 2;
+            else atual = 1;
+        } else if ((avaria.descricao || "").includes("[Externo:")) {
+            atual = 1;
+        }
+        return { passos, atual };
+    }
+
+    function renderizarPipeline(passos, atual) {
+        return `<div class="av-pipeline">` +
+            passos.map((nome, i) => {
+                let cls = "av-pipeline__passo";
+                let icone = "";
+                if (i < atual) {
+                    cls += " av-pipeline__passo--feito";
+                    icone = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+                } else if (i === atual) {
+                    cls += " av-pipeline__passo--ativo";
+                    icone = `<span style="width:8px;height:8px;border-radius:50%;background:#fff;display:inline-block;"></span>`;
+                }
+                return `<div class="${cls}">
+                    <div class="av-pipeline__circulo">${icone}</div>
+                    <div class="av-pipeline__rotulo">${nome}</div>
+                </div>`;
+            }).join("") +
+        `</div>`;
+    }
+
     function abrirModalDetalhe(avaria) {
         const corpo     = document.getElementById("detalhe-corpo");
         const descLimpa = (avaria.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").trim();
         const matchExt  = (avaria.descricao || "").match(/\[Externo: ([^\]]+)\]/);
 
-        let html = `
+        const { passos, atual } = calcularPassosGestor(avaria);
+        let html = renderizarPipeline(passos, atual);
+
+        html += `
             <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);width:130px;">Data</td>
                     <td>${fmtData(avaria.data_registo)}</td></tr>
@@ -285,14 +323,14 @@
         }
 
         corpo.innerHTML = html;
-        modalDetalhe.hidden = false;
+        modalDetalhe.style.display = "";
     }
 
     document.querySelectorAll("[data-fechar-modal-detalhe]").forEach((el) =>
-        el.addEventListener("click", () => { modalDetalhe.hidden = true; })
+        el.addEventListener("click", () => { modalDetalhe.style.display = "none"; })
     );
     modalDetalhe?.addEventListener("click", (e) => {
-        if (e.target === modalDetalhe) modalDetalhe.hidden = true;
+        if (e.target === modalDetalhe) modalDetalhe.style.display = "none";
     });
 
     tbody.addEventListener("click", async (e) => {

@@ -115,7 +115,7 @@
                             <span class="app-topbar__user-perfil">Gestor</span>
                         </span>
                     </button>
-                    <div class="app-topbar__menu" id="menu-user" hidden>
+                    <div class="app-topbar__menu" id="menu-user" style="display:none">
                         <a href="perfil.html">A minha conta</a>
                         <button type="button" class="sair" id="botao-sair">Terminar sessão</button>
                     </div>
@@ -124,11 +124,12 @@
 
         document.getElementById("botao-user").addEventListener("click", (e) => {
             e.stopPropagation();
-            document.getElementById("menu-user").hidden = !document.getElementById("menu-user").hidden;
+            const m = document.getElementById("menu-user");
+            m.style.display = m.style.display === "none" ? "" : "none";
         });
         document.addEventListener("click", () => {
             const m = document.getElementById("menu-user");
-            if (m) m.hidden = true;
+            if (m) m.style.display = "none";
         });
         document.getElementById("botao-sair").addEventListener("click", () => {
             window.api.logout();

@@ -4,6 +4,7 @@ from typing import List
 from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_g, token_atual
 from app.estruturas.espaco import CriarEspaco, AtualizarEspaco, LerEspaco
+from app.logica import acesso_gestor
 from app.logica import espaco as servico
 
 router = APIRouter(prefix="/espacos", tags=["Espaços"])
@@ -38,15 +39,18 @@ def obter(id: int, _=Depends(token_atual), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerEspaco, status_code=201)
-def criar(dados: CriarEspaco, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def criar(dados: CriarEspaco, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_edificio(db, dados.id_edificio, gestor.id)
     return servico.criar(db, dados)
 
 
 @router.put("/{id}", response_model=LerEspaco)
-def atualizar(id: int, dados: AtualizarEspaco, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def atualizar(id: int, dados: AtualizarEspaco, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_espaco(db, id, gestor.id)
     return servico.atualizar(db, id, dados)
 
 
 @router.delete("/{id}")
-def remover(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def remover(id: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_espaco(db, id, gestor.id)
     return servico.remover(db, id)

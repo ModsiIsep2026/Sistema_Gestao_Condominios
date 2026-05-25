@@ -14,8 +14,8 @@ def listar(id_apartamento: Optional[int] = None, _=Depends(verificar_g), db: Ses
     return servico.listar_todos(db) if id_apartamento is None else servico.listar(db, id_apartamento)
 
 
-@router.put("/me", response_model=LerCondomino)
-def atualizar_proprio_perfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+@router.put("/conta", response_model=LerCondomino)
+def atualizar_pperfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.atualizar(db, condomino.id, dados)
 
 
@@ -25,8 +25,7 @@ def obter(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerCondomino, status_code=201)
-def criar(dados: CriarCondomino, background: BackgroundTasks,
-          _=Depends(verificar_g), db: Session = Depends(get_db)):
+def criar(dados: CriarCondomino, background: BackgroundTasks, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.criar(db, dados, background)
 
 

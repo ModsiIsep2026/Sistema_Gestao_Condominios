@@ -19,10 +19,10 @@
 
     function mostrarErro(txt) {
         msgErro.textContent = txt;
-        msgErro.hidden = false;
+        msgErro.style.display = "";
         msgErro.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-    function limparErro() { msgErro.hidden = true; }
+    function limparErro() { msgErro.style.display = "none"; }
 
     function fmt(centimos) {
         return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" })

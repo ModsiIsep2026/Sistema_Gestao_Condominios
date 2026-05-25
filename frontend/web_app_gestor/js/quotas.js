@@ -23,8 +23,9 @@
             tbody.innerHTML = `
                 <tr><td colspan="6">
                     <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
                         <h3>Sem pagamentos</h3>
-                        <p>Ainda não foram gerados pagamentos.</p>
+                        <p>Ainda não foram gerados pagamentos neste edifício.</p>
                     </div>
                 </td></tr>`;
             return;
@@ -142,10 +143,10 @@
         const hoje = new Date();
         inputMes.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
 
-        modal.hidden = false;
+        modal.style.display = "";
     }
 
-    function fecharModal() { modal.hidden = true; }
+    function fecharModal() { modal.style.display = "none"; }
 
     document.getElementById("btn-gerar-quota").addEventListener("click", abrirModal);
     document.getElementById("btn-fechar-gerar").addEventListener("click", fecharModal);

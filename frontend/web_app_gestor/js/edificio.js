@@ -108,9 +108,9 @@
             btn.textContent = "Adicionar";
             document.getElementById("apt-id").value = "";
         }
-        modalApt.hidden = false;
+        modalApt.style.display = "";
     }
-    function fecharModalApt() { modalApt.hidden = true; }
+    function fecharModalApt() { modalApt.style.display = "none"; }
 
     document.getElementById("btn-novo-apt").addEventListener("click", () => abrirModalApt());
     document.querySelectorAll("[data-fechar-apt]").forEach((el) => el.addEventListener("click", fecharModalApt));
@@ -207,9 +207,9 @@
         erroCond.style.display = "none";
         document.getElementById("form-cond").reset();
         popularSelectApt();
-        modalCond.hidden = false;
+        modalCond.style.display = "";
     }
-    function fecharModalCond() { modalCond.hidden = true; }
+    function fecharModalCond() { modalCond.style.display = "none"; }
 
     document.getElementById("btn-novo-cond").addEventListener("click", abrirModalCond);
     document.querySelectorAll("[data-fechar-cond]").forEach((el) => el.addEventListener("click", fecharModalCond));

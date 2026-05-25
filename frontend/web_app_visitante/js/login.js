@@ -27,8 +27,8 @@
         }
     }
 
-    function mostrarErro(msg) { erro.textContent = msg; erro.hidden = false; }
-    function limparErro()     { erro.hidden = true; erro.textContent = ""; }
+    function mostrarErro(msg) { erro.textContent = msg; erro.style.display = ""; }
+    function limparErro()     { erro.style.display = "none"; erro.textContent = ""; }
 
     const avisoLogin = sessionStorage.getItem("aviso_login");
     if (avisoLogin) {
@@ -75,7 +75,7 @@
     });
 
 
-    document.querySelectorAll(".btn-social").forEach((btn) => {
+    document.querySelectorAll(".btn-oauth").forEach((btn) => {
         btn.addEventListener("click", () => {
             const servico = btn.dataset.provider === "outlook" ? "microsoft" : btn.dataset.provider;
             window.location.href = `/auth/${servico}/inicio`;

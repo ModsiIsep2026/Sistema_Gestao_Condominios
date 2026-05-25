@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservar espaço — Gestão de Condomínios</title>
+    <title>Reservar espaco - Gestao de Condominios</title>
     <link rel="stylesheet" href="../visuais/css/tokens.css">
     <link rel="stylesheet" href="../visuais/css/base.css">
     <link rel="stylesheet" href="../visuais/css/componentes.css">
@@ -21,15 +21,14 @@
 
                 <div class="app-cabecalho">
                     <div class="app-cabecalho__titulo">
-                        <h1>Reservar espaço</h1>
-                        <p>Consulte a disponibilidade e reserve espaços comuns do seu condomínio.</p>
+                        <h1>Reservar espaco</h1>
+                        <p>Veja os espacos comuns do seu edificio e reserve por dias.</p>
                     </div>
                     <div class="app-cabecalho__acoes">
                         <button type="button" class="btn btn--primario" id="btn-nova-reserva">Nova reserva</button>
                     </div>
                 </div>
 
-    
                 <div class="painel" style="margin-bottom:var(--esp-5);">
                     <div class="painel__cabecalho">
                         <h2>As minhas reservas</h2>
@@ -38,8 +37,8 @@
                         <table class="app-tabela">
                             <thead>
                                 <tr>
-                                    <th>Espaço</th>
-                                    <th>Início</th>
+                                    <th>Espaco</th>
+                                    <th>Inicio</th>
                                     <th>Fim</th>
                                     <th>Valor</th>
                                 </tr>
@@ -51,22 +50,21 @@
                     </div>
                 </div>
 
-         
                 <div class="painel">
                     <div class="painel__cabecalho">
-                        <h2>Disponibilidade por espaço</h2>
+                        <h2>Disponibilidade por espaco</h2>
                     </div>
                     <div class="painel__corpo">
-                        <div class="campo" style="max-width:320px;margin-bottom:var(--esp-4);">
-                            <label for="sel-espaco">ID do espaço</label>
+                        <div class="campo" style="max-width:360px;margin-bottom:var(--esp-4);">
+                            <label for="sel-espaco">Espaco comum</label>
                             <select id="sel-espaco">
-                                <option value="">— Introduza o ID do espaço —</option>
+                                <option value="">- Selecione um espaco -</option>
                             </select>
                         </div>
                         <div id="calendario-reservas"
                              style="background:var(--cor-fundo-alt);border:1px solid var(--cor-borda);
                                     padding:var(--esp-4);font-size:var(--tam-sm);color:var(--cor-texto-suave);">
-                            Selecione um espaço para ver a disponibilidade.
+                            Selecione um espaco para ver os dias ocupados.
                         </div>
                     </div>
                 </div>
@@ -75,7 +73,6 @@
         </div>
     </div>
 
-
     <div class="modal-overlay" id="modal-reserva" hidden>
         <div class="modal">
             <div class="modal__cabecalho">
@@ -83,20 +80,23 @@
                 <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
             </div>
             <div class="modal__corpo">
-                <div id="erro-reserva" class="login-erro" hidden></div>
+                <div id="erro-reserva" class="login-erro" style="display:none"></div>
                 <form id="form-reserva">
                     <div class="campo">
-                        <label for="r-espaco">ID do espaço</label>
-                        <input type="number" id="r-espaco" min="1" required
-                               placeholder="Consulte o gestor para saber o ID">
+                        <label for="r-espaco">Espaco</label>
+                        <select id="r-espaco" required></select>
                     </div>
                     <div class="campo">
-                        <label for="r-inicio">Data e hora de início</label>
-                        <input type="datetime-local" id="r-inicio" required>
+                        <label for="r-inicio">Dia de inicio</label>
+                        <input type="date" id="r-inicio" required>
                     </div>
                     <div class="campo">
-                        <label for="r-fim">Data e hora de fim</label>
-                        <input type="datetime-local" id="r-fim" required>
+                        <label for="r-fim">Dia de fim</label>
+                        <input type="date" id="r-fim" required>
+                    </div>
+                    <div id="dias-indisponiveis"
+                         style="background:var(--cor-fundo-alt);border:1px solid var(--cor-borda);padding:var(--esp-3);font-size:var(--tam-sm);color:var(--cor-texto-suave);">
+                        Escolha um espaco para ver os dias ja reservados.
                     </div>
                 </form>
             </div>
@@ -108,6 +108,7 @@
     </div>
 
     <script src="../visuais/js/api.js"></script>
+    <script src="../visuais/js/toast.js"></script>
     <script src="js/app.js"></script>
     <script src="js/reservas.js"></script>
 </body>

@@ -1,4 +1,3 @@
-
 (async function () {
 
     for (let i = 0; i < 30; i++) {
@@ -7,16 +6,16 @@
     }
     const u = window.utilizadorAtual || {};
 
-    document.getElementById("perfil-nome").value  = u.nome  || "";
+    document.getElementById("perfil-nome").value = u.nome || "";
     document.getElementById("perfil-email").value = u.email || "";
 
     const campoTelemovel = document.getElementById("campo-telemovel");
-    const campoEmpresa   = document.getElementById("campo-empresa");
+    const campoEmpresa = document.getElementById("campo-empresa");
     if (campoTelemovel) campoTelemovel.style.display = "";
-    if (campoEmpresa)   campoEmpresa.style.display   = "";
+    if (campoEmpresa) campoEmpresa.style.display = "";
 
     document.getElementById("perfil-telemovel").value = u.telemovel || "";
-    document.getElementById("perfil-empresa").value   = u.empresa   || "";
+    document.getElementById("perfil-empresa").value = u.empresa || "";
 
     const msgPerfil = document.getElementById("msg-perfil");
 
@@ -25,21 +24,34 @@
         msgPerfil.style.display = "none";
 
         const dados = {
-            nome:      document.getElementById("perfil-nome").value.trim()      || undefined,
-            email:     document.getElementById("perfil-email").value.trim()     || undefined,
+            nome: document.getElementById("perfil-nome").value.trim() || undefined,
+            email: document.getElementById("perfil-email").value.trim() || undefined,
             telemovel: document.getElementById("perfil-telemovel").value.trim() || undefined,
-            empresa:   document.getElementById("perfil-empresa").value.trim()   || undefined,
+            empresa: document.getElementById("perfil-empresa").value.trim() || undefined,
         };
 
         try {
-            await window.api.put("/gestores/conta", dados);
-            msgPerfil.textContent   = "Alterações guardadas.";
-            msgPerfil.className     = "login-sucesso";
+            const atualizado = await window.api.put("/gestores/conta", dados);
+            window.utilizadorAtual = {
+                ...(window.utilizadorAtual || {}),
+                nome: atualizado.nome,
+                email: atualizado.email,
+                telemovel: atualizado.telemovel,
+                empresa: atualizado.empresa,
+            };
+
+            document.getElementById("perfil-nome").value = atualizado.nome || "";
+            document.getElementById("perfil-email").value = atualizado.email || "";
+            document.getElementById("perfil-telemovel").value = atualizado.telemovel || "";
+            document.getElementById("perfil-empresa").value = atualizado.empresa || "";
+
+            msgPerfil.textContent = "Alteracoes guardadas.";
+            msgPerfil.className = "login-sucesso";
             msgPerfil.style.display = "";
             setTimeout(() => { msgPerfil.style.display = "none"; }, 3000);
         } catch (err) {
-            msgPerfil.textContent   = err.message || "Não foi possível guardar.";
-            msgPerfil.className     = "login-erro";
+            msgPerfil.textContent = err.message || "Nao foi possivel guardar.";
+            msgPerfil.className = "login-erro";
             msgPerfil.style.display = "";
         }
     });
@@ -49,33 +61,33 @@
     document.getElementById("form-pw")?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const pwAtual = document.getElementById("pw-atual").value;
-        const pwNova  = document.getElementById("pw-nova").value;
-        const pwConf  = document.getElementById("pw-confirmar").value;
+        const pwNova = document.getElementById("pw-nova").value;
+        const pwConf = document.getElementById("pw-confirmar").value;
 
         msgPw.style.display = "none";
 
         if (pwNova.length < 8 || !/[A-Z]/.test(pwNova) || !/\d/.test(pwNova)) {
-            msgPw.textContent   = "A nova password precisa de ter pelo menos 8 caracteres, uma maiúscula e um número.";
-            msgPw.className     = "login-erro";
+            msgPw.textContent = "A nova password precisa de ter pelo menos 8 caracteres, uma maiuscula e um numero.";
+            msgPw.className = "login-erro";
             msgPw.style.display = "";
             return;
         }
         if (pwNova !== pwConf) {
-            msgPw.textContent   = "As passwords não coincidem.";
-            msgPw.className     = "login-erro";
+            msgPw.textContent = "As passwords nao coincidem.";
+            msgPw.className = "login-erro";
             msgPw.style.display = "";
             return;
         }
 
         try {
             const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
-            msgPw.textContent   = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
-            msgPw.className     = "login-sucesso";
+            msgPw.textContent = res?.mensagem || "Enviamos um email de confirmacao. Clique no link para concluir.";
+            msgPw.className = "login-sucesso";
             msgPw.style.display = "";
             document.getElementById("form-pw").reset();
         } catch (err) {
-            msgPw.textContent   = err.message || "Não foi possível alterar a password.";
-            msgPw.className     = "login-erro";
+            msgPw.textContent = err.message || "Nao foi possivel alterar a password.";
+            msgPw.className = "login-erro";
             msgPw.style.display = "";
         }
     });

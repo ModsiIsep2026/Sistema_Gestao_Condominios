@@ -11,6 +11,7 @@
             tbody.innerHTML = `
                 <tr><td colspan="5">
                     <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <h3>Sem condóminos</h3>
                         <p>Adicione o primeiro condómino para começar.</p>
                     </div>
@@ -113,9 +114,9 @@
         document.getElementById("form-condomino").reset();
         selApt.innerHTML = `<option value="">Primeiro selecione o edifício</option>`;
         selApt.disabled = true;
-        modal.hidden = false;
+        modal.style.display = "";
     }
-    function fecharModal() { modal.hidden = true; }
+    function fecharModal() { modal.style.display = "none"; }
 
     document.getElementById("btn-novo-condomino")?.addEventListener("click", abrirModal);
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>

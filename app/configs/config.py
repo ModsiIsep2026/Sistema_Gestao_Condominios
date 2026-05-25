@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     SMTP_FROM_NAME: str = "Sistema de Gestão de Condomínios"
 
     
-    PASSWORD_RESET_PATH: str = "/website_C/reset_pw2.html"
+    PASSWORD_RESET_PATH: str = "/web_app_visitante/reset_pw2.html"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60
 
     # Stripe (test mode)

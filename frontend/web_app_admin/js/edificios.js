@@ -102,10 +102,10 @@
             btn.textContent    = "Adicionar";
             document.getElementById("e-id").value = "";
         }
-        modal.hidden = false;
+        modal.style.display = "";
     }
 
-    function fecharModal() { modal.hidden = true; }
+    function fecharModal() { modal.style.display = "none"; }
 
     document.getElementById("btn-novo").addEventListener("click", () => abrirModal());
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>

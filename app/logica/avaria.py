@@ -21,8 +21,7 @@ def listar_ptecnico(db: Session, id_tecnico: int):
 
 
 def listar_pcondomino(db: Session, id_condomino: int):
-    return (
-        db.query(RegistoAvaria)
+    return (db.query(RegistoAvaria)
         .options(_com_resolucao())
         .filter(RegistoAvaria.id_condomino == id_condomino, RegistoAvaria.status == 1)
         .all()
@@ -40,8 +39,7 @@ def listar_pedificio(db: Session, id_edificio: int):
 
 
 def obter(db: Session, id: int):
-    avaria = (
-        db.query(RegistoAvaria)
+    avaria = (db.query(RegistoAvaria)
         .options(_com_resolucao())
         .filter(RegistoAvaria.id == id, RegistoAvaria.status == 1)
         .first()

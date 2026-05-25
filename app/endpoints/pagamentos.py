@@ -7,6 +7,7 @@ from app.tabelas_bd.edificio import Edificio
 from app.tabelas_bd.apartamento import Apartamento
 from app.tabelas_bd.pagamento import Pagamento
 from app.estruturas.pagamento import CriarPagamento, LerPagamento
+from app.logica import acesso_gestor
 from app.logica import pagamento as servico
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
@@ -31,7 +32,8 @@ router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 # Regista o pagamento de uma quota por parte do condómino.
 
 @router.get("", response_model=List[LerPagamento])
-def listar(id_apartamento: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def listar(id_apartamento: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_apartamento(db, id_apartamento, gestor.id)
     return servico.listar(db, id_apartamento)
 
 
@@ -54,7 +56,8 @@ def listar_meus(condomino=Depends(verificar_c), db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=LerPagamento, status_code=201)
-def criar(dados: CriarPagamento, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def criar(dados: CriarPagamento, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_apartamento(db, dados.id_apartamento, gestor.id)
     return servico.criar(db, dados)
 
 
@@ -64,5 +67,6 @@ def pagar(id: int, condomino=Depends(verificar_c), db: Session = Depends(get_db)
 
 
 @router.post("/{id}/marcar-paga", response_model=LerPagamento)
-def marcar_paga(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
+def marcar_paga(id: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+    acesso_gestor.obter_pagamento(db, id, gestor.id)
     return servico.pagamento_feito(db, id)

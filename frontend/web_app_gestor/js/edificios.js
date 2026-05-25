@@ -15,8 +15,9 @@
             tbody.innerHTML = `
                 <tr><td colspan="5">
                     <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="12.01"/><line x1="12" y1="16" x2="12" y2="16.01"/></svg>
                         <h3>Sem edifícios</h3>
-                        <p>${eAdmin ? "Não existem edifícios registados." : "Crie o primeiro edifício para começar."}</p>
+                        <p>${eAdmin ? "Não existem edifícios registados na plataforma." : "Crie o primeiro edifício para começar."}</p>
                     </div>
                 </td></tr>`;
             return;
@@ -102,10 +103,10 @@
             btn.textContent    = "Adicionar";
             document.getElementById("e-id").value = "";
         }
-        modal.hidden = false;
+        modal.style.display = "";
     }
 
-    function fecharModal() { modal.hidden = true; }
+    function fecharModal() { modal.style.display = "none"; }
 
     document.getElementById("btn-novo").addEventListener("click", () => abrirModal());
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>

@@ -614,3 +614,116 @@ body.app-body {
     .app-topbar__user-info { display: none; }
     .app-main { padding: var(--esp-4); }
 }
+
+
+/* ══════════════════════════════════════════════════
+   MELHORIA 3 — Cards de edifício com indicador de saúde
+   ══════════════════════════════════════════════════ */
+
+.edificios-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--esp-4);
+    margin-bottom: var(--esp-5);
+}
+
+@media (max-width: 1100px) {
+    .edificios-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .edificios-grid { grid-template-columns: 1fr; }
+}
+
+.edificio-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    padding: 20px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.edificio-card:hover {
+    border-color: var(--cor-primaria);
+    box-shadow: var(--sombra-suave, 0 2px 8px rgba(0,0,0,.08));
+}
+
+.edificio-card__cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.edificio-card__nome {
+    font-size: var(--tam-sm);
+    font-weight: 700;
+    color: var(--cor-primaria);
+    line-height: 1.3;
+    margin-bottom: 2px;
+}
+
+.edificio-card__cidade {
+    font-size: var(--tam-xs);
+    color: var(--cor-texto-suave);
+}
+
+.edificio-card__saude {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.edificio-card__saude--verde { background-color: #15803D; }
+.edificio-card__saude--amarelo { background-color: #D97706; }
+.edificio-card__saude--vermelho { background-color: #B83227; }
+
+.edificio-card__barra {
+    height: 4px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    background-color: #E5E7EB;
+    overflow: hidden;
+}
+
+.edificio-card__barra-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.edificio-card__barra--verde  .edificio-card__barra-fill { background-color: #15803D; width: 100%; }
+.edificio-card__barra--amarelo .edificio-card__barra-fill { background-color: #D97706; width: 55%; }
+.edificio-card__barra--vermelho .edificio-card__barra-fill { background-color: #B83227; width: 20%; }
+
+.edificio-card__metricas {
+    display: flex;
+    gap: var(--esp-4);
+}
+
+.edificio-card__metrica {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.edificio-card__metrica-valor {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.edificio-card__metrica-rotulo {
+    font-size: var(--tam-xs);
+    color: var(--cor-texto-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.edificio-card__metrica--avarias .edificio-card__metrica-valor { color: var(--cor-erro); }
+.edificio-card__metrica--quotas  .edificio-card__metrica-valor { color: var(--cor-acento); }

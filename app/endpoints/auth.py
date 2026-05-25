@@ -105,7 +105,16 @@ def me(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
     utilizador = _obter_utilizador(tipo, uid, db)
     if not utilizador:
         raise HTTPException(404, "Utilizador não encontrado")
-    return {"id": utilizador.id, "nome": utilizador.nome, "email": utilizador.email, "tipo": tipo}
+
+    resposta = {"id": utilizador.id, "nome": utilizador.nome, "email": utilizador.email, "tipo": tipo}
+    if tipo == "gestor":
+        resposta["telemovel"] = utilizador.telemovel
+        resposta["empresa"] = utilizador.empresa
+    if tipo == "condomino":
+        resposta["telemovel"] = utilizador.telemovel
+        resposta["id_apartamento"] = utilizador.id_apartamento
+        resposta["id_edificio"] = utilizador.apartamento.id_edificio if utilizador.apartamento else None
+    return resposta
 
 
 

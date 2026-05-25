@@ -62,18 +62,18 @@ except ImportError:
 
 
 def redirect_login(token: str):
-    return RedirectResponse(f"/website_C/login.html#token={token}")
+    return RedirectResponse(f"/web_app_visitante/login.html#token={token}")
 
 
 def redirect_register(email: str, msg: str = ""):
-    url = f"/website_C/registo_gestor.html?email={quote(email)}"
+    url = f"/web_app_visitante/registo_gestor.html?email={quote(email)}"
     if msg:
         url += f"&aviso={quote(msg)}"
     return RedirectResponse(url)
 
 
 def redirect_error(msg: str):
-    return RedirectResponse(f"/website_C/login.html?erro={quote(msg)}")
+    return RedirectResponse(f"/web_app_visitante/login.html?erro={quote(msg)}")
 
 
 def callback_url(service: str):

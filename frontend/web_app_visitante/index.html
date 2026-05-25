@@ -318,7 +318,7 @@
             display: flex; align-items: center; gap: 10px;
             font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 16px;
         }
-        .footer__logo img { height: 28px; width: auto; filter: brightness(0) invert(1); }
+        .footer__logo img { height: 28px; width: auto; }
         .footer__descricao { font-size: 13px; line-height: 1.6; }
         .footer h5 { color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
         .footer ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -585,7 +585,7 @@
             </div>
 
             <form id="contacto-form" class="form-contacto">
-                <div id="contacto-mensagem" style="padding:12px;background:#F0FFF4;border-left:3px solid #2E7D32;font-size:13px;color:#2E7D32;" hidden></div>
+                <div id="contacto-mensagem" style="padding:12px;background:#F0FFF4;border-left:3px solid #2E7D32;font-size:13px;color:#2E7D32;display:none"></div>
                 <div class="campo-c">
                     <label for="contacto-nome">Nome</label>
                     <input type="text" id="contacto-nome" placeholder="O seu nome" required>
@@ -645,6 +645,7 @@
     </footer>
 
     <script src="../visuais/js/api.js"></script>
+    <script src="../visuais/js/toast.js"></script>
     <script src="js/contacto.js"></script>
 </body>
 </html>

@@ -22,20 +22,20 @@
 
     function mostrarErro(mensagem) {
         erro.textContent = mensagem;
-        erro.hidden = false;
-        sucesso.hidden = true;
+        erro.style.display = "";
+        sucesso.style.display = "none";
     }
 
     function mostrarSucesso(mensagem) {
         sucesso.textContent = mensagem;
-        sucesso.hidden = false;
-        erro.hidden = true;
+        sucesso.style.display = "";
+        erro.style.display = "none";
     }
 
     function limparMensagens() {
-        erro.hidden = true;
+        erro.style.display = "none";
         erro.textContent = "";
-        sucesso.hidden = true;
+        sucesso.style.display = "none";
         sucesso.textContent = "";
     }
 

@@ -2,15 +2,14 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Parceiro(BaseModel):
+class BaseParceiro(BaseModel):
     nome: str
     servico: Optional[str] = None
     localizacao: Optional[str] = None
     site: Optional[str] = None
-    id_admin: int
 
 
-class CriarParceiro(Parceiro):
+class CriarParceiro(BaseParceiro):
     pass
 
 
@@ -22,8 +21,9 @@ class AtualizarParceiro(BaseModel):
     status: Optional[int] = None
 
 
-class LerParceiro(Parceiro):
+class LerParceiro(BaseParceiro):
     id: int
+    id_admin: int
     status: int
 
     class Config:
