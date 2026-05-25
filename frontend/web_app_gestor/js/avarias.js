@@ -9,6 +9,8 @@
     let avariaSel  = null;
     let tipoAlocar = "interno";
 
+    const divSite = document.getElementById("parceiro-site");
+
     const tbody    = document.querySelector('[data-tabela="avarias"]');
     const selectEd = document.getElementById("filtro-edificio");
     const filtroEst = document.getElementById("filtro-estado");
@@ -156,20 +158,21 @@
             const ativos = parceiros.filter((p) => p.status !== 0);
             selParceiro.innerHTML = `<option value="">— Selecionar parceiro —</option>` +
                 ativos.map((p) =>
-                    `<option value="${p.id}" data-nome="${p.nome}" data-loc="${p.localizacao || ""}">`
-                    + `${p.nome}${p.servico ? " · " + p.servico : ""}${p.localizacao ? " (" + p.localizacao + ")" : ""}`
+                    `<option value="${p.id}" data-nome="${p.nome}" data-site="${p.site || ""}">`
+                    + `${p.nome}${p.servico ? " · " + p.servico : ""}`
                     + `</option>`
                 ).join("");
 
             selParceiro.addEventListener("change", () => {
-                const opt = selParceiro.options[selParceiro.selectedIndex];
-                const contacto    = document.getElementById("inp-contacto");
-                if (opt?.value) {
-                    if (nomeEmpresa) nomeEmpresa.value = opt.dataset.nome || "";
-                    if (contacto && opt.dataset.loc) contacto.value = opt.dataset.loc;
+                const opt  = selParceiro.options[selParceiro.selectedIndex];
+                const site = opt?.dataset.site;
+                if (opt?.value && site) {
+                    divSite.innerHTML = `<a href="${site}" target="_blank" rel="noopener"
+                        style="color:var(--cor-primaria);text-decoration:underline;">🔗 ${site}</a>`;
+                    divSite.style.display = "";
                 } else {
-                    if (nomeEmpresa) nomeEmpresa.value = "";
-                    if (contacto) contacto.value = "";
+                    divSite.innerHTML  = "";
+                    divSite.style.display = "none";
                 }
             });
         }
@@ -193,11 +196,11 @@
         document.getElementById("av-resumo-desc").textContent = descLimpa || "(sem descrição)";
 
         erroAlocar.style.display = "none";
-        document.getElementById("inp-nota").value     = "";
-        document.getElementById("inp-empresa").value  = "";
-   
+        document.getElementById("inp-nota").value = "";
+
         const sp = document.getElementById("sel-parceiro");
         if (sp) sp.value = "";
+        if (divSite) { divSite.innerHTML = ""; divSite.style.display = "none"; }
         const selTec = document.getElementById("sel-tecnico");
         if (selTec) selTec.value = "";
 
@@ -261,10 +264,16 @@
                     await window.api.put(`/avarias/${avariaSel.id}`, { descricao: descAtual.substring(0, 255) });
                 }
             } else {
-
-                let descAtual  = (avariaSel.descricao || "").replace(/\[Externo:[^\]]*\]\n?/g, "").trim();
-                let novaDesc   = descAtual ? `${descAtual}\n[Externo: ${infoExt}]` : `[Externo: ${infoExt}]`;
-                if (nota) novaDesc += `\nNota: ${nota}`;
+                const sp       = document.getElementById("sel-parceiro");
+                const opt      = sp?.options[sp.selectedIndex];
+                const nomeParc = opt?.dataset.nome || "";
+                if (!nomeParc) {
+                    erroAlocar.textContent   = "Selecione um parceiro.";
+                    erroAlocar.style.display = "";
+                    return;
+                }
+                let descAtual = (avariaSel.descricao || "").replace(/\[Externo:[^\]]*\]\n?/g, "").trim();
+                let novaDesc  = descAtual ? `${descAtual}\n[Externo: ${nomeParc}]` : `[Externo: ${nomeParc}]`;
                 await window.api.put(`/avarias/${avariaSel.id}`, { descricao: novaDesc.substring(0, 255) });
             }
 

@@ -8,6 +8,12 @@ from app.logica import tecnico as servico
 
 router = APIRouter(prefix="/tecnicos", tags=["Técnicos"])
 
+# (GET)    /tecnicos              - Lista os técnicos do gestor autenticado.
+# (GET)    /tecnicos/{id}         - Mostra os dados de um técnico.
+# (POST)   /tecnicos              - Cria um técnico e envia as credenciais por email.
+# (PUT)    /tecnicos/conta        - Atualiza o perfil do técnico autenticado.
+# (PUT)    /tecnicos/{id}         - Atualiza os dados de um técnico (gestor).
+# (DELETE) /tecnicos/{id}         - Remove um técnico (gestor).
 
 @router.get("", response_model=List[LerTecnico])
 def listar(gestor=Depends(verificar_g), db: Session = Depends(get_db)):

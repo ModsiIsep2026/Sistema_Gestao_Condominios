@@ -8,6 +8,13 @@ from app.logica import gestor as servico
 
 router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
+# (GET)    /gestores              - Lista todos os gestores (admin).
+# (GET)    /gestores/adesoes      - Estatísticas de novas adesões por dia (admin).
+# (GET)    /gestores/{id}         - Mostra os dados de um gestor específico (admin).
+# (POST)   /gestores              - Cria um gestor manualmente (admin).
+# (PUT)    /gestores/conta        - Atualiza o perfil do gestor autenticado.
+# (PUT)    /gestores/{id}         - Atualiza um gestor (admin).
+# (DELETE) /gestores/{id}         - Remove um gestor (admin).
 
 @router.get("", response_model=List[LerGestor])
 def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):

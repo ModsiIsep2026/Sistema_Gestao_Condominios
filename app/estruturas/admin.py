@@ -2,13 +2,6 @@ from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 
-
-class LoginAdmin(BaseModel):
-    email: EmailStr
-    pw: str
-
-
-
 class LerAdmin(BaseModel):
     id: int
     nome: str

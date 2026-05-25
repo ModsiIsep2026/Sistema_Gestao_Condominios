@@ -3,96 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservar espaco - Gestao de Condominios</title>
+    <title>Reservar espaço — Gestão de Condomínios</title>
     <link rel="stylesheet" href="../visuais/css/tokens.css">
     <link rel="stylesheet" href="../visuais/css/base.css">
     <link rel="stylesheet" href="../visuais/css/componentes.css">
     <link rel="stylesheet" href="css/app.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .horas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--esp-3);
+        }
+        .reserva-preview {
+            background: var(--cor-fundo);
+            border: 1px solid var(--cor-borda);
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--cor-texto-secundario);
+            margin-top: var(--esp-3);
+            min-height: 42px;
+        }
+        .reserva-preview strong {
+            color: var(--cor-primaria);
+            font-size: 15px;
+        }
+        .slots-ocupados {
+            font-size: 12px;
+            color: var(--cor-texto-secundario);
+            margin-top: var(--esp-2);
+        }
+        .slots-ocupados span {
+            display: inline-block;
+            background: #FEF3C7;
+            color: #92400E;
+            border-radius: 4px;
+            padding: 2px 7px;
+            margin: 2px 2px 0 0;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body class="app-body">
+<div class="app-shell">
+    <aside class="app-sidebar"></aside>
+    <div>
+        <header class="app-topbar"></header>
+        <main class="app-main">
 
-    <div class="app-shell">
-        <aside class="app-sidebar"></aside>
+            <div class="app-cabecalho">
+                <div class="app-cabecalho__titulo">
+                    <h1>Reservar espaço</h1>
+                    <p>Reserva os espaços comuns do teu edifício por horas.</p>
+                </div>
+                <div class="app-cabecalho__acoes">
+                    <button type="button" class="btn btn--primario" id="btn-nova-reserva">Nova reserva</button>
+                </div>
+            </div>
 
-        <div>
-            <header class="app-topbar"></header>
-            <main class="app-main">
+            <div class="painel">
+                <div class="painel__cabecalho">
+                    <h2>As minhas reservas</h2>
+                </div>
+                <div class="painel__corpo painel__corpo--sem-pad">
+                    <table class="app-tabela">
+                        <thead>
+                            <tr>
+                                <th>Espaço</th>
+                                <th>Dia</th>
+                                <th>Início</th>
+                                <th>Fim</th>
+                                <th>Horas</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody data-tabela="minhas-reservas">
+                            <tr><td colspan="6" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-                <div class="app-cabecalho">
-                    <div class="app-cabecalho__titulo">
-                        <h1>Reservar espaco</h1>
-                        <p>Veja os espacos comuns do seu edificio e reserve por dias.</p>
+        </main>
+    </div>
+</div>
+
+<!-- Modal: nova reserva -->
+<div class="modal-overlay" id="modal-reserva" hidden>
+    <div class="modal" style="max-width:480px;">
+        <div class="modal__cabecalho">
+            <h3>Nova reserva</h3>
+            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+        </div>
+        <div class="modal__corpo">
+            <div id="erro-reserva" class="login-erro" style="display:none; margin-bottom:var(--esp-3);"></div>
+            <form id="form-reserva">
+                <div class="campo">
+                    <label for="r-espaco">Espaço</label>
+                    <select id="r-espaco" required>
+                        <option value="">Selecionar espaço...</option>
+                    </select>
+                    <div id="r-preco-hora" class="slots-ocupados" style="display:none;"></div>
+                </div>
+                <div class="campo">
+                    <label for="r-dia">Dia</label>
+                    <input type="date" id="r-dia" required>
+                </div>
+                <div class="horas-grid">
+                    <div class="campo">
+                        <label for="r-hora-inicio">Hora de início</label>
+                        <input type="time" id="r-hora-inicio" required step="1800">
                     </div>
-                    <div class="app-cabecalho__acoes">
-                        <button type="button" class="btn btn--primario" id="btn-nova-reserva">Nova reserva</button>
+                    <div class="campo">
+                        <label for="r-hora-fim">Hora de fim</label>
+                        <input type="time" id="r-hora-fim" required step="1800">
                     </div>
                 </div>
-
-                <div class="painel" style="margin-bottom:var(--esp-5);">
-                    <div class="painel__cabecalho">
-                        <h2>As minhas reservas</h2>
-                    </div>
-                    <div class="painel__corpo painel__corpo--sem-pad">
-                        <table class="app-tabela">
-                            <thead>
-                                <tr>
-                                    <th>Espaco</th>
-                                    <th>Inicio</th>
-                                    <th>Fim</th>
-                                    <th>Valor</th>
-                                </tr>
-                            </thead>
-                            <tbody data-tabela="minhas-reservas">
-                                <tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="slots-ocupados-dia" class="slots-ocupados" style="display:none;"></div>
+                <div id="reserva-preview" class="reserva-preview">
+                    Seleciona o espaço, dia e horas para ver o valor.
                 </div>
-
-                
-
-            </main>
+            </form>
+        </div>
+        <div class="modal__rodape">
+            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-confirmar-reserva">Confirmar reserva</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="modal-reserva" hidden>
-        <div class="modal">
-            <div class="modal__cabecalho">
-                <h3>Nova reserva</h3>
-                <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
-            </div>
-            <div class="modal__corpo">
-                <div id="erro-reserva" class="login-erro" style="display:none"></div>
-                <form id="form-reserva">
-                    <div class="campo">
-                        <label for="r-espaco">Espaco</label>
-                        <select id="r-espaco" required></select>
-                    </div>
-                    <div class="campo">
-                        <label for="r-inicio">Dia de inicio</label>
-                        <input type="date" id="r-inicio" required>
-                    </div>
-                    <div class="campo">
-                        <label for="r-fim">Dia de fim</label>
-                        <input type="date" id="r-fim" required>
-                    </div>
-                    <div id="dias-indisponiveis"
-                         style="background:var(--cor-fundo-alt);border:1px solid var(--cor-borda);padding:var(--esp-3);font-size:var(--tam-sm);color:var(--cor-texto-suave);">
-                        Escolha um espaco para ver os dias ja reservados.
-                    </div>
-                </form>
-            </div>
-            <div class="modal__rodape">
-                <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
-                <button type="button" class="btn btn--primario" id="btn-confirmar-reserva">Confirmar reserva</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="../visuais/js/api.js"></script>
-    <script src="../visuais/js/toast.js"></script>
-    <script src="js/app.js"></script>
-    <script src="js/reservas.js"></script>
+<script src="../visuais/js/api.js"></script>
+<script src="../visuais/js/toast.js"></script>
+<script src="js/app.js"></script>
+<script src="js/reservas.js"></script>
 </body>
 </html>

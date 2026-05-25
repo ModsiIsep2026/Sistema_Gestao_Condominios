@@ -14,7 +14,7 @@ class Pagamento(Base):
     mes = Column(String(7), nullable=False)
     valor = Column(Numeric(10, 2), nullable=False)
 
-    # 1=ativo, 0=cancelado
+    
     status = Column(SmallInteger, nullable=False, default=1) # 1- ativo  0- cancelado
 
     data_i = Column(DateTime, nullable=False)

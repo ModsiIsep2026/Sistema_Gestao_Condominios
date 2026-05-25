@@ -2,7 +2,6 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from app.tabelas_bd.apartamento import Apartamento
-from app.tabelas_bd.condomino import Condomino
 from app.tabelas_bd.edificio import Edificio
 from app.tabelas_bd.espaco import Espaco
 from app.tabelas_bd.pagamento import Pagamento
@@ -39,23 +38,6 @@ def obter_apartamento(db: Session, id_apartamento: int, id_gestor: int):
     if not apartamento:
         raise SEM_PERMISSAO
     return apartamento
-
-
-def obter_condomino(db: Session, id_condomino: int, id_gestor: int):
-    condomino = (db.query(Condomino).join(Apartamento, Condomino.id_apartamento == Apartamento.id)
-        .join(Edificio, Apartamento.id_edificio == Edificio.id)
-        .filter(
-            Condomino.id == id_condomino,
-            Condomino.status == 1,
-            Apartamento.status == 1,
-            Edificio.id_gestor == id_gestor,
-            Edificio.status == 1,
-        )
-        .first()
-    )
-    if not condomino:
-        raise SEM_PERMISSAO
-    return condomino
 
 
 def obter_espaco(db: Session, id_espaco: int, id_gestor: int):

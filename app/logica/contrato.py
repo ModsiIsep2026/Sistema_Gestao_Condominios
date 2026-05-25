@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 
 from app.configs.config import get_configs
-from app.configs.email import enviar_email
+from app.configs.email import enviar_email, enviar_boas_vindas
 from app.configs.seguranca import pw_encript, random_pw
 from app.tabelas_bd.contrato import Contrato
 from app.tabelas_bd.licenca import Licenca
@@ -186,17 +186,26 @@ def concluir_pagamento(db: Session, dados):
 
 
 def _enviar_boas_vindas(email, nome, pw, edificios, meses):
-
-    html = f"""
-    <div style="font-family:Arial;max-width:560px;margin:auto;">
-      <h2>Bem-vindo, {nome}</h2>
-      <p>Conta criada com sucesso.</p>
-
-      <p><b>Email:</b> {email}</p>
-      <p><b>Password:</b> {pw}</p>
-
-      <p>Plano: {edificios} edifícios / {meses} meses</p>
+    enviar_boas_vindas(email, nome, pw, "gestor")
+    # Nota de plano enviada em email separado para manter o template consistente
+    nota_html = f"""
+    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;">
+      <div style="background:#0B2240;padding:24px 32px;">
+        <p style="color:#fff;font-size:18px;font-weight:700;margin:0;">Detalhes do plano contratado</p>
+      </div>
+      <div style="background:#F4F3F1;padding:32px;">
+        <p style="font-size:14px;color:#1A1A1A;margin:0 0 8px;">
+          O seu plano inclui <strong>{edificios} edifício(s)</strong> durante <strong>{meses} mês(es)</strong>.
+        </p>
+        <p style="font-size:13px;color:#6B6860;margin:0;">
+          Pode gerir os seus edifícios a partir do painel de gestor assim que fizer o primeiro acesso.
+        </p>
+      </div>
+      <div style="background:#E2E0DC;padding:12px 32px;">
+        <p style="font-size:11px;color:#6B6860;margin:0;">
+          © 2026 Sistema de Gestão de Condomínios — Email gerado automaticamente.
+        </p>
+      </div>
     </div>
     """
-
-    enviar_email(email, "Credenciais de acesso", html)
+    enviar_email(email, "O seu plano — Gestão de Condomínios", nota_html)

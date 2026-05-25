@@ -16,74 +16,68 @@
     <div>
         <header class="app-topbar"></header>
         <main class="app-main">
+
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
                     <h1>Condóminos</h1>
                     <p>Pessoas com fração nos seus edifícios.</p>
                 </div>
                 <div class="app-cabecalho__acoes">
-                    <button type="button" class="btn btn--primario" id="btn-novo-condomino">Adicionar condómino</button>
+                    <button type="button" class="btn btn--primario" id="btn-adicionar-cond" style="display:none;">
+                        Adicionar condómino
+                    </button>
                 </div>
             </div>
-            <div class="app-filtros">
-                <input type="search" placeholder="Procurar por nome ou email..." data-pesquisa>
+
+            <!-- Seletor de edifício -->
+            <div class="app-filtros" style="margin-bottom:var(--esp-5);">
+                <select id="sel-edificio" style="min-width:320px;">
+                    <option value="">Selecionar edifício...</option>
+                </select>
             </div>
-            <div class="painel">
-                <table class="app-tabela">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Email</th>
-                            <th>Telemóvel</th>
-                            <th>Apartamento</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody data-tabela="condominos"><tr><td colspan="5" class="app-vazio"><p>A carregar...</p></td></tr></tbody>
-                </table>
+
+            <!-- Conteúdo -->
+            <div id="condominos-container">
+                <p style="color:var(--cor-texto-secundario);">Seleciona um edifício para ver os condóminos.</p>
             </div>
+
         </main>
     </div>
 </div>
 
-
-<div class="modal-overlay" id="modal-condomino" hidden>
-    <div class="modal modal--largo">
+<!-- Modal: adicionar condómino -->
+<div class="modal-overlay" id="modal-cond" hidden>
+    <div class="modal" style="max-width:480px;">
         <div class="modal__cabecalho">
             <h3>Adicionar condómino</h3>
-            <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+            <button type="button" class="modal__fechar" data-fechar-cond>&times;</button>
         </div>
         <div class="modal__corpo">
-            <div id="erro-condomino" class="login-erro" style="display:none; margin-bottom:var(--esp-3);"></div>
-            <form id="form-condomino">
+            <div id="modal-cond-edificio"
+                 style="background:var(--cor-fundo);padding:10px 14px;border-radius:6px;
+                        font-size:13px;color:var(--cor-texto-secundario);margin-bottom:var(--esp-4);">
+            </div>
+            <div id="erro-cond" class="login-erro" style="display:none;margin-bottom:var(--esp-3);"></div>
+            <form id="form-cond">
                 <div class="campo">
-                    <label for="c-nome">Nome completo</label>
-                    <input type="text" id="c-nome" required>
+                    <label for="cond-nome">Nome completo</label>
+                    <input type="text" id="cond-nome" required>
                 </div>
                 <div class="campo">
-                    <label for="c-email">Email</label>
-                    <input type="email" id="c-email" required>
+                    <label for="cond-email">Email</label>
+                    <input type="email" id="cond-email" required>
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
-                    <div class="campo">
-                        <label for="c-edificio">Edifício</label>
-                        <select id="c-edificio" required>
-                            <option value="">Selecionar...</option>
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label for="c-apartamento">Apartamento / Fração</label>
-                        <select id="c-apartamento" required disabled>
-                            <option value="">Primeiro selecione o edifício</option>
-                        </select>
-                    </div>
+                <div class="campo">
+                    <label for="cond-apt">Apartamento / Fração</label>
+                    <select id="cond-apt" required>
+                        <option value="">Selecionar fração...</option>
+                    </select>
                 </div>
-                <div id="c-link-edificio" style="display:none;margin-top:var(--esp-2);font-size:13px;"></div>
             </form>
         </div>
         <div class="modal__rodape">
-            <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
-            <button type="button" class="btn btn--primario" id="btn-criar-condomino">Adicionar</button>
+            <button type="button" class="btn btn--outline" data-fechar-cond>Cancelar</button>
+            <button type="button" class="btn btn--primario" id="btn-guardar-cond">Adicionar</button>
         </div>
     </div>
 </div>

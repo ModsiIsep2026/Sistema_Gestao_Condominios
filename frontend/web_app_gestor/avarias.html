@@ -115,8 +115,12 @@
                         <option value="">A carregar técnicos…</option>
                     </select>
                 </div>
+                <div class="campo" style="margin-top:var(--esp-3);">
+                    <label for="inp-nota">Nota / observação (opcional)</label>
+                    <textarea id="inp-nota" rows="2" placeholder="Informação adicional para o técnico…"
+                              style="resize:vertical;" maxlength="200"></textarea>
+                </div>
             </div>
-
 
             <div class="av-painel-externo" id="painel-externo">
                 <div class="campo">
@@ -125,20 +129,7 @@
                         <option value="">— Selecionar parceiro —</option>
                     </select>
                 </div>
-                <div class="campo">
-                    <label for="inp-empresa">APAGAR ISTO</label>
-                    <input type="text" id="inp-empresa" placeholder="Nome da empresa / serviço" maxlength="120">
-                </div>
-                <div class="campo">
-                    <label for="inp-contacto">APAGAR ISTO</label>
-                    <input type="text" id="inp-contacto" placeholder="Telefone ou email" maxlength="80">
-                </div>
-            </div>
-
-            <div class="campo" style="margin-top:var(--esp-3);">
-                <label for="inp-nota">Nota / observação (opcional)</label>
-                <textarea id="inp-nota" rows="2" placeholder="Informação adicional para o técnico ou empresa…"
-                          style="resize:vertical;" maxlength="200"></textarea>
+                <div id="parceiro-site" style="display:none; margin-top:var(--esp-2); font-size:13px;"></div>
             </div>
         </div>
         <div class="modal__rodape">

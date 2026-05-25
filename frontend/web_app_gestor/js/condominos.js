@@ -1,188 +1,188 @@
-
 (async function () {
 
-    let dados          = [];
-    let filtroPesquisa = "";
+    let edificios    = [];
+    let edificioSel  = null;   // objeto do edifício selecionado
 
+    const container  = document.getElementById("condominos-container");
+    const selEdif    = document.getElementById("sel-edificio");
+    const btnAdicionar = document.getElementById("btn-adicionar-cond");
+    const modal      = document.getElementById("modal-cond");
+    const erroModal  = document.getElementById("erro-cond");
+    const selApt     = document.getElementById("cond-apt");
+    const infoEdif   = document.getElementById("modal-cond-edificio");
 
-    function renderizar(lista) {
-        const tbody = document.querySelector('[data-tabela="condominos"]');
-        if (!lista.length) {
-            tbody.innerHTML = `
-                <tr><td colspan="5">
-                    <div class="app-vazio">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <h3>Sem condóminos</h3>
-                        <p>Adicione o primeiro condómino para começar.</p>
-                    </div>
-                </td></tr>`;
-            return;
-        }
-        tbody.innerHTML = lista.map((c) => {
-            const apt   = c.apartamento;
-            const aptTx = apt ? `Fração ${apt.fracao}${apt.andar != null ? " · " + apt.andar + "º" : ""}` : "—";
-            const tel   = (c.telemovel && !c.telemovel.startsWith("_p")) ? c.telemovel : "—";
-            return `
-            <tr>
-                <td><strong>${c.nome}</strong></td>
-                <td>${c.email}</td>
-                <td>${tel}</td>
-                <td>${aptTx}</td>
-                <td class="app-tabela__acoes">
-                    <button data-acao="remover" data-id="${c.id}" class="perigo">Remover</button>
-                </td>
-            </tr>`;
-        }).join("");
+    // ── Carregar edifícios para o select ──────────────────────────────────────
+
+    try {
+        edificios = await window.api.get("/edificios");
+        selEdif.innerHTML = `<option value="">Selecionar edifício...</option>` +
+            edificios.map((e) =>
+                `<option value="${e.id}">${e.rua}${e.cidade ? " — " + e.cidade : ""}</option>`
+            ).join("");
+    } catch (e) {
+        container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Erro: ${e.message}</p>`;
     }
 
-    async function carregar() {
-        try {
-            dados = await window.api.get("/condominos");
-            renderizar(dados);
-        } catch (e) {
-            document.querySelector('[data-tabela="condominos"]').innerHTML =
-                `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
-        }
-    }
+    // ── Carregar e renderizar condóminos do edifício selecionado ──────────────
 
-    await carregar();
-
-    
-    document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
-        filtroPesquisa = e.target.value.toLowerCase().trim();
-        if (!filtroPesquisa) return renderizar(dados);
-        renderizar(dados.filter((c) =>
-            (c.nome  || "").toLowerCase().includes(filtroPesquisa) ||
-            (c.email || "").toLowerCase().includes(filtroPesquisa)
-        ));
-    });
-
-
-    const modal     = document.getElementById("modal-condomino");
-    const erroModal = document.getElementById("erro-condomino");
-    const selEdif   = document.getElementById("c-edificio");
-    const selApt    = document.getElementById("c-apartamento");
-
-
-    async function carregarEdificios() {
-        try {
-            const edificios = await window.api.get("/edificios");
-            selEdif.innerHTML = `<option value="">Selecionar edifício...</option>`;
-            edificios.forEach((e) => {
-                selEdif.innerHTML += `<option value="${e.id}">${e.rua}${e.cidade ? " — " + e.cidade : ""}</option>`;
-            });
-        } catch {  }
-    }
-
-
-    const linkEdificio = document.getElementById("c-link-edificio");
-
-    selEdif.addEventListener("change", async () => {
-        const idEdif = parseInt(selEdif.value);
-        selApt.innerHTML = `<option value="">A carregar...</option>`;
-        selApt.disabled = true;
-        linkEdificio.style.display = "none";
-
-        if (!idEdif) {
-            selApt.innerHTML = `<option value="">Primeiro selecione o edifício</option>`;
-            return;
-        }
+    async function carregarCondominos() {
+        if (!edificioSel) return;
+        container.innerHTML = `<p style="color:var(--cor-texto-secundario);">A carregar...</p>`;
 
         try {
-            const [apts, todosCondominos] = await Promise.all([
-                window.api.get(`/apartamentos?id_edificio=${idEdif}`),
-                window.api.get("/condominos").catch(() => []),
-            ]);
-            if (!apts.length) {
-                selApt.innerHTML = `<option value="">Sem apartamentos neste edifício</option>`;
-                linkEdificio.innerHTML = `
-                    ⚠️ Este edifício ainda não tem apartamentos.
-                    <a href="edificio.html?id=${idEdif}" target="_blank"
-                       style="color:var(--cor-primaria);font-weight:600;margin-left:4px;">
-                        Adicionar apartamentos →
-                    </a>`;
-                linkEdificio.style.display = "";
+            const todos = await window.api.get("/condominos");
+            const lista = todos.filter((c) => c.apartamento?.id_edificio === edificioSel.id);
+
+            if (!lista.length) {
+                container.innerHTML = `
+                    <div class="painel">
+                        <table class="app-tabela">
+                            <thead><tr>
+                                <th>Nome</th><th>Email</th><th>Telemóvel</th><th>Fração</th><th></th>
+                            </tr></thead>
+                            <tbody>
+                                <tr><td colspan="5" class="app-vazio"><p>Sem condóminos neste edifício.</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>`;
                 return;
             }
-            // Filtrar frações já ocupadas
-            const ocupados = new Set(todosCondominos.map((c) => c.id_apartamento));
+
+            const linhas = lista.map((c) => {
+                const apt   = c.apartamento;
+                const aptTx = apt
+                    ? `Fração ${apt.fracao}${apt.andar != null ? " · " + apt.andar + "º" : ""}`
+                    : "—";
+                const tel = (c.telemovel && !c.telemovel.startsWith("_p")) ? c.telemovel : "—";
+                return `
+                <tr>
+                    <td><strong>${c.nome}</strong></td>
+                    <td>${c.email}</td>
+                    <td>${tel}</td>
+                    <td>${aptTx}</td>
+                    <td class="app-tabela__acoes">
+                        <button data-acao="remover" data-id="${c.id}" class="perigo">Remover</button>
+                    </td>
+                </tr>`;
+            }).join("");
+
+            container.innerHTML = `
+                <div class="painel">
+                    <table class="app-tabela">
+                        <thead><tr>
+                            <th>Nome</th><th>Email</th><th>Telemóvel</th><th>Fração</th><th></th>
+                        </tr></thead>
+                        <tbody>${linhas}</tbody>
+                    </table>
+                </div>`;
+        } catch (e) {
+            container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Erro: ${e.message}</p>`;
+        }
+    }
+
+    // ── Mudar edifício ────────────────────────────────────────────────────────
+
+    selEdif.addEventListener("change", async () => {
+        const id = parseInt(selEdif.value);
+        if (!id) {
+            edificioSel = null;
+            btnAdicionar.style.display = "none";
+            container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Seleciona um edifício para ver os condóminos.</p>`;
+            return;
+        }
+        edificioSel = edificios.find((e) => e.id === id) || null;
+        btnAdicionar.style.display = "";
+        await carregarCondominos();
+    });
+
+    // ── Botão adicionar (cabeçalho) ───────────────────────────────────────────
+
+    btnAdicionar.addEventListener("click", () => {
+        if (edificioSel) abrirModal();
+    });
+
+    // ── Modal ─────────────────────────────────────────────────────────────────
+
+    async function abrirModal() {
+        infoEdif.textContent = `${edificioSel.rua}${edificioSel.cidade ? " — " + edificioSel.cidade : ""}`;
+        erroModal.style.display = "none";
+        document.getElementById("form-cond").reset();
+        selApt.innerHTML = `<option value="">A carregar frações...</option>`;
+        selApt.disabled  = true;
+        modal.removeAttribute("hidden");
+
+        try {
+            const [apts, condominos] = await Promise.all([
+                window.api.get(`/apartamentos?id_edificio=${edificioSel.id}`),
+                window.api.get("/condominos"),
+            ]);
+            const ocupados = new Set(condominos.map((c) => c.id_apartamento));
             const livres   = apts.filter((a) => !ocupados.has(a.id));
 
             if (!livres.length) {
                 selApt.innerHTML = `<option value="">Todas as frações já têm condómino</option>`;
-                selApt.disabled  = true;
             } else {
                 selApt.disabled  = false;
-                selApt.innerHTML = `<option value="">Selecionar fração...</option>`;
-                livres.forEach((a) => {
-                    const label = `Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}`;
-                    selApt.innerHTML += `<option value="${a.id}">${label}</option>`;
-                });
+                selApt.innerHTML = `<option value="">Selecionar fração...</option>` +
+                    livres.map((a) =>
+                        `<option value="${a.id}">Fração ${a.fracao}${a.andar != null ? " — " + a.andar + "º andar" : ""}</option>`
+                    ).join("");
             }
-        } catch (err) {
-            selApt.innerHTML = `<option value="">Erro ao carregar apartamentos</option>`;
+        } catch {
+            selApt.innerHTML = `<option value="">Erro ao carregar frações</option>`;
         }
-    });
-
-    function abrirModal() {
-        erroModal.style.display = "none";
-        document.getElementById("form-condomino").reset();
-        selApt.innerHTML = `<option value="">Primeiro selecione o edifício</option>`;
-        selApt.disabled = true;
-        modal.removeAttribute("hidden");
     }
-    function fecharModal() { modal.setAttribute("hidden", ""); }
 
-    document.getElementById("btn-novo-condomino")?.addEventListener("click", abrirModal);
-    document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
+    function fecharModal() {
+        modal.setAttribute("hidden", "");
+    }
+
+    document.querySelectorAll("[data-fechar-cond]").forEach((el) =>
         el.addEventListener("click", fecharModal)
     );
-    modal?.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
+    modal.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
 
+    // ── Guardar condómino ─────────────────────────────────────────────────────
 
-    document.getElementById("btn-criar-condomino")?.addEventListener("click", async () => {
+    document.getElementById("btn-guardar-cond").addEventListener("click", async () => {
         erroModal.style.display = "none";
 
-        const nome           = document.getElementById("c-nome").value.trim();
-        const email          = document.getElementById("c-email").value.trim();
+        const nome           = document.getElementById("cond-nome").value.trim();
+        const email          = document.getElementById("cond-email").value.trim();
         const id_apartamento = parseInt(selApt.value);
 
-        if (!nome)               { erroModal.textContent = "Indique o nome.";             erroModal.style.display = ""; return; }
-        if (!email)              { erroModal.textContent = "Indique o email.";            erroModal.style.display = ""; return; }
-        if (!selEdif.value)      { erroModal.textContent = "Selecione o edifício.";       erroModal.style.display = ""; return; }
-        if (isNaN(id_apartamento)) { erroModal.textContent = "Selecione o apartamento."; erroModal.style.display = ""; return; }
+        if (!nome)               { erroModal.textContent = "Indique o nome.";        erroModal.style.display = ""; return; }
+        if (!email)              { erroModal.textContent = "Indique o email.";       erroModal.style.display = ""; return; }
+        if (isNaN(id_apartamento)) { erroModal.textContent = "Selecione a fração."; erroModal.style.display = ""; return; }
 
-        const btn = document.getElementById("btn-criar-condomino");
-        btn.disabled = true;
+        const btn = document.getElementById("btn-guardar-cond");
+        btn.disabled    = true;
         btn.textContent = "A adicionar...";
         try {
             await window.api.post("/condominos", { nome, email, id_apartamento });
             fecharModal();
-            await carregar();
+            await carregarCondominos();
         } catch (e) {
-            erroModal.textContent = e.message || "Não foi possível criar o condómino.";
+            erroModal.textContent   = e.message || "Não foi possível criar o condómino.";
             erroModal.style.display = "";
         } finally {
-            btn.disabled = false;
+            btn.disabled    = false;
             btn.textContent = "Adicionar";
         }
     });
 
-   
-    document.querySelector('[data-tabela="condominos"]').addEventListener("click", async (e) => {
-        const btn = e.target.closest("[data-acao]");
-        if (!btn || btn.dataset.acao !== "remover") return;
-        const id = parseInt(btn.dataset.id);
+    // ── Delegação: remover ────────────────────────────────────────────────────
+
+    container.addEventListener("click", async (e) => {
+        const btn = e.target.closest("[data-acao='remover']");
+        if (!btn) return;
         btn.disabled = true;
         try {
-            await window.api.delete(`/condominos/${id}`);
-            await carregar();
-        } catch (err) {
+            await window.api.delete(`/condominos/${btn.dataset.id}`);
+            await carregarCondominos();
+        } catch {
             btn.disabled = false;
         }
     });
-
-
-    await carregarEdificios();
 
 })();

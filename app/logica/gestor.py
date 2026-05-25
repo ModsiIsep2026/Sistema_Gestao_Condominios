@@ -6,10 +6,6 @@ from app.tabelas_bd.contrato import Contrato
 from app.configs.seguranca import pw_encript
 
 
-def listar(db: Session):
-    return db.query(Gestor).filter(Gestor.status == 1).all()
-
-
 def listar_todos(db: Session):
     from app.logica.contrato import v_contrato_expirados
     v_contrato_expirados(db)

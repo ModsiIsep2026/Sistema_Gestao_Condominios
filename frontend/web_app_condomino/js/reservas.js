@@ -1,226 +1,234 @@
 (async function () {
 
-    await new Promise((r) => setTimeout(r, 50));
+    let espacos        = [];
+    let reservasEspaco = [];   // reservas do espaço selecionado (para verificar conflitos)
 
-    let minhasReservas = [];
-    let reservasEspaco = [];
-    let espacos = [];
-    let contaAtual = null;
+    const modal      = document.getElementById("modal-reserva");
+    const erroDiv    = document.getElementById("erro-reserva");
+    const selEspaco  = document.getElementById("r-espaco");
+    const precoHora  = document.getElementById("r-preco-hora");
+    const inputDia   = document.getElementById("r-dia");
+    const inputInicio = document.getElementById("r-hora-inicio");
+    const inputFim    = document.getElementById("r-hora-fim");
+    const slotsDia   = document.getElementById("slots-ocupados-dia");
+    const preview    = document.getElementById("reserva-preview");
+    const tbody      = document.querySelector('[data-tabela="minhas-reservas"]');
 
-    const selectEspaco = document.getElementById("sel-espaco");
-    const selectEspacoModal = document.getElementById("r-espaco");
-    const inputInicio = document.getElementById("r-inicio");
-    const inputFim = document.getElementById("r-fim");
-    const calContainer = document.getElementById("calendario-reservas");
-    const diasIndisponiveis = document.getElementById("dias-indisponiveis");
-    const modal = document.getElementById("modal-reserva");
-    const erro = document.getElementById("erro-reserva");
-
-    const fmtData = (iso) => iso
-        ? new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" })
-        : "-";
-    const fmtEur = (v) => v != null
+    const fmtEur  = (v) => v != null
         ? new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(v)
-        : "-";
+        : "—";
+    const fmtHora = (iso) => iso ? new Date(iso).toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" }) : "—";
+    const fmtDia  = (iso) => iso ? new Date(iso).toLocaleDateString("pt-PT") : "—";
 
-    function toIsoDate(date) {
-        return date.toISOString().slice(0, 10);
-    }
-
-    function enumerarDias(inicioIso, fimIso) {
-        const dias = [];
-        const atual = new Date(`${inicioIso}T00:00:00`);
-        const fim = new Date(`${fimIso}T00:00:00`);
-        while (atual <= fim) {
-            dias.push(toIsoDate(atual));
-            atual.setDate(atual.getDate() + 1);
-        }
-        return dias;
-    }
-
-    function diasReservadosDaLista(lista) {
-        const ocupados = new Set();
-        lista.forEach((r) => {
-            const inicio = (r.data_inicio || "").slice(0, 10);
-            const fimBase = new Date(r.data_fim);
-            fimBase.setDate(fimBase.getDate() - 1);
-            const fim = toIsoDate(fimBase);
-            if (inicio && fim >= inicio) {
-                enumerarDias(inicio, fim).forEach((dia) => ocupados.add(dia));
-            }
-        });
-        return ocupados;
-    }
-
-    function renderizarOpcoesEspaco() {
-        const opcoes = espacos.map((espaco) =>
-            `<option value="${espaco.id}">${espaco.nome}</option>`
-        ).join("");
-
-        if (selectEspaco) {
-            selectEspaco.innerHTML = `<option value="">- Selecione um espaco -</option>${opcoes}`;
-        }
-        if (selectEspacoModal) {
-            selectEspacoModal.innerHTML = `<option value="">- Selecione um espaco -</option>${opcoes}`;
-        }
-    }
+    // ── Tabela de reservas ────────────────────────────────────────────────────
 
     async function carregarMinhasReservas() {
-        const tbody = document.querySelector('[data-tabela="minhas-reservas"]');
-        if (!tbody) return;
         try {
-            minhasReservas = await window.api.get("/alugueres-espaco/condomino");
-            if (!minhasReservas.length) {
-                tbody.innerHTML = `<tr><td colspan="4" class="app-vazio"><p>Sem reservas ativas.</p></td></tr>`;
+            const lista = await window.api.get("/alugueres-espaco/condomino");
+            if (!lista.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Ainda não tens reservas.</p></td></tr>`;
                 return;
             }
-            tbody.innerHTML = minhasReservas.map((r) => {
-                const espaco = espacos.find((e) => e.id === r.id_espaco);
+            tbody.innerHTML = lista.map((r) => {
+                const nome  = r.espaco?.nome || `Espaço #${r.id_espaco}`;
+                const horas = ((new Date(r.data_fim) - new Date(r.data_inicio)) / 3_600_000).toFixed(1);
                 return `
-                    <tr>
-                        <td>${espaco?.nome || `Espaco #${r.id_espaco}`}</td>
-                        <td>${fmtData(r.data_inicio)}</td>
-                        <td>${fmtData(r.data_fim)}</td>
-                        <td>${fmtEur(r.preco_total)}</td>
-                    </tr>`;
+                <tr>
+                    <td>${nome}</td>
+                    <td>${fmtDia(r.data_inicio)}</td>
+                    <td>${fmtHora(r.data_inicio)}</td>
+                    <td>${fmtHora(r.data_fim)}</td>
+                    <td>${horas} h</td>
+                    <td>${fmtEur(r.preco_total)}</td>
+                </tr>`;
             }).join("");
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="4" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }
+
+    // ── Carregar espaços do edifício ──────────────────────────────────────────
 
     async function carregarEspacos() {
-        contaAtual = await window.api.me();
-        if (!contaAtual?.id_edificio) {
-            throw new Error("Sem edificio associado.");
-        }
+        const conta = await window.api.me();
+        const idEdif = conta?.id_edificio;
+        if (!idEdif) throw new Error("A tua conta não tem edifício associado.");
 
-        espacos = await window.api.get(`/espacos?id_edificio=${contaAtual.id_edificio}`);
-        renderizarOpcoesEspaco();
+        espacos = await window.api.get(`/espacos?id_edificio=${idEdif}`);
+        selEspaco.innerHTML = `<option value="">Selecionar espaço...</option>` +
+            espacos.map((e) =>
+                `<option value="${e.id}" data-preco="${e.preco_hora ?? 0}">${e.nome}</option>`
+            ).join("");
     }
 
-    async function carregarCalendario(idEspaco) {
-        if (!calContainer) return;
-        calContainer.innerHTML = "<p>A carregar disponibilidade...</p>";
-        try {
-            reservasEspaco = await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`);
-            const dias = [...diasReservadosDaLista(reservasEspaco)];
-            if (!dias.length) {
-                calContainer.innerHTML = `<p style="color:var(--cor-ok);">Espaco sem reservas, disponivel.</p>`;
-                return;
-            }
-            calContainer.innerHTML = `
-                <p style="margin-bottom:var(--esp-3);">Dias ja reservados:</p>
-                <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                    ${dias.map((dia) => `<span class="estado estado--alerta">${dia}</span>`).join("")}
-                </div>`;
-        } catch (e) {
-            calContainer.innerHTML = `<p style="color:var(--cor-erro);">${e.message}</p>`;
+    // ── Slots ocupados para o dia selecionado ─────────────────────────────────
+
+    function mostrarSlotsOcupados() {
+        const dia = inputDia.value;
+        if (!dia || !reservasEspaco.length) {
+            slotsDia.style.display = "none";
+            return;
         }
+        const ocupados = reservasEspaco.filter((r) => r.data_inicio.slice(0, 10) === dia);
+        if (!ocupados.length) {
+            slotsDia.style.display = "none";
+            return;
+        }
+        slotsDia.style.display = "";
+        slotsDia.innerHTML = "Horas ocupadas: " +
+            ocupados.map((r) => `<span>${fmtHora(r.data_inicio)} – ${fmtHora(r.data_fim)}</span>`).join(" ");
     }
 
-    async function atualizarDiasIndisponiveis(idEspaco) {
-        if (!diasIndisponiveis) return;
-        if (!idEspaco) {
-            diasIndisponiveis.textContent = "Escolha um espaco para ver os dias ja reservados.";
+    // ── Preview de valor ──────────────────────────────────────────────────────
+
+    function atualizarPreview() {
+        const opt     = selEspaco.selectedOptions[0];
+        const preco   = parseFloat(opt?.dataset.preco ?? 0);
+        const dia     = inputDia.value;
+        const inicio  = inputInicio.value;
+        const fim     = inputFim.value;
+
+        if (!opt?.value || !dia || !inicio || !fim) {
+            preview.innerHTML = "Seleciona o espaço, dia e horas para ver o valor.";
             return;
         }
 
-        const lista = await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`);
-        const dias = [...diasReservadosDaLista(lista)];
-        diasIndisponiveis.innerHTML = dias.length
-            ? `Dias ocupados: ${dias.join(", ")}`
-            : "Nao existem dias reservados para este espaco.";
-    }
+        const dtInicio = new Date(`${dia}T${inicio}:00`);
+        const dtFim    = new Date(`${dia}T${fim}:00`);
+        const horas    = (dtFim - dtInicio) / 3_600_000;
 
-    function mostrarModalReserva() {
-        if (erro) {
-            erro.style.display = "none";
-            erro.textContent = "";
+        if (horas <= 0) {
+            preview.innerHTML = `<span style="color:var(--cor-erro);">A hora de fim deve ser posterior à hora de início.</span>`;
+            return;
         }
-        document.getElementById("form-reserva")?.reset();
-        if (selectEspaco && selectEspaco.value && selectEspacoModal) {
-            selectEspacoModal.value = selectEspaco.value;
-            atualizarDiasIndisponiveis(selectEspaco.value).catch(() => {});
+
+        const total = preco * horas;
+        preview.innerHTML = `<strong>${fmtEur(total)}</strong>`;
+    }
+
+    // ── Evento: mudar espaço ──────────────────────────────────────────────────
+
+    selEspaco.addEventListener("change", async () => {
+        const id = parseInt(selEspaco.value);
+        const opt = selEspaco.selectedOptions[0];
+
+        // mostrar preço/hora
+        if (opt?.value) {
+            const preco = parseFloat(opt.dataset.preco ?? 0);
+            precoHora.style.display = "";
+            precoHora.textContent   = `${fmtEur(preco)} / hora`;
+        } else {
+            precoHora.style.display = "none";
         }
-        if (modal) modal.removeAttribute("hidden");
-    }
 
-    function esconderModalReserva() {
-        if (modal) modal.setAttribute("hidden", "");
-    }
-
-    function mostrarErro(msg) {
-        if (erro) {
-            erro.textContent = msg;
-            erro.style.display = "";
+        // carregar reservas do espaço
+        reservasEspaco = [];
+        if (id) {
+            try {
+                reservasEspaco = await window.api.get(`/alugueres-espaco/espaco/${id}`);
+            } catch {}
         }
+
+        mostrarSlotsOcupados();
+        atualizarPreview();
+    });
+
+    // ── Eventos: mudar dia / horas ────────────────────────────────────────────
+
+    inputDia.addEventListener("change", () => { mostrarSlotsOcupados(); atualizarPreview(); });
+    inputInicio.addEventListener("change", atualizarPreview);
+    inputFim.addEventListener("change", atualizarPreview);
+
+    // ── Modal: abrir / fechar ─────────────────────────────────────────────────
+
+    function abrirModal() {
+        erroDiv.style.display = "none";
+        document.getElementById("form-reserva").reset();
+        precoHora.style.display  = "none";
+        slotsDia.style.display   = "none";
+        reservasEspaco           = [];
+        preview.textContent      = "Seleciona o espaço, dia e horas para ver o valor.";
+
+        // mínimo = hoje
+        inputDia.min = new Date().toISOString().slice(0, 10);
+
+        modal.removeAttribute("hidden");
     }
 
-    document.getElementById("btn-nova-reserva")?.addEventListener("click", mostrarModalReserva);
+    function fecharModal() {
+        modal.setAttribute("hidden", "");
+    }
+
+    document.getElementById("btn-nova-reserva").addEventListener("click", abrirModal);
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
-        el.addEventListener("click", esconderModalReserva)
+        el.addEventListener("click", fecharModal)
     );
-    modal?.addEventListener("click", (e) => {
-        if (e.target === modal) esconderModalReserva();
-    });
+    modal.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
 
-    selectEspaco?.addEventListener("change", async () => {
-        if (selectEspaco.value) {
-            await carregarCalendario(parseInt(selectEspaco.value, 10));
-        } else if (calContainer) {
-            calContainer.innerHTML = "Selecione um espaco para ver os dias ocupados.";
+    // ── Confirmar reserva ─────────────────────────────────────────────────────
+
+    document.getElementById("btn-confirmar-reserva").addEventListener("click", async () => {
+        erroDiv.style.display = "none";
+
+        const idEspaco = parseInt(selEspaco.value);
+        const dia      = inputDia.value;
+        const inicio   = inputInicio.value;
+        const fim      = inputFim.value;
+
+        if (!idEspaco)  { mostrarErro("Seleciona um espaço."); return; }
+        if (!dia)       { mostrarErro("Indica o dia."); return; }
+        if (!inicio)    { mostrarErro("Indica a hora de início."); return; }
+        if (!fim)       { mostrarErro("Indica a hora de fim."); return; }
+
+        const dtInicio = new Date(`${dia}T${inicio}:00`);
+        const dtFim    = new Date(`${dia}T${fim}:00`);
+
+        if (dtFim <= dtInicio) {
+            mostrarErro("A hora de fim deve ser posterior à hora de início.");
+            return;
         }
-    });
 
-    selectEspacoModal?.addEventListener("change", async () => {
-        await atualizarDiasIndisponiveis(parseInt(selectEspacoModal.value, 10) || null);
-    });
-
-    document.getElementById("btn-confirmar-reserva")?.addEventListener("click", async () => {
-        const idEspaco = parseInt(selectEspacoModal?.value, 10);
-        const dataInicio = inputInicio?.value;
-        const dataFim = inputFim?.value;
-
-        if (isNaN(idEspaco)) return mostrarErro("Selecione um espaco.");
-        if (!dataInicio) return mostrarErro("Indique o dia de inicio.");
-        if (!dataFim) return mostrarErro("Indique o dia de fim.");
-        if (dataFim < dataInicio) return mostrarErro("O dia de fim nao pode ser anterior ao dia de inicio.");
-
-        const ocupados = diasReservadosDaLista(await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`));
-        const diasPedido = enumerarDias(dataInicio, dataFim);
-        if (diasPedido.some((dia) => ocupados.has(dia))) {
-            return mostrarErro("Existem dias ja reservados dentro do periodo escolhido.");
+        // verificar conflito local antes de enviar
+        const conflito = reservasEspaco.some((r) =>
+            new Date(r.data_inicio) < dtFim && new Date(r.data_fim) > dtInicio
+        );
+        if (conflito) {
+            mostrarErro("O período escolhido sobrepõe-se com uma reserva existente.");
+            return;
         }
 
         const btn = document.getElementById("btn-confirmar-reserva");
-        btn.disabled = true;
+        btn.disabled    = true;
         btn.textContent = "A reservar...";
 
         try {
             await window.api.post("/alugueres-espaco", {
-                id_espaco: idEspaco,
-                data_inicio: `${dataInicio}T00:00:00`,
-                data_fim: `${dataFim}T23:59:59`,
+                id_espaco:   idEspaco,
+                data_inicio: `${dia}T${inicio}:00`,
+                data_fim:    `${dia}T${fim}:00`,
             });
-            esconderModalReserva();
+            fecharModal();
             await carregarMinhasReservas();
-            if (selectEspaco?.value) {
-                await carregarCalendario(parseInt(selectEspaco.value, 10));
-            }
         } catch (e) {
-            mostrarErro(e.message || "Nao foi possivel reservar.");
+            mostrarErro(e.message || "Não foi possível criar a reserva.");
         } finally {
-            btn.disabled = false;
+            btn.disabled    = false;
             btn.textContent = "Confirmar reserva";
         }
     });
+
+    function mostrarErro(msg) {
+        erroDiv.textContent   = msg;
+        erroDiv.style.display = "";
+    }
+
+    // ── Arranque ──────────────────────────────────────────────────────────────
 
     try {
         await carregarEspacos();
         await carregarMinhasReservas();
     } catch (e) {
-        if (calContainer) calContainer.innerHTML = `<p style="color:var(--cor-erro);">${e.message}</p>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
     }
 
 })();

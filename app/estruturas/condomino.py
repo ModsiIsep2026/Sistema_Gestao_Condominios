@@ -34,15 +34,6 @@ class LerAptResumo(BaseModel):
         from_attributes = True
 
 
-class LerEdificioResumo(BaseModel):
-    id: int
-    rua: str
-    cidade: Optional[str] = None
-
-    class Config:
-        from_attributes = True
-
-
 class LerCondomino(Condomino):
     id: int
     status: int
