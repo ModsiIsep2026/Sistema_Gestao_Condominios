@@ -25,17 +25,27 @@
                 </td></tr>`;
             return;
         }
-        tbody.innerHTML = lista.map((r) => `
+        tbody.innerHTML = lista.map((r) => {
+            const nomeCondomino = r.condomino?.nome || `#${r.id_condomino}`;
+            const apt = r.condomino?.apartamento
+                ? `Fração ${r.condomino.apartamento.fracao}${r.condomino.apartamento.andar != null ? ` · ${r.condomino.apartamento.andar}º andar` : ""}`
+                : "—";
+            const nomeEspaco = r.espaco?.nome || `#${r.id_espaco}`;
+            return `
             <tr>
-                <td>${r.id_condomino}</td>
-                <td>${r.id_espaco}</td>
+                <td>
+                    <strong>${nomeCondomino}</strong>
+                    <div style="font-size:var(--tam-xs);color:var(--cor-texto-suave);margin-top:2px;">${apt}</div>
+                </td>
+                <td>${nomeEspaco}</td>
                 <td>${fmtData(r.data_inicio)}</td>
                 <td>${fmtData(r.data_fim)}</td>
                 <td>${fmtEur(r.preco_total)}</td>
                 <td class="app-tabela__acoes">
                     <button class="perigo" data-acao="cancelar" data-id="${r.id}">Cancelar</button>
                 </td>
-            </tr>`).join("");
+            </tr>`;
+        }).join("");
     }
 
     function aplicarFiltros() {
@@ -43,6 +53,8 @@
         const estado = document.getElementById("filtro-estado")?.value || "";
         let lista = [...dados];
         if (termo) lista = lista.filter((r) =>
+            (r.condomino?.nome    || "").toLowerCase().includes(termo) ||
+            (r.espaco?.nome       || "").toLowerCase().includes(termo) ||
             String(r.id_condomino).includes(termo) ||
             String(r.id_espaco).includes(termo)
         );
@@ -53,7 +65,7 @@
 
     async function carregar() {
         try {
-            dados = await window.api.get("/alugueres_espaco");
+            dados = await window.api.get("/alugueres-espaco");
             aplicarFiltros();
         } catch (e) {
             document.querySelector('[data-tabela="reservas"]').innerHTML =
@@ -72,7 +84,7 @@
         const id = parseInt(btn.dataset.id);
         btn.disabled = true;
         try {
-            await window.api.delete(`/alugueres_espaco/${id}`);
+            await window.api.delete(`/alugueres-espaco/${id}`);
             await carregar();
         } catch { btn.disabled = false; }
     });

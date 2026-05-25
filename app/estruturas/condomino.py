@@ -9,8 +9,11 @@ class Condomino(BaseModel):
     id_apartamento: int
 
 
-class CriarCondomino(Condomino):
-    pass   # pw gerada automaticamente no backend
+class CriarCondomino(BaseModel):
+    nome: str
+    email: EmailStr
+    id_apartamento: int
+    telemovel: Optional[str] = None   # preenchido pelo condómino no perfil
 
 
 class AtualizarCondomino(BaseModel):

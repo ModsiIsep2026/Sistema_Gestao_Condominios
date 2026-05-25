@@ -114,9 +114,9 @@
         document.getElementById("form-condomino").reset();
         selApt.innerHTML = `<option value="">Primeiro selecione o edifício</option>`;
         selApt.disabled = true;
-        modal.style.display = "";
+        modal.removeAttribute("hidden");
     }
-    function fecharModal() { modal.style.display = "none"; }
+    function fecharModal() { modal.setAttribute("hidden", ""); }
 
     document.getElementById("btn-novo-condomino")?.addEventListener("click", abrirModal);
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
@@ -130,12 +130,10 @@
 
         const nome           = document.getElementById("c-nome").value.trim();
         const email          = document.getElementById("c-email").value.trim();
-        const telemovel      = document.getElementById("c-telemovel").value.trim();
         const id_apartamento = parseInt(selApt.value);
 
         if (!nome)               { erroModal.textContent = "Indique o nome.";             erroModal.style.display = ""; return; }
         if (!email)              { erroModal.textContent = "Indique o email.";            erroModal.style.display = ""; return; }
-        if (!telemovel)          { erroModal.textContent = "Indique o telemóvel.";        erroModal.style.display = ""; return; }
         if (!selEdif.value)      { erroModal.textContent = "Selecione o edifício.";       erroModal.style.display = ""; return; }
         if (isNaN(id_apartamento)) { erroModal.textContent = "Selecione o apartamento."; erroModal.style.display = ""; return; }
 
@@ -143,7 +141,7 @@
         btn.disabled = true;
         btn.textContent = "A adicionar...";
         try {
-            await window.api.post("/condominos", { nome, email, telemovel, id_apartamento });
+            await window.api.post("/condominos", { nome, email, id_apartamento });
             fecharModal();
             await carregar();
         } catch (e) {

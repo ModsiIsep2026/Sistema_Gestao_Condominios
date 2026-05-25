@@ -12,9 +12,10 @@
     const msgPerfil = document.getElementById("msg-perfil");
     const msgPw = document.getElementById("msg-pw");
 
+    const telReal = (u.telemovel && !u.telemovel.startsWith("_p")) ? u.telemovel : "";
     if (inputNome) inputNome.value = u.nome || "";
     if (inputEmail) inputEmail.value = u.email || "";
-    if (inputTelemovel) inputTelemovel.value = u.telemovel || "";
+    if (inputTelemovel) inputTelemovel.value = telReal;
 
     document.getElementById("form-perfil")?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -38,7 +39,7 @@
 
             if (inputNome) inputNome.value = atualizado.nome || "";
             if (inputEmail) inputEmail.value = atualizado.email || "";
-            if (inputTelemovel) inputTelemovel.value = atualizado.telemovel || "";
+            if (inputTelemovel) inputTelemovel.value = (atualizado.telemovel && !atualizado.telemovel.startsWith("_p")) ? atualizado.telemovel : "";
 
             msgPerfil.textContent = "Alteracoes guardadas com sucesso.";
             msgPerfil.className = "login-sucesso";

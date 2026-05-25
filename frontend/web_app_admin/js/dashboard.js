@@ -60,9 +60,17 @@
         }
     };
 
+    let gestoresMap = {};
     try {
-        const edificios = await window.api.get("/edificios/todos");
+        const [edificios, gestores] = await Promise.all([
+            window.api.get("/edificios/todos"),
+            window.api.get("/gestores"),
+        ]);
+
+        gestores.forEach((g) => { gestoresMap[g.id] = g.nome; });
         set("kpi-edificios", edificios.length);
+        set("kpi-gestores", gestores.length);
+
         const tbody = document.getElementById("tabela-edificios");
         if (!edificios.length) {
             tbody.innerHTML = `<tr><td colspan="3"><div class="app-vazio"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><rect x="2" y="7" width="20" height="14" rx="1"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg><h3>Sem edifícios</h3><p>Ainda não existem edifícios registados na plataforma.</p></div></td></tr>`;
@@ -71,17 +79,11 @@
                 <tr>
                     <td><strong>${e.rua}</strong></td>
                     <td>${e.cidade || "—"}</td>
-                    <td>${e.id_gestor}</td>
+                    <td>${gestoresMap[e.id_gestor] || "—"}</td>
                 </tr>`).join("");
         }
     } catch {
         set("kpi-edificios", "0");
-    }
-
-    try {
-        const gestores = await window.api.get("/gestores");
-        set("kpi-gestores", gestores.length);
-    } catch {
         set("kpi-gestores", "0");
     }
 

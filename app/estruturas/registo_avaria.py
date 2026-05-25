@@ -38,12 +38,39 @@ class LerResolucaoInfo(BaseModel):
         from_attributes = True
 
 
+class LerAptAvaria(BaseModel):
+    fracao: str
+    andar: Optional[int] = None
+
+    class Config:
+        from_attributes = True
+
+
+class LerCondominoAvaria(BaseModel):
+    id: int
+    nome: str
+    apartamento: Optional[LerAptAvaria] = None
+
+    class Config:
+        from_attributes = True
+
+
+class LerEdificioAvaria(BaseModel):
+    id: int
+    rua: str
+
+    class Config:
+        from_attributes = True
+
+
 class LerRegistoAvaria(RegistoAvaria):
     id: int
     id_condomino: int
     data_registo: datetime
     status: int
     resolucao: Optional[LerResolucaoInfo] = None
+    condomino: Optional[LerCondominoAvaria] = None
+    edificio: Optional[LerEdificioAvaria] = None
 
     class Config:
         from_attributes = True

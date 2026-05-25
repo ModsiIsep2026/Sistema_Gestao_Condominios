@@ -1,6 +1,7 @@
 import secrets
 import string
 import logging
+import time
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, BackgroundTasks
 from app.tabelas_bd.condomino import Condomino
@@ -74,12 +75,14 @@ def obter(db: Session, id: int):
 
 
 def criar(db: Session, dados, background: BackgroundTasks = None):
-    pw_temp =criar_pw_temp()
+    pw_temp = criar_pw_temp()
+    # Se o gestor não indicou telemóvel, guarda placeholder temporário único
+    tel = dados.telemovel if dados.telemovel else f"_p{int(time.time() * 1000)}"
     condomino = Condomino(
         nome=dados.nome,
         email=dados.email,
         pw=pw_encript(pw_temp),
-        telemovel=dados.telemovel,
+        telemovel=tel,
         id_apartamento=dados.id_apartamento,
     )
     db.add(condomino)

@@ -143,10 +143,10 @@
         const hoje = new Date();
         inputMes.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
 
-        modal.style.display = "";
+        modal.removeAttribute("hidden");
     }
 
-    function fecharModal() { modal.style.display = "none"; }
+    function fecharModal() { modal.setAttribute("hidden", ""); }
 
     document.getElementById("btn-gerar-quota").addEventListener("click", abrirModal);
     document.getElementById("btn-fechar-gerar").addEventListener("click", fecharModal);

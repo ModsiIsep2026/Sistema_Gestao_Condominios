@@ -1,5 +1,5 @@
 
-// Parceiros (antigos fornecedores)
+
 (async function () {
 
     let dados = [];
@@ -9,10 +9,10 @@
         return new Promise((resolve) => {
             const overlay = document.getElementById("modal-confirmar");
             document.getElementById("confirmar-texto").textContent = texto;
-            overlay.style.display = "";
+            overlay.removeAttribute("hidden");
 
             function fechar(resultado) {
-                overlay.style.display = "none";
+                overlay.setAttribute("hidden", "");
                 btnOk.removeEventListener("click", onOk);
                 btnCancelar.removeEventListener("click", onCancelar);
                 btnCancelar2.removeEventListener("click", onCancelar);
@@ -105,10 +105,10 @@
             titulo.textContent = "Adicionar parceiro";
             document.getElementById("f-id").value = "";
         }
-        modal.style.display = "";
+        modal.removeAttribute("hidden");
     }
 
-    function fecharModal() { modal.style.display = "none"; }
+    function fecharModal() { modal.setAttribute("hidden", ""); }
 
     document.getElementById("btn-novo").addEventListener("click", () => abrirModal());
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>

@@ -60,11 +60,11 @@
     function abrirModal() {
         if (erro) erro.style.display = "none";
         document.getElementById("form-avaria")?.reset();
-        if (modal) modal.style.display = "";
+        if (modal) modal.removeAttribute("hidden");
     }
 
     function fecharModal() {
-        if (modal) modal.style.display = "none";
+        if (modal) modal.setAttribute("hidden", "");
     }
 
     document.getElementById("btn-reportar")?.addEventListener("click", abrirModal);

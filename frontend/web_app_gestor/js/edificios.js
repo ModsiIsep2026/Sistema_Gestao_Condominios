@@ -32,7 +32,7 @@
             const acoes = eAdmin
                 ? (streetView || "—")
                 : `${streetView}
-                   <a href="edificio.html?id=${e.id}" class="btn btn--outline" style="font-size:12px;padding:5px 12px;text-decoration:none;">Gerir →</a>
+                   <a href="edificio.html?id=${e.id}" style="text-decoration:none;">Gerir →</a>
                    <button data-acao="editar" data-id="${e.id}">Editar</button>
                    <button class="perigo" data-acao="remover" data-id="${e.id}">Remover</button>`;
 
@@ -103,10 +103,10 @@
             btn.textContent    = "Adicionar";
             document.getElementById("e-id").value = "";
         }
-        modal.style.display = "";
+        modal.removeAttribute("hidden");
     }
 
-    function fecharModal() { modal.style.display = "none"; }
+    function fecharModal() { modal.setAttribute("hidden", ""); }
 
     document.getElementById("btn-novo").addEventListener("click", () => abrirModal());
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>

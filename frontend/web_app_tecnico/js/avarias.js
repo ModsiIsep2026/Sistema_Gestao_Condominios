@@ -15,11 +15,21 @@
         return `<span class="estado estado--prog">Em progresso</span>`;
     }
 
+    function localAvaria(a) {
+        const rua    = a.edificio?.rua;
+        const fracao = a.condomino?.apartamento?.fracao;
+        const andar  = a.condomino?.apartamento?.andar;
+        if (!rua) return "—";
+        let txt = `<span style="font-size:12px;font-weight:600;">${rua}</span>`;
+        if (fracao) txt += `<br><span style="font-size:11px;color:var(--cor-texto-secundario);">Fração ${fracao}${andar != null ? " · " + andar + "º" : ""}</span>`;
+        return txt;
+    }
+
     function renderizar(lista) {
         const tbody = document.querySelector('[data-tabela="avarias"]');
         if (!lista.length) {
             tbody.innerHTML = `
-                <tr><td colspan="5">
+                <tr><td colspan="6">
                     <div class="app-vazio">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                         <h3>Sem avarias</h3>
@@ -30,12 +40,14 @@
         }
         tbody.innerHTML = lista.map((a) => {
             const resolvida = a.resolucao?.status === 1;
-            const descLimpa = (a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").trim();
+            const descBase  = (a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").replace(/\nNota:.*$/s, "").trim();
+            const descExibir = descBase.length > 60 ? descBase.substring(0, 60) + "…" : (descBase || "—");
             return `
                 <tr>
                     <td style="white-space:nowrap;">${fmtData(a.data_registo)}</td>
                     <td><strong>${a.zona || "—"}</strong></td>
-                    <td style="font-size:13px;color:var(--cor-texto-secundario);">${descLimpa.substring(0, 60) || "—"}</td>
+                    <td style="font-size:13px;color:var(--cor-texto-secundario);">${descExibir}</td>
+                    <td style="font-size:12px;">${localAvaria(a)}</td>
                     <td>${estadoBadge(a.resolucao)}</td>
                     <td class="app-tabela__acoes">
                         <button data-acao="detalhe" data-id="${a.id}"
@@ -112,7 +124,14 @@
     function abrirModalDetalhe(avaria) {
         const corpo     = document.getElementById("detalhe-corpo");
         const descLimpa = (avaria.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").trim();
+        const matchNota = descLimpa.match(/\nNota: (.+)$/s);
+        const descBase  = descLimpa.replace(/\nNota:.*$/s, "").trim();
         const matchExt  = (avaria.descricao || "").match(/\[Externo: ([^\]]+)\]/);
+
+        const edRua     = avaria.edificio?.rua;
+        const condNome  = avaria.condomino?.nome;
+        const aptFracao = avaria.condomino?.apartamento?.fracao;
+        const aptAndar  = avaria.condomino?.apartamento?.andar;
 
         const { passos, atual } = calcularPassosTecnico(avaria.resolucao);
         let html = renderizarPipelineTecnico(passos, atual);
@@ -121,6 +140,12 @@
             <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);width:130px;">Data</td>
                     <td>${fmtData(avaria.data_registo)}</td></tr>
+                ${edRua ? `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Edifício</td>
+                    <td>${edRua}</td></tr>` : ""}
+                ${aptFracao ? `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Apartamento</td>
+                    <td>Fração ${aptFracao}${aptAndar != null ? " — " + aptAndar + "º andar" : ""}</td></tr>` : ""}
+                ${condNome ? `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Reportado por</td>
+                    <td><strong>${condNome}</strong></td></tr>` : ""}
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Zona</td>
                     <td><strong>${avaria.zona || "—"}</strong></td></tr>
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Estado</td>
@@ -130,25 +155,29 @@
             html += `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Serviço externo</td>
                          <td>🏢 ${matchExt[1]}</td></tr>`;
         }
+        if (matchNota) {
+            html += `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Nota do gestor</td>
+                         <td style="font-style:italic;">${matchNota[1].replace(/\n/g, "<br>")}</td></tr>`;
+        }
         html += `</table>`;
 
-        if (descLimpa) {
+        if (descBase) {
             html += `
                 <hr style="margin:16px 0;border:none;border-top:1px solid var(--cor-borda);">
                 <p style="font-size:12px;color:var(--cor-texto-secundario);margin:0 0 6px;
                           text-transform:uppercase;letter-spacing:.05em;">Descrição</p>
-                <p style="font-size:13px;color:var(--cor-texto-secundario);white-space:pre-wrap;">${descLimpa.replace(/\n/g, "<br>")}</p>`;
+                <p style="font-size:13px;color:var(--cor-texto-secundario);white-space:pre-wrap;">${descBase.replace(/\n/g, "<br>")}</p>`;
         }
 
         corpo.innerHTML = html;
-        modalDetalhe.style.display = "";
+        modalDetalhe.removeAttribute("hidden");
     }
 
     document.querySelectorAll("[data-fechar-modal-detalhe]").forEach((el) =>
-        el.addEventListener("click", () => { modalDetalhe.style.display = "none"; })
+        el.addEventListener("click", () => { modalDetalhe.setAttribute("hidden", ""); })
     );
     modalDetalhe?.addEventListener("click", (e) => {
-        if (e.target === modalDetalhe) modalDetalhe.style.display = "none";
+        if (e.target === modalDetalhe) modalDetalhe.setAttribute("hidden", "");
     });
 
     document.querySelector('[data-tabela="avarias"]').addEventListener("click", async (e) => {

@@ -49,8 +49,6 @@ def criar(dados: CriarApartamento, gestor=Depends(verificar_g), db: Session = De
 @router.put("/{id}", response_model=LerApartamento)
 def atualizar(id: int, dados: AtualizarApartamento, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     acesso_gestor.obter_apartamento(db, id, gestor.id)
-    if dados.id_edificio is not None:
-        acesso_gestor.obter_edificio(db, dados.id_edificio, gestor.id)
     return servico.atualizar(db, id, dados)
 
 

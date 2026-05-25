@@ -107,10 +107,10 @@
             btn.textContent = "Adicionar";
             document.getElementById("es-id").value = "";
         }
-        modalEspaco.style.display = "";
+        modalEspaco.removeAttribute("hidden");
     }
 
-    function fecharModalEspaco() { modalEspaco.style.display = "none"; }
+    function fecharModalEspaco() { modalEspaco.setAttribute("hidden", ""); }
 
     document.getElementById("btn-novo-espaco").addEventListener("click", () => abrirModalEspaco());
     document.querySelectorAll("[data-fechar-espaco]").forEach((el) =>
@@ -182,12 +182,12 @@
 
     async function abrirModalMateriais(idEspaco) {
         resetarFormMaterial();
-        modalMateriais.style.display = "";
+        modalMateriais.removeAttribute("hidden");
         await carregarMateriais(idEspaco);
     }
 
     function fecharModalMateriais() {
-        modalMateriais.style.display = "none";
+        modalMateriais.setAttribute("hidden", "");
         espacoAtualId = null;
     }
 

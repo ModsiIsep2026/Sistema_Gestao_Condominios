@@ -69,7 +69,7 @@
         const tbody = document.querySelector('[data-tabela="minhas-reservas"]');
         if (!tbody) return;
         try {
-            minhasReservas = await window.api.get("/alugueres_espaco/condomino");
+            minhasReservas = await window.api.get("/alugueres-espaco/condomino");
             if (!minhasReservas.length) {
                 tbody.innerHTML = `<tr><td colspan="4" class="app-vazio"><p>Sem reservas ativas.</p></td></tr>`;
                 return;
@@ -103,7 +103,7 @@
         if (!calContainer) return;
         calContainer.innerHTML = "<p>A carregar disponibilidade...</p>";
         try {
-            reservasEspaco = await window.api.get(`/alugueres_espaco/espaco/${idEspaco}`);
+            reservasEspaco = await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`);
             const dias = [...diasReservadosDaLista(reservasEspaco)];
             if (!dias.length) {
                 calContainer.innerHTML = `<p style="color:var(--cor-ok);">Espaco sem reservas, disponivel.</p>`;
@@ -126,7 +126,7 @@
             return;
         }
 
-        const lista = await window.api.get(`/alugueres_espaco/espaco/${idEspaco}`);
+        const lista = await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`);
         const dias = [...diasReservadosDaLista(lista)];
         diasIndisponiveis.innerHTML = dias.length
             ? `Dias ocupados: ${dias.join(", ")}`
@@ -143,11 +143,11 @@
             selectEspacoModal.value = selectEspaco.value;
             atualizarDiasIndisponiveis(selectEspaco.value).catch(() => {});
         }
-        if (modal) modal.style.display = "flex";
+        if (modal) modal.removeAttribute("hidden");
     }
 
     function esconderModalReserva() {
-        if (modal) modal.style.display = "none";
+        if (modal) modal.setAttribute("hidden", "");
     }
 
     function mostrarErro(msg) {
@@ -187,7 +187,7 @@
         if (!dataFim) return mostrarErro("Indique o dia de fim.");
         if (dataFim < dataInicio) return mostrarErro("O dia de fim nao pode ser anterior ao dia de inicio.");
 
-        const ocupados = diasReservadosDaLista(await window.api.get(`/alugueres_espaco/espaco/${idEspaco}`));
+        const ocupados = diasReservadosDaLista(await window.api.get(`/alugueres-espaco/espaco/${idEspaco}`));
         const diasPedido = enumerarDias(dataInicio, dataFim);
         if (diasPedido.some((dia) => ocupados.has(dia))) {
             return mostrarErro("Existem dias ja reservados dentro do periodo escolhido.");
@@ -198,7 +198,7 @@
         btn.textContent = "A reservar...";
 
         try {
-            await window.api.post("/alugueres_espaco", {
+            await window.api.post("/alugueres-espaco", {
                 id_espaco: idEspaco,
                 data_inicio: `${dataInicio}T00:00:00`,
                 data_fim: `${dataFim}T23:59:59`,

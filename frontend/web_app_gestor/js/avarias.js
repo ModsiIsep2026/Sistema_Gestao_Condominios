@@ -4,6 +4,7 @@
     let dados      = [];
     let tecnicos   = [];
     let edificios  = [];
+    let parceiros  = [];
     let idEdificio = null;
     let avariaSel  = null;
     let tipoAlocar = "interno";
@@ -36,10 +37,19 @@
         return avaria.resolucao.tecnico?.nome || `Técnico #${avaria.resolucao.id_tecnico}`;
     }
 
+    function reportadoPor(a) {
+        const nome   = a.condomino?.nome || "—";
+        const fracao = a.condomino?.apartamento?.fracao;
+        const andar  = a.condomino?.apartamento?.andar;
+        const apt    = fracao ? `Fração ${fracao}${andar != null ? " · " + andar + "º" : ""}` : null;
+        return `<span style="font-weight:600;">${nome}</span>`
+            + (apt ? `<br><span style="font-size:11px;color:var(--cor-texto-secundario);">${apt}</span>` : "");
+    }
+
     function renderizar(lista) {
         if (!lista.length) {
             tbody.innerHTML = `
-                <tr><td colspan="6">
+                <tr><td colspan="7">
                     <div class="app-vazio">
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
                         <h3>Sem avarias</h3>
@@ -53,7 +63,7 @@
             const resolvida   = a.resolucao?.status === 1;
             const emProgresso = a.resolucao && a.resolucao.status === 0;
             const temExterno  = !a.resolucao && (a.descricao || "").includes("[Externo:");
-            const descLimpa   = (a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").trim();
+            const descLimpa   = (a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").replace(/\nNota:.*$/s, "").trim();
             const descExibir  = descLimpa.length > 55 ? descLimpa.substring(0, 55) + "…" : (descLimpa || "—");
 
             let acoes = "";
@@ -68,6 +78,7 @@
                     <td style="white-space:nowrap;">${fmtData(a.data_registo)}</td>
                     <td><strong>${a.zona || "—"}</strong></td>
                     <td style="color:var(--cor-texto-secundario);font-size:13px;">${descExibir}</td>
+                    <td style="font-size:13px;">${reportadoPor(a)}</td>
                     <td>${estadoBadge(a)}</td>
                     <td style="font-size:13px;">${atribuidoA(a)}</td>
                     <td class="app-tabela__acoes">${acoes}</td>
@@ -106,9 +117,10 @@
     }
 
     try {
-        [edificios, tecnicos] = await Promise.all([
+        [edificios, tecnicos, parceiros] = await Promise.all([
             window.api.get("/edificios"),
             window.api.get("/tecnicos").catch(() => []),
+            window.api.get("/parceiros").catch(() => []),
         ]);
 
         if (selectEd) {
@@ -138,6 +150,30 @@
                   ).join("")
                 : `<option value="">Sem técnicos ativos</option>`;
         }
+
+        const selParceiro = document.getElementById("sel-parceiro");
+        if (selParceiro) {
+            const ativos = parceiros.filter((p) => p.status !== 0);
+            selParceiro.innerHTML = `<option value="">— Selecionar parceiro —</option>` +
+                ativos.map((p) =>
+                    `<option value="${p.id}" data-nome="${p.nome}" data-loc="${p.localizacao || ""}">`
+                    + `${p.nome}${p.servico ? " · " + p.servico : ""}${p.localizacao ? " (" + p.localizacao + ")" : ""}`
+                    + `</option>`
+                ).join("");
+
+            selParceiro.addEventListener("change", () => {
+                const opt = selParceiro.options[selParceiro.selectedIndex];
+                const nomeEmpresa = document.getElementById("inp-empresa");
+                const contacto    = document.getElementById("inp-contacto");
+                if (opt?.value) {
+                    if (nomeEmpresa) nomeEmpresa.value = opt.dataset.nome || "";
+                    if (contacto && opt.dataset.loc) contacto.value = opt.dataset.loc;
+                } else {
+                    if (nomeEmpresa) nomeEmpresa.value = "";
+                    if (contacto) contacto.value = "";
+                }
+            });
+        }
     } catch (e) {
         tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
     }
@@ -161,6 +197,8 @@
         document.getElementById("inp-nota").value     = "";
         document.getElementById("inp-empresa").value  = "";
         document.getElementById("inp-contacto").value = "";
+        const sp = document.getElementById("sel-parceiro");
+        if (sp) sp.value = "";
         const selTec = document.getElementById("sel-tecnico");
         if (selTec) selTec.value = "";
 
@@ -169,10 +207,10 @@
         document.getElementById("painel-interno").classList.add("visivel");
         document.getElementById("painel-externo").classList.remove("visivel");
 
-        modalAlocar.style.display = "";
+        modalAlocar.removeAttribute("hidden");
     }
 
-    function fecharModalAlocar() { modalAlocar.style.display = "none"; avariaSel = null; }
+    function fecharModalAlocar() { modalAlocar.setAttribute("hidden", ""); avariaSel = null; }
 
     document.querySelectorAll("[data-fechar-modal-alocar]").forEach((el) =>
         el.addEventListener("click", fecharModalAlocar)
@@ -293,10 +331,19 @@
         const { passos, atual } = calcularPassosGestor(avaria);
         let html = renderizarPipeline(passos, atual);
 
+        const condNome  = avaria.condomino?.nome;
+        const aptFracao = avaria.condomino?.apartamento?.fracao;
+        const aptAndar  = avaria.condomino?.apartamento?.andar;
+        const edRua     = avaria.edificio?.rua;
+
         html += `
             <table style="width:100%;border-collapse:collapse;font-size:13px;">
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);width:130px;">Data</td>
                     <td>${fmtData(avaria.data_registo)}</td></tr>
+                <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Edifício</td>
+                    <td>${edRua || "—"}</td></tr>
+                ${condNome ? `<tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Reportado por</td>
+                    <td><strong>${condNome}</strong>${aptFracao ? ` · Fração ${aptFracao}${aptAndar != null ? " (" + aptAndar + "º)" : ""}` : ""}</td></tr>` : ""}
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Zona</td>
                     <td><strong>${avaria.zona || "—"}</strong></td></tr>
                 <tr><td style="padding:6px 0;color:var(--cor-texto-secundario);">Estado</td>
@@ -323,14 +370,14 @@
         }
 
         corpo.innerHTML = html;
-        modalDetalhe.style.display = "";
+        modalDetalhe.removeAttribute("hidden");
     }
 
     document.querySelectorAll("[data-fechar-modal-detalhe]").forEach((el) =>
-        el.addEventListener("click", () => { modalDetalhe.style.display = "none"; })
+        el.addEventListener("click", () => { modalDetalhe.setAttribute("hidden", ""); })
     );
     modalDetalhe?.addEventListener("click", (e) => {
-        if (e.target === modalDetalhe) modalDetalhe.style.display = "none";
+        if (e.target === modalDetalhe) modalDetalhe.setAttribute("hidden", "");
     });
 
     tbody.addEventListener("click", async (e) => {

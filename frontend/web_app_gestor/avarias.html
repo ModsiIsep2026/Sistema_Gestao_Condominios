@@ -65,6 +65,7 @@
                             <th>Data</th>
                             <th>Zona</th>
                             <th>Descrição</th>
+                            <th>Reportado por</th>
                             <th>Estado</th>
                             <th>Atribuído a</th>
                             <th></th>
@@ -119,8 +120,14 @@
 
             <div class="av-painel-externo" id="painel-externo">
                 <div class="campo">
-                    <label for="inp-empresa">Nome da empresa / serviço</label>
-                    <input type="text" id="inp-empresa" placeholder="Ex: Electro Sul, Lda." maxlength="120">
+                    <label for="sel-parceiro">Parceiro registado</label>
+                    <select id="sel-parceiro">
+                        <option value="">— Selecionar parceiro —</option>
+                    </select>
+                </div>
+                <div class="campo">
+                    <label for="inp-empresa">Ou indicar manualmente</label>
+                    <input type="text" id="inp-empresa" placeholder="Nome da empresa / serviço" maxlength="120">
                 </div>
                 <div class="campo">
                     <label for="inp-contacto">Contacto (opcional)</label>

@@ -114,6 +114,8 @@ def me(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
         resposta["telemovel"] = utilizador.telemovel
         resposta["id_apartamento"] = utilizador.id_apartamento
         resposta["id_edificio"] = utilizador.apartamento.id_edificio if utilizador.apartamento else None
+    if tipo == "tecnico":
+        resposta["funcao"] = utilizador.funcao
     return resposta
 
 

@@ -84,9 +84,9 @@
     function abrirModal() {
         erroModal.style.display = "none";
         document.getElementById("form-tecnico").reset();
-        modal.style.display = "";
+        modal.removeAttribute("hidden");
     }
-    function fecharModal() { modal.style.display = "none"; }
+    function fecharModal() { modal.setAttribute("hidden", ""); }
 
     document.getElementById("btn-novo-tecnico").addEventListener("click", abrirModal);
     document.querySelectorAll("[data-fechar-modal]").forEach((el) =>
