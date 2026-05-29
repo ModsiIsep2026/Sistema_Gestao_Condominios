@@ -2,7 +2,7 @@ fastapi==0.115.0                # Framework de Python
 uvicorn[standard]==0.32.0     
 sqlalchemy==2.0.36              # ORM para comunicar com a base de dados
 pymysql==1.1.1               
-cryptography==43.0.3          # Funcoes criptograficas usadas por outras libs
+cryptography==43.0.3          # Funcoes criptograficas usadas por outras libs (teste)
 pydantic==2.13.4              # Validacao e formatacao de dados
 pydantic-settings==2.6.1      # Leitura de configuracoes e variaveis de ambiente
 python-jose[cryptography]==3.3.0  # Criacao e validacao de tokens Json Web Token
