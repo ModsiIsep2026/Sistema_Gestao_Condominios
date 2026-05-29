@@ -12,7 +12,7 @@ jinja2==3.1.4                 # Motor de templates HTML
 python-dotenv==1.0.1          # Carrega variaveis do ficheiro .env
 authlib==1.3.2                # Autenticacao OAuth com servicos externos
 itsdangerous==2.2.0           
-aiosmtplib==1.3.1             # Para enviar emails de forma assincrona
+aiosmtplib==1.1.7             # Para enviar emails de forma assincrona
 pytest==8.3.3                 # Framework de testes
 httpx==0.27.2                 # Cliente HTTP para chamadas externas e testes
 openpyxl==3.1.5               # Criar ficheiros Excel
