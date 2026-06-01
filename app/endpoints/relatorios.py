@@ -9,17 +9,11 @@ from app.logica import relatorio as servico
 
 router = APIRouter(prefix="/relatorios", tags=["Relatórios"])
 
-# (GET) /relatorios/excel  - Exporta relatório de pagamentos em Excel  (gestor)
-# (GET) /relatorios/pdf    - Exporta relatório de pagamentos em PDF    (gestor)
-
+# (GET) /relatorios/excel  - Exporta relatório de pagamentos em Excel  (exclusivo do gestor)
+# (GET) /relatorios/pdf    - Exporta relatório de pagamentos em PDF    (exclusivo do gestor)
 
 @router.get("/excel")
-def download_excel(
-    gestor=Depends(verificar_g),
-    data_inicio: Optional[date] = None,
-    data_fim: Optional[date] = None,
-    db: Session = Depends(get_db),
-):
+def download_excel(gestor=Depends(verificar_g),data_inicio: Optional[date] = None,data_fim: Optional[date] = None,db: Session = Depends(get_db),):
     buffer = servico.exportar_excel(db, gestor.id, data_inicio, data_fim)
     return StreamingResponse(
         buffer,
@@ -29,9 +23,7 @@ def download_excel(
 
 
 @router.get("/pdf")
-def download_pdf(
-    gestor=Depends(verificar_g),
-    data_inicio: Optional[date] = None,
+def download_pdf(gestor=Depends(verificar_g),data_inicio: Optional[date] = None,
     data_fim: Optional[date] = None,
     db: Session = Depends(get_db),
 ):

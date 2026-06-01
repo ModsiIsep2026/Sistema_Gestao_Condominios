@@ -4,7 +4,6 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
 
-    # Base de dados
     DB_HOST: str
     DB_PORT: int
     DB_USER: str
@@ -16,32 +15,31 @@ class Settings(BaseSettings):
     APP_DEBUG: bool = False
     APP_PORT: int = 8080
     APP_URL: str = "http://localhost:8080"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30           # Token expira em 30 minutos por segurança
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    # Envio de emails para recuperar a password
     SMTP_HOST: str = "smtp.gmail.com"
-    SMTP_PORT: int = 587                             # 587 para TLS, se fosse SSL era 465 
+    SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_FROM_EMAIL: str = ""
     SMTP_FROM_NAME: str = "Sistema de Gestão de Condomínios"
 
-    
     PASSWORD_RESET_PATH: str = "/web_app_visitante/reset_pw2.html"
     PASSWORD_RESET_EXPIRE_MINUTES: int = 60
 
-    # Stripe (test mode)
     STRIPE_SECRET_KEY: str = ""
     STRIPE_PUBLISHABLE_KEY: str = ""
-    STRIPE_PRECO_CENTIMOS: int = 5000  
+    STRIPE_PRECO_CENTIMOS: int = 5000
 
-    GOOGLE_CLIENT_ID: str = ""                       # Trabalho futuro quando tivermos em prod
-    GOOGLE_CLIENT_SECRET: str = "" # --
-    GITHUB_CLIENT_ID: str = "" # --
-    GITHUB_CLIENT_SECRET: str = "" # --
-    MICROSOFT_CLIENT_ID: str = "" # --
-    MICROSOFT_CLIENT_SECRET: str = "" # --
-    OAUTH_REDIRECT_BASE: str = "http://localhost:8080" # --
+    CORS_ORIGINS: list = ["http://localhost:8080"]
+
+    GOOGLE_CLIENT_ID: str = ""
+    GOOGLE_CLIENT_SECRET: str = ""
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+    MICROSOFT_CLIENT_ID: str = ""
+    MICROSOFT_CLIENT_SECRET: str = ""
+    OAUTH_REDIRECT_BASE: str = "http://localhost:8080"
 
     @property
     def DB_connect(self) -> str:

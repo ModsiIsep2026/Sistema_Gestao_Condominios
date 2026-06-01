@@ -8,7 +8,6 @@ class CriarTecnico(BaseModel):
     email: EmailStr
 
 
-
 class AtualizarTecnico(BaseModel):
     nome: Optional[str] = None
     funcao: Optional[str] = None

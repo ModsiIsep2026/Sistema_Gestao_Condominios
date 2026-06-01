@@ -6,7 +6,7 @@ import openpyxl
 from openpyxl.styles import Alignment, Font, PatternFill
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.tabelas_bd.edificio import Edificio
 from app.tabelas_bd.apartamento import Apartamento
@@ -14,23 +14,28 @@ from app.tabelas_bd.pagamento import Pagamento
 
 
 def _obter_pagamentos(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]):
-    edificios = db.query(Edificio).filter(Edificio.id_gestor == id_gestor, Edificio.status == 1).all()
-    apt_ids = [
-        a.id
-        for e in edificios
-        for a in db.query(Apartamento).filter(Apartamento.id_edificio == e.id, Apartamento.status == 1).all()
-    ]
-
-    q = db.query(Pagamento).filter(Pagamento.id_apartamento.in_(apt_ids), Pagamento.status == 1)
+    q = (
+        db.query(Pagamento)
+        .join(Apartamento, Pagamento.id_apartamento == Apartamento.id)
+        .join(Edificio, Apartamento.id_edificio == Edificio.id)
+        .options(joinedload(Pagamento.apartamento).joinedload(Apartamento.edificio))
+        .filter(
+            Edificio.id_gestor == id_gestor,
+            Edificio.status == 1,
+            Apartamento.status == 1,
+            Pagamento.status == 1,
+        )
+    )
     if data_inicio:
         q = q.filter(Pagamento.data_i >= data_inicio)
     if data_fim:
         q = q.filter(Pagamento.data_i <= data_fim)
 
-    apt_map = {a.id: a for e in edificios for a in db.query(Apartamento).filter(Apartamento.id_edificio == e.id).all()}
-    ed_map = {e.id: e for e in edificios}
+    pagamentos = q.all()
+    apt_map = {p.id_apartamento: p.apartamento for p in pagamentos if p.apartamento}
+    ed_map = {p.apartamento.id_edificio: p.apartamento.edificio for p in pagamentos if p.apartamento and p.apartamento.edificio}
 
-    return q.all(), apt_map, ed_map
+    return pagamentos, apt_map, ed_map
 
 
 def exportar_excel(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]) -> io.BytesIO:

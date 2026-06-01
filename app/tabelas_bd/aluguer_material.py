@@ -20,5 +20,5 @@ class AluguerMaterial(Base):
 
     preco_total = Column(Numeric(10, 2), nullable=False, default=0.00)
 
-    material_espaco = relationship("MaterialEspaco", back_populates="alugueres") #fk
+    material_espaco = relationship("MaterialEspaco", back_populates="alugueres")
     condomino = relationship("Condomino", back_populates="alugueres_material")

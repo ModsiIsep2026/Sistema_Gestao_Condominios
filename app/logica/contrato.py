@@ -28,11 +28,9 @@ def v_contrato_expirados(db: Session) -> None:
         db.commit()
 
 
-#pagamentos pelo stripe
 def stripe_client():
     stripe.api_key = cfg.STRIPE_SECRET_KEY
     return stripe
-
 
 
 def get_licenca(db: Session, licenca_id: int):
@@ -63,7 +61,6 @@ def get_contrato(db: Session, gestor_id: int):
     return contrato
 
 
-#contratos
 def listar(db: Session):
     return db.query(Contrato).filter(Contrato.status == 1).all()
 
@@ -91,18 +88,13 @@ def atualizar(db: Session, gestor_id: int, dados):
     return contrato
 
 
-
 def iniciar_pagamento(db: Session, dados):
-
     licenca = get_licenca(db, dados.id_licenca)
-    #verifica se o email existe
     if email_exists(db, dados.email):
         raise HTTPException(409, "Email já registado")
 
     meses = max(1, dados.num_meses)
-
-    preco_mensal = max(50,int(float(licenca.ppem) * licenca.num_edificios * 100))
-
+    preco_mensal = max(50, int(float(licenca.ppem) * licenca.num_edificios * 100))
     total = preco_mensal * meses
 
     s = stripe_client()
@@ -166,28 +158,19 @@ def concluir_pagamento(db: Session, dados):
         data_inicio=date.today(),
         data_fim=date.today() + timedelta(days=30 * meses),
     )
-
     db.add(contrato)
     db.commit()
 
     try:
-        _enviar_boas_vindas(
-            dados.email,
-            dados.nome,
-            pw_temp,
-            licenca.num_edificios,
-            meses,
-        )
+        _enviar_boas_vindas(dados.email, dados.nome, pw_temp, licenca.num_edificios, meses)
     except Exception:
         pass
 
     return {"email": dados.email}
 
 
-
 def _enviar_boas_vindas(email, nome, pw, edificios, meses):
     enviar_boas_vindas(email, nome, pw, "gestor")
-    # Nota de plano enviada em email separado para manter o template consistente
     nota_html = f"""
     <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;">
       <div style="background:#0B2240;padding:24px 32px;">

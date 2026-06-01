@@ -7,7 +7,6 @@ from app.estruturas.tecnico import CriarTecnico, AtualizarTecnico, LerTecnico
 from app.logica import tecnico as servico
 
 router = APIRouter(prefix="/tecnicos", tags=["Técnicos"])
-
 # (GET)    /tecnicos              - Lista os técnicos do gestor autenticado.
 # (GET)    /tecnicos/{id}         - Mostra os dados de um técnico.
 # (POST)   /tecnicos              - Cria um técnico e envia as credenciais por email.
@@ -19,27 +18,22 @@ router = APIRouter(prefix="/tecnicos", tags=["Técnicos"])
 def listar(gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.listar(db, gestor.id)
 
-
 @router.put("/conta", response_model=LerTecnico)
-def atualizar_pperfil(dados: AtualizarTecnico, tecnico=Depends(verificar_t), db: Session = Depends(get_db)):
+def atualizar_perfil(dados: AtualizarTecnico, tecnico=Depends(verificar_t), db: Session = Depends(get_db)):
     return servico.atualizar(db, tecnico.id, dados)
-
 
 @router.get("/{id}", response_model=LerTecnico)
 def obter(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.obter(db, id)
-
 
 @router.post("", response_model=LerTecnico, status_code=201)
 def criar(dados: CriarTecnico, background: BackgroundTasks,
           gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.criar(db, dados, gestor.id, background)
 
-
 @router.put("/{id}", response_model=LerTecnico)
 def atualizar(id: int, dados: AtualizarTecnico, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.atualizar(db, id, dados)
-
 
 @router.delete("/{id}")
 def remover(id: int, _=Depends(verificar_g), db: Session = Depends(get_db)):

@@ -26,7 +26,7 @@ class Edificio(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    gestor = relationship("Gestor", back_populates="edificios")#fk
+    gestor = relationship("Gestor", back_populates="edificios")
     apartamentos = relationship("Apartamento", back_populates="edificio")
     espacos = relationship("Espaco", back_populates="edificio")
     avarias = relationship("RegistoAvaria", back_populates="edificio")

@@ -20,5 +20,5 @@ class Tecnico(Base):
     
     status = Column(SmallInteger, nullable=False, default=1)
 
-    gestor = relationship("Gestor", back_populates="tecnicos") #fk
+    gestor = relationship("Gestor", back_populates="tecnicos")
     resolucoes = relationship("ResolucaoAvaria", back_populates="tecnico")

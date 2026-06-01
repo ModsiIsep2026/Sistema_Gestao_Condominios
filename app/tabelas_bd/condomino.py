@@ -20,7 +20,7 @@ class Condomino(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    apartamento = relationship("Apartamento", back_populates="condominos")#fk
+    apartamento = relationship("Apartamento", back_populates="condominos")
     alugueres_espaco = relationship("AluguerEspaco", back_populates="condomino")
     alugueres_material = relationship("AluguerMaterial", back_populates="condomino")
     avarias = relationship("RegistoAvaria", back_populates="condomino")

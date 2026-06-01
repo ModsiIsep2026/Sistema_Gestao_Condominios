@@ -3,7 +3,7 @@ logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
@@ -28,16 +28,28 @@ app = FastAPI(
 )
 
 
-
-
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
-        response.headers["X-Content-Type-Options"]  = "nosniff"                                 # Proteção contra MIME sniffing
-        response.headers["X-Frame-Options"]         = "DENY"                                      # Proteção contra clickjacking
-        response.headers["X-XSS-Protection"]        = "1; mode=block"                           # Proteção contra XSS
+        response.headers["X-Content-Type-Options"]  = "nosniff"
+        response.headers["X-Frame-Options"]         = "DENY"
+        response.headers["X-XSS-Protection"]        = "1; mode=block"
         response.headers["Referrer-Policy"]         = "strict-origin-when-cross-origin"
-        response.headers["Cache-Control"]           = "no-store"                                    # Evita cache de dados sensíveis
+        response.headers["Cache-Control"]           = "no-store"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com https://cdn.jsdelivr.net; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
+            "font-src 'self' https://fonts.gstatic.com; "
+            "img-src 'self' data: https:; "
+            "connect-src 'self' https://api.stripe.com; "
+            "frame-src https://js.stripe.com; "
+            "object-src 'none'; "
+            "base-uri 'self';"
+        )
+        response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=(self)"
+        if _configs.APP_ENV == "production":
+            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 
 
@@ -45,18 +57,16 @@ app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=_configs.APP_SECRET_KEY)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=_configs.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allow_headers=["Authorization", "Content-Type"],)
-
-
-# Endpoints
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 app.include_router(auth.router)
-app.include_router(oauth.router)           
-app.include_router(licencas.router)       
-app.include_router(parceiros.router)      
+app.include_router(oauth.router)
+app.include_router(licencas.router)
+app.include_router(parceiros.router)
 app.include_router(admin.router)
 app.include_router(gestores.router)
 app.include_router(contratos.router)
@@ -74,18 +84,16 @@ app.include_router(relatorios.router)
 app.include_router(contacto.router)
 
 
-
-
 _frontend = Path(__file__).resolve().parent.parent / "frontend"
-app.mount("/visuais", StaticFiles(directory=_frontend / "visuais"), name="visuais")
+app.mount("/visuais",          StaticFiles(directory=_frontend / "visuais"),          name="visuais")
 app.mount("/web_app_visitante", StaticFiles(directory=_frontend / "web_app_visitante", html=True), name="web_app_visitante")
-app.mount("/website_C", StaticFiles(directory=_frontend / "web_app_visitante", html=True), name="website_C_legacy")
-app.mount("/web_app_admin", StaticFiles(directory=_frontend / "web_app_admin", html=True), name="web_app_admin")
-app.mount("/web_app_gestor", StaticFiles(directory=_frontend / "web_app_gestor", html=True), name="web_app_gestor")
+app.mount("/website_C",        StaticFiles(directory=_frontend / "web_app_visitante", html=True), name="website_C_legacy")
+app.mount("/web_app_admin",    StaticFiles(directory=_frontend / "web_app_admin",    html=True), name="web_app_admin")
+app.mount("/web_app_gestor",   StaticFiles(directory=_frontend / "web_app_gestor",   html=True), name="web_app_gestor")
 app.mount("/web_app_condomino", StaticFiles(directory=_frontend / "web_app_condomino", html=True), name="web_app_condomino")
-app.mount("/web_app_tecnico", StaticFiles(directory=_frontend / "web_app_tecnico", html=True), name="web_app_tecnico")
+app.mount("/web_app_tecnico",  StaticFiles(directory=_frontend / "web_app_tecnico",  html=True), name="web_app_tecnico")
 
 
 @app.get("/", include_in_schema=False)
-def raiz():
+def pagina_inicial():
     return RedirectResponse(url="/web_app_visitante/")

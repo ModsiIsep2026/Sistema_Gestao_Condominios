@@ -16,5 +16,5 @@ class MaterialEspaco(Base):
 
     id_espaco = Column(Integer, ForeignKey("espaco.id"), nullable=False)
 
-    espaco = relationship("Espaco", back_populates="materiais")#fk
+    espaco = relationship("Espaco", back_populates="materiais")
     alugueres = relationship("AluguerMaterial", back_populates="material_espaco")

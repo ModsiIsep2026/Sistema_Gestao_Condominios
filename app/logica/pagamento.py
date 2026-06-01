@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.tabelas_bd.pagamento import Pagamento
@@ -27,7 +27,7 @@ def criar(db: Session, dados):
         id_apartamento=dados.id_apartamento,
         mes=dados.mes,
         valor=apt.calcular_quota_mensal(),
-        data_i=datetime.utcnow(),
+        data_i=datetime.now(timezone.utc),
         status=1,
         estado=0,
     )
@@ -44,7 +44,7 @@ def pagamento_feito(db: Session, id: int):
         raise HTTPException(404, "Pagamento não registado")
     
     pagamento.estado = 1
-    pagamento.data_p = datetime.utcnow()
+    pagamento.data_p = datetime.now(timezone.utc)
     db.commit()
     db.refresh(pagamento)
     return pagamento

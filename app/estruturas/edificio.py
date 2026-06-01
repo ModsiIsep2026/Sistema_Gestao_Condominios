@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-# Usado apenas para leitura (inclui id_gestor que vem da BD)
 class LerEdificio(BaseModel):
     id: int
     rua: str

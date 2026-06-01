@@ -20,6 +20,6 @@ class RegistoAvaria(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    condomino = relationship("Condomino", back_populates="avarias")#fk
+    condomino = relationship("Condomino", back_populates="avarias")
     edificio = relationship("Edificio", back_populates="avarias")
     resolucao = relationship("ResolucaoAvaria", back_populates="registo_avaria", uselist=False)

@@ -3,12 +3,16 @@ import string
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 from jose import jwt, JWTError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.configs.config import get_configs
 from app.configs.db_connect import get_db
+from app.tabelas_bd.admin import Admin
+from app.tabelas_bd.gestor import Gestor
+from app.tabelas_bd.condomino import Condomino
+from app.tabelas_bd.tecnico import Tecnico
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 pwd_encriptada = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -19,11 +23,17 @@ credenciais_invalidas = HTTPException(status_code=401,
 )
 
 ACESSO_NEGADO = HTTPException(status_code=403, detail="Acesso negado")
-IGNORAR_C = set("0O1lI")    # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
+IGNORAR_C = set("0O1lI")  # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
+
+TABELAS = {
+    "admin":     Admin,
+    "gestor":    Gestor,
+    "condomino": Condomino,
+    "tecnico":   Tecnico,
+}
 
 
-# ── Passwords ──────────────────────────────────────────────────────────────────
-# Recebe a pw e retorna encriptada através da bibilioteca  CryptoContext
+# Recebe a pw e retorna encriptada através da bibilioteca CryptoContext
 def pw_encript(pw: str) -> str:
     return pwd_encriptada.hash(pw)
 
@@ -46,13 +56,13 @@ def random_pw(tamanho: int = 12) -> str:
 
 # Json Web Token (JWT)
 def criar_token(id: int, tipo: str) -> str:
-    
     configs = get_configs()
+    agora = datetime.now(timezone.utc)
     conteudo = {
         "sub": str(id),
         "tipo": tipo,
-        "exp": datetime.utcnow() + timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES),
-        "iat": datetime.utcnow(),
+        "exp": agora + timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES),
+        "iat": agora,
     }
     return jwt.encode(conteudo, configs.APP_SECRET_KEY, algorithm=configs.ALGORITHM)
 
@@ -72,57 +82,19 @@ def token_atual(token: str = Depends(oauth2_scheme)) -> dict:
         raise credenciais_invalidas
 
 
+def verificar_perfil(tipo: str):
+    def perfis(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
+        
+        if dados["tipo"] != tipo:
+            raise ACESSO_NEGADO
+        modelo = TABELAS[tipo]
+        u = db.query(modelo).filter(modelo.id == dados["id"], modelo.status == 1).first()
+        if not u:
+            raise credenciais_invalidas
+        return u
+    return perfis
 
-# Verificar o perfil quando acedem
-def verificar_a(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
-
-    if dados["tipo"] != "admin":
-        raise ACESSO_NEGADO
-    
-    from app.tabelas_bd.admin import Admin
-
-    u = db.query(Admin).filter(Admin.id == dados["id"], Admin.status == 1).first()
-    if not u:
-        raise credenciais_invalidas
-    return u
-
-
-def verificar_g(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
-
-    if dados["tipo"] != "gestor":
-        raise ACESSO_NEGADO
-    
-    from app.tabelas_bd.gestor import Gestor
-
-    u = db.query(Gestor).filter(Gestor.id == dados["id"], Gestor.status == 1).first()
-    if not u:
-        raise credenciais_invalidas
-    return u
-
-
-def verificar_c(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
-
-    if dados["tipo"] != "condomino":
-
-        raise ACESSO_NEGADO
-    
-    from app.tabelas_bd.condomino import Condomino
-
-    u = db.query(Condomino).filter(Condomino.id == dados["id"], Condomino.status == 1).first()
-    if not u:
-        raise credenciais_invalidas
-    return u
-
-
-def verificar_t(dados: dict = Depends(token_atual), db: Session = Depends(get_db)):
-
-    if dados["tipo"] != "tecnico":
-
-        raise ACESSO_NEGADO
-    
-    from app.tabelas_bd.tecnico import Tecnico
-
-    u = db.query(Tecnico).filter(Tecnico.id == dados["id"], Tecnico.status == 1).first()
-    if not u:
-        raise credenciais_invalidas
-    return u
+verificar_a = verificar_perfil("admin")
+verificar_g = verificar_perfil("gestor")
+verificar_c = verificar_perfil("condomino")
+verificar_t = verificar_perfil("tecnico")

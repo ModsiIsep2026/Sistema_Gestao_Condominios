@@ -16,6 +16,6 @@ class Espaco(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    edificio = relationship("Edificio", back_populates="espacos") #fk
+    edificio = relationship("Edificio", back_populates="espacos")
     materiais = relationship("MaterialEspaco", back_populates="espaco")
     alugueres = relationship("AluguerEspaco", back_populates="espaco")

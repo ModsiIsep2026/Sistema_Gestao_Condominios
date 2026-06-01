@@ -21,7 +21,7 @@ def listar(id_apartamento: Optional[int] = None, _=Depends(verificar_g), db: Ses
 
 
 @router.put("/conta", response_model=LerCondomino)
-def atualizar_pperfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+def atualizar_perfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.atualizar(db, condomino.id, dados)
 
 

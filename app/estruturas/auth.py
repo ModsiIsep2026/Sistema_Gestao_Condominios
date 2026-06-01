@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Literal, Optional
 
 
@@ -17,4 +17,17 @@ class Token(BaseModel):
 
 class AlterarPassword(BaseModel):
     pw_atual: str
-    pw_nova: str
+    pw_nova: str = Field(min_length=8)
+
+
+class RecuperarPassword(BaseModel):
+    email: EmailStr
+
+
+class ResetPassword(BaseModel):
+    token: str
+    password: str = Field(min_length=8)
+
+
+class ConfirmarNovaPassword(BaseModel):
+    token: str

@@ -29,4 +29,4 @@ class Pagamento(Base):
         UniqueConstraint("id_apartamento", "mes", name="uq_pagamento"),
     )
 
-    apartamento = relationship("Apartamento", back_populates="pagamentos")#fk
+    apartamento = relationship("Apartamento", back_populates="pagamentos")

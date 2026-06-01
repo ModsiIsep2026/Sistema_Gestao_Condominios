@@ -18,16 +18,10 @@ class Apartamento(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    edificio = relationship("Edificio", back_populates="apartamentos") #fk
+    edificio = relationship("Edificio", back_populates="apartamentos")
     condominos = relationship("Condomino", back_populates="apartamento")
     pagamentos = relationship("Pagamento", back_populates="apartamento")
 
-
-    # Cada edificio vai ter um valor base mensal definido , 
-    # que é proporcionalmente dividido de acordo com a premilagem entre todos os condóminos
-
-    def calcular_quota_mensal(self):                                            
-        
+    def calcular_quota_mensal(self) -> float:
         valor_base = self.edificio.valor_base_mensal if self.edificio else 0
-
         return float(valor_base) * float(self.permilagem) / 1000

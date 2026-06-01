@@ -16,5 +16,5 @@ class ResolucaoAvaria(Base):
 
     data_resolucao = Column(DateTime, nullable=True)
 
-    registo_avaria = relationship("RegistoAvaria", back_populates="resolucao")#fk
+    registo_avaria = relationship("RegistoAvaria", back_populates="resolucao")
     tecnico = relationship("Tecnico", back_populates="resolucoes")

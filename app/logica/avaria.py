@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session, joinedload
 from fastapi import HTTPException
 from app.tabelas_bd.registo_avaria import RegistoAvaria
@@ -10,12 +10,11 @@ def _com_resolucao():
 
 
 def listar_ptecnico(db: Session, id_tecnico: int):
-    resolucoes = db.query(ResolucaoAvaria).filter(ResolucaoAvaria.id_tecnico == id_tecnico).all()
-    ids = [r.id_registo_avaria for r in resolucoes]
     return (
         db.query(RegistoAvaria)
+        .join(ResolucaoAvaria, ResolucaoAvaria.id_registo_avaria == RegistoAvaria.id)
         .options(_com_resolucao())
-        .filter(RegistoAvaria.id.in_(ids), RegistoAvaria.status == 1)
+        .filter(ResolucaoAvaria.id_tecnico == id_tecnico, RegistoAvaria.status == 1)
         .all()
     )
 
@@ -56,10 +55,10 @@ def criar(db: Session, dados, id_condomino: int):
         zona=dados.zona,
         descricao=dados.descricao,
         id_edificio=dados.id_edificio,
-        data_registo=datetime.utcnow(),
+        data_registo=datetime.now(timezone.utc),
     )
-    db.add(avaria) 
-    db.commit() #adiciona à BD
+    db.add(avaria)
+    db.commit()
     db.refresh(avaria)
     return avaria
 
@@ -73,7 +72,6 @@ def atualizar(db: Session, id: int, dados):
     db.commit()
     db.refresh(avaria)
     return avaria
-
 
 
 def criar_resolucao(db: Session, id_avaria: int, id_tecnico: int):
@@ -99,8 +97,8 @@ def atualizar_resolucao(db: Session, id_avaria: int, dados):
         setattr(resolucao, campo, valor)
 
     if resolucao.status == 1 and not resolucao.data_resolucao:
-        resolucao.data_resolucao = datetime.utcnow()
-        
+        resolucao.data_resolucao = datetime.now(timezone.utc)
+
     db.commit()
     db.refresh(resolucao)
     return resolucao

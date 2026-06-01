@@ -12,54 +12,32 @@ from app.logica import contrato as servico
 
 router = APIRouter(prefix="/contratos", tags=["Contratos"])
 
-# (GET)  /contratos
-# Lista todos os contratos.
-
-
-# (GET)  /contratos/gestor
-# Mostra o contrato do gestor autenticado.
-
-
-# (POST) /contratos
-# Cria um novo contrato.
-
-
-# (PUT)  /contratos/gestor
-# Atualiza o contrato do gestor.
-
-
-# (POST) /contratos/iniciar
-# Inicia o processo de pagamento do contrato.
-
-
-# (POST) /contratos/concluir
-# Conclui o pagamento e finaliza a criação do contrato.
+# (GET)  /contratos - Lista todos os contratos.
+# (GET)  /contratos/gestor - Mostra o contrato do gestor autenticado.
+# (POST) /contratos - Cria um novo contrato.
+# (PUT)  /contratos/gestor - Atualiza o contrato do gestor.
+# (POST) /contratos/iniciar - Inicia o processo de pagamento do contrato.
+# (POST) /contratos/concluir - Conclui o pagamento e finaliza a criação do contrato.
 
 @router.get("", response_model=List[LerContrato])
 def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.listar(db)
 
-
 @router.get("/gestor", response_model=LerContrato)
 def obter_meu(gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.obter_pgestor(db, gestor.id)
-
 
 @router.post("", response_model=LerContrato, status_code=201)
 def criar(dados: CriarContrato, _=Depends(verificar_a), db: Session = Depends(get_db)):
     return servico.criar(db, dados)
 
-
 @router.put("/gestor", response_model=LerContrato)
 def atualizar(dados: AtualizarContrato, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.atualizar(db, gestor.id, dados)
 
-
-
 @router.post("/iniciar")
 def iniciar_pagamento(dados: IniciarPagamento, db: Session = Depends(get_db)):
     return servico.iniciar_pagamento(db, dados)
-
 
 @router.post("/concluir")
 def concluir_pagamento(dados: ConcluirPagamento, db: Session = Depends(get_db)):

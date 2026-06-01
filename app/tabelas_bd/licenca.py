@@ -9,6 +9,6 @@ class Licenca(Base):
 
     num_edificios = Column(Integer, nullable=False)
 
-    ppem = Column(Numeric(10, 2), nullable=False) # preco mensal p/edificio
+    ppem = Column(Numeric(10, 2), nullable=False)
     
     status = Column(SmallInteger, nullable=False, default=1)

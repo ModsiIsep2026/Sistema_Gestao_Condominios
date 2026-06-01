@@ -34,7 +34,6 @@ def obter(db: Session, id: int):
 
 def criar(db: Session, dados, background: BackgroundTasks = None):
     pw_temp = random_pw()
-    # telemovel é opcional no registo — placeholder evita violação de NOT NULL na BD
     tel = dados.telemovel if dados.telemovel else f"_p{int(time.time() * 1000)}"
     condomino = Condomino(
         nome=dados.nome,

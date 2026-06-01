@@ -16,8 +16,8 @@ class Parceiro(Base):
 
     status = Column(SmallInteger, nullable=False, default=1)
 
-    id_admin = Column(Integer, ForeignKey("admin.id"), nullable=False) # Qual admin fechou com este parceiro
+    id_admin = Column(Integer, ForeignKey("admin.id"), nullable=False)
 
     site = Column(String(255), nullable=True)
 
-    admin = relationship("Admin")#fk
+    admin = relationship("Admin")
