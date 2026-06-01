@@ -15,3 +15,9 @@ from app.estruturas.aluguer_material import CriarAluguerMaterial, LerAluguerMate
 from app.estruturas.pagamento import CriarPagamento, LerPagamento
 from app.estruturas.registo_avaria import CriarRegistoAvaria, AtualizarRegistoAvaria, LerRegistoAvaria
 from app.estruturas.resolucao_avaria import CriarResolucaoAvaria, AtualizarResolucaoAvaria, LerResolucaoAvaria
+
+
+
+#As estruturas são classes Pydantic que definem 
+# exatamente quais campos cada endpoint aceita ou devolve, fazem validação 
+# automática desses campos (por exemplo email válido e password com mínimo de 8 caracteres)

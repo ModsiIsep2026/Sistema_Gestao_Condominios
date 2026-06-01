@@ -18,6 +18,7 @@ def listar_pcondomino(db: Session, id_condomino: int):
 
 
 def criar(db: Session, dados, condomino):
+
     espaco = db.query(Espaco).filter(Espaco.id == dados.id_espaco, Espaco.status == 1).first()
 
     if not espaco:
@@ -49,9 +50,9 @@ def criar(db: Session, dados, condomino):
         data_fim=dados.data_fim,
         preco_total=round(float(espaco.preco_hora) * horas, 2),
     )
-    db.add(aluguer)
-    db.commit()
-    db.refresh(aluguer)
+    db.add(aluguer) # adiciona info na bd
+    db.commit() # guarda as alterações na bd
+    db.refresh(aluguer) #atualiza na bd
     return aluguer
 
 

@@ -6,7 +6,7 @@ _cfg = get_configs()
 
 def enviar_contacto(dados: MensagemContacto) -> None:
 
-    telefone_linha = f"<tr><td style='padding:4px 0;color:#6B6860;font-size:13px;'>Telefone</td><td style='padding:4px 0;font-size:13px;'>{dados.telefone}</td></tr>" if dados.telefone else ""
+    telefone_html = f"<tr><td style='padding:4px 0;color:#6B6860;font-size:13px;'>Telefone</td><td style='padding:4px 0;font-size:13px;'>{dados.telefone}</td></tr>" if dados.telefone else ""
 
     corpo_html = f"""
     <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;">
@@ -27,7 +27,7 @@ def enviar_contacto(dados: MensagemContacto) -> None:
               <a href="mailto:{dados.email}" style="color:#F08A24;">{dados.email}</a>
             </td>
           </tr>
-          {telefone_linha}
+          {telefone_html}
         </table>
         <hr style="border:none;border-top:1px solid #E2E0DC;margin:20px 0;">
         <p style="font-size:13px;color:#6B6860;margin:0 0 8px;">Mensagem</p>

@@ -13,7 +13,7 @@ from app.tabelas_bd.apartamento import Apartamento
 from app.tabelas_bd.pagamento import Pagamento
 
 
-def _obter_pagamentos(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]):
+def obter_pagamentos(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]):
     q = (
         db.query(Pagamento)
         .join(Apartamento, Pagamento.id_apartamento == Apartamento.id)
@@ -31,7 +31,7 @@ def _obter_pagamentos(db: Session, id_gestor: int, data_inicio: Optional[date], 
     if data_fim:
         q = q.filter(Pagamento.data_i <= data_fim)
 
-    pagamentos = q.all()
+    pagamentos = q.all() 
     apt_map = {p.id_apartamento: p.apartamento for p in pagamentos if p.apartamento}
     ed_map = {p.apartamento.id_edificio: p.apartamento.edificio for p in pagamentos if p.apartamento and p.apartamento.edificio}
 
@@ -39,7 +39,7 @@ def _obter_pagamentos(db: Session, id_gestor: int, data_inicio: Optional[date], 
 
 
 def exportar_excel(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]) -> io.BytesIO:
-    pagamentos, apt_map, ed_map = _obter_pagamentos(db, id_gestor, data_inicio, data_fim)
+    pagamentos, apt_map, ed_map = obter_pagamentos(db, id_gestor, data_inicio, data_fim)
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -78,7 +78,7 @@ def exportar_excel(db: Session, id_gestor: int, data_inicio: Optional[date], dat
 
 
 def exportar_pdf(db: Session, id_gestor: int, data_inicio: Optional[date], data_fim: Optional[date]) -> io.BytesIO:
-    pagamentos, apt_map, ed_map = _obter_pagamentos(db, id_gestor, data_inicio, data_fim)
+    pagamentos, apt_map, ed_map = obter_pagamentos(db, id_gestor, data_inicio, data_fim)
 
     buffer = io.BytesIO()
     pdf = canvas.Canvas(buffer, pagesize=A4)

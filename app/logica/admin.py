@@ -9,9 +9,9 @@ def atualizar(db: Session, id: int, dados):
     for campo, valor in dados.model_dump(exclude_unset=True).items():
 
         setattr(admin, campo, valor)
-        
-    db.commit()
-    db.refresh(admin)
+         
+    db.commit()  # guarda as alterações na bd
+    db.refresh(admin) # atualiza os dados na db
     return admin
 
 

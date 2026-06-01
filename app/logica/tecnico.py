@@ -8,24 +8,21 @@ from app.configs.email import enviar_boas_vindas
 log = logging.getLogger(__name__)
 
 
-def _notificar(email: str, nome: str, pw_temp: str) -> None:
+def notificar(email: str, nome: str, pw_temp: str) -> None:
     try:
         enviar_boas_vindas(email, nome, pw_temp, "técnico")
         log.info("Email de boas-vindas enviado para técnico %s", email)
     except Exception as exc:
         log.error("Falha ao enviar email para técnico %s: %s", email, exc)
 
-
 def listar(db: Session, id_gestor: int):
     return db.query(Tecnico).filter(Tecnico.id_gestor == id_gestor, Tecnico.status == 1).all()
-
 
 def obter(db: Session, id: int):
     tecnico = db.query(Tecnico).filter(Tecnico.id == id, Tecnico.status == 1).first()
     if not tecnico:
         raise HTTPException(404, "Técnico não encontrado")
     return tecnico
-
 
 def criar(db: Session, dados, id_gestor: int, background: BackgroundTasks = None):
     pw_temp = random_pw()
@@ -41,9 +38,9 @@ def criar(db: Session, dados, id_gestor: int, background: BackgroundTasks = None
     db.refresh(tecnico)
 
     if background is not None:
-        background.add_task(_notificar, tecnico.email, tecnico.nome, pw_temp)
+        background.add_task(notificar, tecnico.email, tecnico.nome, pw_temp)
     else:
-        _notificar(tecnico.email, tecnico.nome, pw_temp)
+        notificar(tecnico.email, tecnico.nome, pw_temp)
 
     return tecnico
 
@@ -63,6 +60,6 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     tecnico = obter(db, id)
-    tecnico.status = 0
+    tecnico.status = 0 #soft delete
     db.commit()
     return {"detalhe": "Técnico removido"}

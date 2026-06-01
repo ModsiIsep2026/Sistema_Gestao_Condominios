@@ -6,7 +6,6 @@ from app.tabelas_bd.apartamento import Apartamento
 def listar(db: Session, id_edificio: int):
     return db.query(Apartamento).filter(Apartamento.id_edificio == id_edificio, Apartamento.status == 1).all()
 
-
 def obter(db: Session, id: int):
     apt = db.query(Apartamento).filter(Apartamento.id == id, Apartamento.status == 1).first()
 
@@ -14,14 +13,12 @@ def obter(db: Session, id: int):
         raise HTTPException(404, "Apartamento não encontrado")
     return apt
 
-
 def criar(db: Session, dados):
     apt = Apartamento(**dados.model_dump())
     db.add(apt)
     db.commit()
     db.refresh(apt)
     return apt
-
 
 def atualizar(db: Session, id: int, dados):
     apt = obter(db, id)

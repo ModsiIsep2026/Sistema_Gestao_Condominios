@@ -6,14 +6,12 @@ from app.tabelas_bd.espaco import Espaco
 def listar(db: Session, id_edificio: int):
     return db.query(Espaco).filter(Espaco.id_edificio == id_edificio, Espaco.status == 1).all()
 
-
 def obter(db: Session, id: int):
     espaco = db.query(Espaco).filter(Espaco.id == id, Espaco.status == 1).first()
     
     if not espaco:
         raise HTTPException(404, "Espaço não encontrado")
     return espaco
-
 
 def criar(db: Session, dados):
     espaco = Espaco(**dados.model_dump())
@@ -22,13 +20,12 @@ def criar(db: Session, dados):
     db.refresh(espaco)
     return espaco
 
-
 def atualizar(db: Session, id: int, dados):
     espaco = obter(db, id)
 
     for campo, valor in dados.model_dump(exclude_unset=True).items():
-        setattr(espaco, campo, valor)
-    
+            setattr(espaco, campo, valor)
+        
     db.commit()
     db.refresh(espaco)
     return espaco
@@ -36,6 +33,6 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     espaco = obter(db, id)
-    espaco.status = 0
+    espaco.status = 0 #soft delete
     db.commit()
     return {"detalhe": "Espaço removido"}

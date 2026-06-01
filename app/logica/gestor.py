@@ -62,17 +62,19 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     gestor = obter(db, id)
-    gestor.status = 0
+    gestor.status = 0 #soft delete
     db.commit()
     return {"detalhe": "Gestor removido"}
 
 
+#Conta quantos contratos começaram em cada dia dos últimos dias, 
+# criando uma lista de datas desde inicio até hoje e devolvendo 
+# para cada dia um objeto com "data" e "total"
 def adesoes_por_dia(db: Session, dias: int):
     hoje   = date.today()
     inicio = hoje - timedelta(days=dias - 1)
 
-    contratos = db.query(Contrato).filter(
-        Contrato.data_inicio >= inicio,
+    contratos = db.query(Contrato).filter(Contrato.data_inicio >= inicio,
         Contrato.data_inicio <= hoje,
     ).all()
 

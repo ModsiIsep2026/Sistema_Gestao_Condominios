@@ -6,7 +6,6 @@ from app.tabelas_bd.material_espaco import MaterialEspaco
 def listar_pespaco(db: Session, id_espaco: int):
     return db.query(MaterialEspaco).filter(MaterialEspaco.id_espaco == id_espaco).all()
 
-
 def obter(db: Session, id: int):
     material = db.query(MaterialEspaco).filter(MaterialEspaco.id == id).first()
     
@@ -36,6 +35,6 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     material = obter(db, id)
-    db.delete(material)
+    db.delete(material) # Aqui elimina mesmo, não é soft delete
     db.commit()
     return {"detalhe": "Material removido"}

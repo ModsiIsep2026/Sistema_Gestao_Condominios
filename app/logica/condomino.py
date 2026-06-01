@@ -9,7 +9,7 @@ from app.configs.email import enviar_boas_vindas
 log = logging.getLogger(__name__)
 
 
-def _notificar(email: str, nome: str, pw_temp: str) -> None:
+def notificar(email: str, nome: str, pw_temp: str) -> None:
     try:
         enviar_boas_vindas(email, nome, pw_temp, "condómino")
         log.info("Email de boas-vindas enviado para %s", email)
@@ -20,9 +20,9 @@ def _notificar(email: str, nome: str, pw_temp: str) -> None:
 def listar_todos(db: Session):
     return db.query(Condomino).filter(Condomino.status == 1).all()
 
-
 def listar(db: Session, id_apartamento: int):
-    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento, Condomino.status == 1).all()
+    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento, 
+        Condomino.status == 1).all()
 
 
 def obter(db: Session, id: int):
@@ -47,9 +47,9 @@ def criar(db: Session, dados, background: BackgroundTasks = None):
     db.refresh(condomino)
 
     if background is not None:
-        background.add_task(_notificar, condomino.email, condomino.nome, pw_temp)
+        background.add_task(notificar, condomino.email, condomino.nome, pw_temp)
     else:
-        _notificar(condomino.email, condomino.nome, pw_temp)
+        notificar(condomino.email, condomino.nome, pw_temp)
 
     return condomino
 
@@ -69,6 +69,6 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     condomino = obter(db, id)
-    condomino.status = 0
+    condomino.status = 0 # soft delete
     db.commit()
     return {"detalhe": "Condómino removido"}

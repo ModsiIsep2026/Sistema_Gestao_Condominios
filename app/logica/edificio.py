@@ -8,10 +8,8 @@ from app.tabelas_bd.licenca import Licenca
 def listar(db: Session, id_gestor: int):
     return db.query(Edificio).filter(Edificio.id_gestor == id_gestor, Edificio.status == 1).all()
 
-
 def listar_todos(db: Session):
     return db.query(Edificio).filter(Edificio.status == 1).all()
-
 
 def obter(db: Session, id: int):
     edificio = db.query(Edificio).filter(Edificio.id == id, Edificio.status == 1).first()
@@ -20,11 +18,8 @@ def obter(db: Session, id: int):
         raise HTTPException(404, "Edifício não encontrado")
     return edificio
 
-
 def criar(db: Session, dados, id_gestor: int):
-    contrato = (
-        db.query(Contrato)
-        .filter(Contrato.id_gestor == id_gestor, Contrato.status == 1)
+    contrato = (db.query(Contrato).filter(Contrato.id_gestor == id_gestor, Contrato.status == 1)
         .first()
     )
     if not contrato:
@@ -56,6 +51,6 @@ def atualizar(db: Session, id: int, dados):
 
 def remover(db: Session, id: int):
     edificio = obter(db, id)
-    edificio.status = 0
+    edificio.status = 0 #soft delete
     db.commit()
     return {"detalhe": "Edifício removido"}

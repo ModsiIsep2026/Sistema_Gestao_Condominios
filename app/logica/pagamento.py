@@ -8,7 +8,6 @@ from app.tabelas_bd.apartamento import Apartamento
 def listar(db: Session, id_apartamento: int):
     return db.query(Pagamento).filter(Pagamento.id_apartamento == id_apartamento, Pagamento.status == 1).all()
 
-
 def criar(db: Session, dados):
     apt = db.query(Apartamento).filter(Apartamento.id == dados.id_apartamento, Apartamento.status == 1).first()
 
@@ -35,7 +34,6 @@ def criar(db: Session, dados):
     db.commit()
     db.refresh(pagamento)
     return pagamento
-
 
 def pagamento_feito(db: Session, id: int):
     pagamento = db.query(Pagamento).filter(Pagamento.id == id, Pagamento.status == 1).first()

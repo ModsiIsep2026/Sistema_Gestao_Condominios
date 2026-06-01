@@ -10,7 +10,7 @@ from app.logica import apartamento as servico
 router = APIRouter(prefix="/apartamentos", tags=["Apartamentos"])
 
 # (GET)    /apartamentos - Lista os apartamentos de um edifício.
-# (GET)    /apartamentos/{id} - Obtém os dados de um apartamento específico.
+# (GET)    /apartamentos/{id} - Exibe os dados de um apartamento específico.
 # (POST)   /apartamentos - Cria um novo apartamento.
 # (PUT)    /apartamentos/{id} - Atualiza os dados de um apartamento.
 # (DELETE) /apartamentos/{id} - Remove um apartamento.

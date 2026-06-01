@@ -5,15 +5,14 @@ from app.tabelas_bd.registo_avaria import RegistoAvaria
 from app.tabelas_bd.resolucao_avaria import ResolucaoAvaria
 
 
-def _com_resolucao():
+def com_resolucao():
     return joinedload(RegistoAvaria.resolucao).joinedload(ResolucaoAvaria.tecnico)
-
 
 def listar_ptecnico(db: Session, id_tecnico: int):
     return (
-        db.query(RegistoAvaria)
+    db.query(RegistoAvaria)
         .join(ResolucaoAvaria, ResolucaoAvaria.id_registo_avaria == RegistoAvaria.id)
-        .options(_com_resolucao())
+        .options(com_resolucao())
         .filter(ResolucaoAvaria.id_tecnico == id_tecnico, RegistoAvaria.status == 1)
         .all()
     )
@@ -21,16 +20,14 @@ def listar_ptecnico(db: Session, id_tecnico: int):
 
 def listar_pcondomino(db: Session, id_condomino: int):
     return (db.query(RegistoAvaria)
-        .options(_com_resolucao())
+        .options(com_resolucao())
         .filter(RegistoAvaria.id_condomino == id_condomino, RegistoAvaria.status == 1)
         .all()
     )
 
 
 def listar_pedificio(db: Session, id_edificio: int):
-    return (
-        db.query(RegistoAvaria)
-        .options(_com_resolucao())
+    return (db.query(RegistoAvaria).options(com_resolucao())
         .filter(RegistoAvaria.id_edificio == id_edificio, RegistoAvaria.status == 1)
         .order_by(RegistoAvaria.data_registo.desc())
         .all()
@@ -38,9 +35,7 @@ def listar_pedificio(db: Session, id_edificio: int):
 
 
 def obter(db: Session, id: int):
-    avaria = (db.query(RegistoAvaria)
-        .options(_com_resolucao())
-        .filter(RegistoAvaria.id == id, RegistoAvaria.status == 1)
+    avaria = (db.query(RegistoAvaria).options(com_resolucao()).filter(RegistoAvaria.id == id, RegistoAvaria.status == 1)
         .first()
     )
 

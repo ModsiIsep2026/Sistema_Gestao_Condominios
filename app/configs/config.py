@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     APP_URL: str = "http://localhost:8080"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
-    SMTP_HOST: str = "smtp.gmail.com"
+    SMTP_HOST: str = "smtp.gmail.com" 
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""

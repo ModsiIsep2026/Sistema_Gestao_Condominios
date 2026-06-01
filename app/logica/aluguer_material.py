@@ -21,7 +21,7 @@ def criar(db: Session, dados, id_condomino: int):
     if material.qtd < dados.qtd_alugada:
         raise HTTPException(400, f"Quantidade disponível insuficiente ({material.qtd})")
 
-    horas = (dados.data_fim - dados.data_inicio).total_seconds() / 3600
+    horas = (dados.data_fim - dados.data_inicio).total_seconds() / 3600 # calcula a duracao do aluguer e horas
     
     aluguer = AluguerMaterial(
         id_material_espaco=dados.id_material_espaco,
@@ -29,6 +29,9 @@ def criar(db: Session, dados, id_condomino: int):
         qtd_alugada=dados.qtd_alugada,
         data_inicio=dados.data_inicio,
         data_fim=dados.data_fim,
+        # Calcula o preço total do aluguer multiplicando o preço unitário pelo 
+        # número de unidades alugadas e pela duração em horas, 
+        # arredondando o resultado para 2 casas decimais.
         preco_total=round(float(material.preco_unitario) * dados.qtd_alugada * horas, 2),
     )
     db.add(aluguer)

@@ -9,7 +9,7 @@ from app.logica import condomino as servico
 router = APIRouter(prefix="/condominos", tags=["Condóminos"])
 
 # (GET)    /condominos            - Lista todos os condóminos, ou filtra por apartamento.
-# (GET)    /condominos/{id}       - Mostra os dados de um condómino.
+# (GET)    /condominos/{id}       - Exibe os dados de um condómino.
 # (POST)   /condominos            - Cria um condómino e envia as credenciais por email.
 # (PUT)    /condominos/conta      - Atualiza o perfil do condómino autenticado.
 # (PUT)    /condominos/{id}       - Atualiza os dados de um condómino (gestor).

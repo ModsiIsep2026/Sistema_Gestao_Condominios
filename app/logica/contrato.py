@@ -14,7 +14,7 @@ from app.tabelas_bd.gestor import Gestor
 cfg = get_configs()
 
 
-def v_contrato_expirados(db: Session) -> None:
+def ver_contrato_expirados(db: Session) -> None:
     hoje = date.today()
     expirados = db.query(Contrato).filter(
         Contrato.status == 1,
@@ -27,15 +27,13 @@ def v_contrato_expirados(db: Session) -> None:
     if expirados:
         db.commit()
 
-
 def stripe_client():
     stripe.api_key = cfg.STRIPE_SECRET_KEY
     return stripe
 
-
 def get_licenca(db: Session, licenca_id: int):
-    licenca = db.query(Licenca).filter(
-        Licenca.id == licenca_id,
+
+    licenca = db.query(Licenca).filter(Licenca.id == licenca_id,
         Licenca.status == 1
     ).first()
 
@@ -45,7 +43,7 @@ def get_licenca(db: Session, licenca_id: int):
     return licenca
 
 
-def email_exists(db: Session, email: str):
+def email_existe(db: Session, email: str):
     return db.query(Gestor).filter(Gestor.email == email).first()
 
 
@@ -79,7 +77,10 @@ def criar(db: Session, dados):
 
 def atualizar(db: Session, gestor_id: int, dados):
     contrato = get_contrato(db, gestor_id)
-
+    
+    # Isso percorre os campos enviados em dados que não estão 
+    # vazios e atualiza o objeto contrato atribuindo a 
+    # cada campo (k) o respetivo valor (v).
     for k, v in dados.model_dump(exclude_unset=True).items():
         setattr(contrato, k, v)
 
@@ -90,14 +91,15 @@ def atualizar(db: Session, gestor_id: int, dados):
 
 def iniciar_pagamento(db: Session, dados):
     licenca = get_licenca(db, dados.id_licenca)
-    if email_exists(db, dados.email):
+    if email_existe(db, dados.email):
         raise HTTPException(409, "Email já registado")
 
-    meses = max(1, dados.num_meses)
+    meses = max(1, dados.num_meses) # garante que o plano dure pelo menos 1 mês
+    #Calcula o preço mensal em cêntimos como ppem × número de edifícios, com um mínimo de 50 cêntimos. 
     preco_mensal = max(50, int(float(licenca.ppem) * licenca.num_edificios * 100))
     total = preco_mensal * meses
 
-    s = stripe_client()
+    s = stripe_client() 
     intent = s.PaymentIntent.create(
         amount=total,
         currency="eur",
@@ -123,7 +125,6 @@ def iniciar_pagamento(db: Session, dados):
 
 
 def concluir_pagamento(db: Session, dados):
-
     s = stripe_client()
 
     try:
@@ -134,7 +135,7 @@ def concluir_pagamento(db: Session, dados):
     if intent.status != "succeeded":
         raise HTTPException(400, "Pagamento não confirmado")
 
-    if email_exists(db, dados.email):
+    if email_existe(db, dados.email):
         raise HTTPException(409, "Conta já existe")
 
     licenca = get_licenca(db, dados.id_licenca)
@@ -150,7 +151,7 @@ def concluir_pagamento(db: Session, dados):
     )
 
     db.add(gestor)
-    db.flush()
+    db.flush() # flush para obter o ID do gestor antes de criar o contrato
 
     contrato = Contrato(
         id_licenca=dados.id_licenca,

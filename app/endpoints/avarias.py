@@ -13,7 +13,7 @@ router = APIRouter(prefix="/avarias", tags=["Avarias"])
 # (GET)  /avarias - Lista as avarias de um edifício.
 # (GET)  /avarias/tecnico - Lista as avarias atribuídas ao técnico autenticado.
 # (GET)  /avarias/condomino - Lista as avarias reportadas pelo condómino autenticado.
-# (GET)  /avarias/{id} - Mostra os detalhes de uma avaria específica.
+# (GET)  /avarias/{id} - Exibe os detalhes de uma avaria específica.
 # (POST) /avarias - Cria um novo registo de avaria.
 # (PUT)  /avarias/{id} - Atualiza uma avaria.
 # (POST) /avarias/{id}/resolucao - Atribui um técnico para resolver a avaria.

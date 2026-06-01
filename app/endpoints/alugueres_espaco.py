@@ -7,13 +7,16 @@ from app.estruturas.aluguer_espaco import CriarAluguerEspaco, LerAluguerEspaco
 from app.logica import aluguer_espaco as servico
 
 router = APIRouter(prefix="/alugueres-espaco", tags=["Alugueres de Espaço"])
-# (GET)    /alugueres-espaco - Lista todos os alugueres de espaços.
+
+# (GET)    /alugueres-espaco - Lista todos os alugueres de espaços. 
 # (GET)    /alugueres-espaco/espaco/{id_espaco} - Lista os alugueres de um espaço em específico.
 # (GET)    /alugueres-espaco/condomino - Lista os alugueres do condómino autenticado.
 # (POST)   /alugueres-espaco - Cria uma nova reserva de espaço.
 # (DELETE) /alugueres-espaco/{id} - Cancela um aluguer de espaço.
+
+# verificar_g pois esta ação é exlusiva ao gestor, a mesma lógica para o resto dos depends mas aplicados a outros casos
 @router.get("", response_model=List[LerAluguerEspaco])
-def listar(_=Depends(verificar_g), db: Session = Depends(get_db)):  # verificar_g pois esta ação é exlusiva ao gestor
+def listar(_=Depends(verificar_g), db: Session = Depends(get_db)):  
     return servico.listar(db)
 
 
