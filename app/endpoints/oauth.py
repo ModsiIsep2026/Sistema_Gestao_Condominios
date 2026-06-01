@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from app.configs.config import get_configs
 from app.configs.db_connect import get_db
 from app.configs.seguranca import criar_token
-from app.tabelas_bd.condomino import Condomino
 from app.tabelas_bd.gestor import Gestor
 
 router = APIRouter(prefix="/auth", tags=["OAuth"])
@@ -82,9 +81,6 @@ def callback_url(service: str) -> str:
     return f"{cfg.OAUTH_REDIRECT_BASE}/auth/{service}/callback"
 
 def get_user(db: Session, email: str):
-    user = db.query(Condomino).filter_by(email=email, status=1).first()
-    if user:
-        return user, "condomino"
     user = db.query(Gestor).filter_by(email=email, status=1).first()
     if user:
         return user, "gestor"
