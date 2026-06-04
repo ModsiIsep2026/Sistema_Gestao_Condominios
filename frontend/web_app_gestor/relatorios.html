@@ -2,12 +2,54 @@
 <html lang="pt">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Relatorios - Gestao de Condominios</title>
+<title>Relatórios — Gestão de Condomínios</title>
 <link rel="stylesheet" href="../visuais/css/tokens.css">
 <link rel="stylesheet" href="../visuais/css/base.css">
 <link rel="stylesheet" href="../visuais/css/componentes.css">
 <link rel="stylesheet" href="css/app.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+.export-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--esp-5);
+    margin-bottom: var(--esp-5);
+}
+.export-card {
+    background: #fff;
+    border: 1px solid var(--cor-borda);
+    border-radius: 12px;
+    padding: var(--esp-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--esp-4);
+}
+.export-card__cabecalho {
+    display: flex;
+    align-items: center;
+    gap: var(--esp-3);
+}
+.export-card__icone {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.export-card__icone--excel { background: #E8F5E9; color: #2E7D32; }
+.export-card__icone--pdf   { background: #FEEBE9; color: #C62828; }
+.export-card__icone--avaria { background: #FFF3E0; color: #E65100; }
+.export-card__icone svg { width: 22px; height: 22px; }
+.export-card__titulo { font-size: 15px; font-weight: 700; color: var(--cor-primaria); margin: 0; }
+.export-card__desc   { font-size: 13px; color: var(--cor-texto-suave); margin: 0; line-height: 1.5; }
+.export-card__acoes  { display: flex; gap: var(--esp-2); flex-wrap: wrap; margin-top: auto; }
+.periodo-ativo {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; font-weight: 500; color: var(--cor-texto-suave);
+    background: var(--cor-fundo-alt); border: 1px solid var(--cor-borda);
+    border-radius: 6px; padding: 6px 12px; margin-top: var(--esp-3);
+}
+.periodo-ativo span { color: var(--cor-primaria); font-weight: 600; }
+</style>
 </head>
 <body class="app-body">
 <div class="app-shell">
@@ -18,92 +60,109 @@
 
             <div class="app-cabecalho">
                 <div class="app-cabecalho__titulo">
-                    <h1>Relatorios</h1>
-                    <p>Exporte dados financeiros e acompanhe um resumo do periodo selecionado.</p>
+                    <h1>Relatórios</h1>
+                    <p>Exporte dados financeiros e acompanhe um resumo do período selecionado.</p>
                 </div>
             </div>
 
+            <!-- Seletor de período -->
             <div class="painel">
-                <div class="painel__cabecalho">
-                    <h2>Periodo</h2>
-                </div>
+                <div class="painel__cabecalho"><h2>Período</h2></div>
                 <div class="painel__corpo">
-                    <div class="app-filtros" style="margin-bottom:var(--esp-4);">
+                    <div class="app-filtros" style="margin-bottom:var(--esp-3);">
                         <input type="date" id="rel-data-inicio">
                         <input type="date" id="rel-data-fim">
-                        <button type="button" class="btn btn--outline" data-periodo="mes-atual">Mes atual</button>
-                        <button type="button" class="btn btn--outline" data-periodo="30">Ultimos 30 dias</button>
-                        <button type="button" class="btn btn--outline" data-periodo="90">Ultimos 90 dias</button>
+                        <button type="button" class="btn btn--outline" data-periodo="mes-atual">Mês atual</button>
+                        <button type="button" class="btn btn--outline" data-periodo="30">Últimos 30 dias</button>
+                        <button type="button" class="btn btn--outline" data-periodo="90">Últimos 90 dias</button>
                         <button type="button" class="btn btn--outline" id="btn-limpar-periodo">Limpar</button>
                     </div>
-                    <div id="rel-periodo-desc" class="kpi__sub">A considerar todos os registos disponiveis.</div>
+                    <div class="periodo-ativo" id="rel-periodo-desc">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <span>A considerar todos os registos disponíveis</span>
+                    </div>
                 </div>
             </div>
 
+            <!-- KPIs financeiros -->
             <div class="kpis" style="grid-template-columns:repeat(4,1fr);">
                 <div class="kpi">
                     <div class="kpi__rotulo">Pagamentos</div>
-                    <div class="kpi__valor" id="kpi-pag-total">-</div>
-                    <div class="kpi__sub">Registos no periodo</div>
+                    <div class="kpi__valor" id="kpi-pag-total">—</div>
+                    <div class="kpi__sub">Registos no período</div>
                 </div>
                 <div class="kpi kpi--ok">
                     <div class="kpi__rotulo">Pagos</div>
-                    <div class="kpi__valor" id="kpi-pag-pagos">-</div>
+                    <div class="kpi__valor" id="kpi-pag-pagos">—</div>
                     <div class="kpi__sub">Quotas liquidadas</div>
                 </div>
                 <div class="kpi kpi--alerta">
                     <div class="kpi__rotulo">Pendentes</div>
-                    <div class="kpi__valor" id="kpi-pag-pendentes">-</div>
+                    <div class="kpi__valor" id="kpi-pag-pendentes">—</div>
                     <div class="kpi__sub">Quotas por receber</div>
                 </div>
                 <div class="kpi">
                     <div class="kpi__rotulo">Montante</div>
-                    <div class="kpi__valor" id="kpi-pag-montante">-</div>
-                    <div class="kpi__sub">Total do periodo</div>
+                    <div class="kpi__valor" id="kpi-pag-montante" style="font-size:22px;">—</div>
+                    <div class="kpi__sub">Total do período</div>
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:var(--esp-5);">
-                <div class="painel">
-                    <div class="painel__cabecalho">
-                        <h2>Financeiro</h2>
-                    </div>
-                    <div class="painel__corpo">
-                        <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
-                            Exporte o resumo de pagamentos no periodo selecionado em Excel ou PDF.
-                        </p>
-                        <div style="display:flex;gap:var(--esp-2);flex-wrap:wrap;">
-                            <button id="btn-rel-excel" type="button" class="btn btn--primario">
-                                Exportar Excel
-                            </button>
-                            <button id="btn-rel-pdf" type="button" class="btn btn--outline">
-                                Exportar PDF
-                            </button>
+            <!-- Cards de exportação -->
+            <div class="export-cards">
+
+                <div class="export-card">
+                    <div class="export-card__cabecalho">
+                        <div class="export-card__icone export-card__icone--excel">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
                         </div>
-                        <div id="rel-erro" class="login-erro" style="display:none;margin-top:var(--esp-3);"></div>
+                        <h3 class="export-card__titulo">Financeiro — Excel</h3>
+                    </div>
+                    <p class="export-card__desc">Exporta o resumo de pagamentos do período selecionado em formato Excel (.xlsx), compatível com Microsoft Excel e Google Sheets.</p>
+                    <div class="export-card__acoes">
+                        <button id="btn-rel-excel" type="button" class="btn btn--primario">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Exportar Excel
+                        </button>
+                    </div>
+                    <div id="rel-erro" class="login-erro" style="display:none;margin-top:var(--esp-2);"></div>
+                </div>
+
+                <div class="export-card">
+                    <div class="export-card__cabecalho">
+                        <div class="export-card__icone export-card__icone--pdf">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><line x1="9" y1="9" x2="10" y2="9"/></svg>
+                        </div>
+                        <h3 class="export-card__titulo">Financeiro — PDF</h3>
+                    </div>
+                    <p class="export-card__desc">Gera um relatório em formato PDF pronto a imprimir ou partilhar com condóminos e entidades externas.</p>
+                    <div class="export-card__acoes">
+                        <button id="btn-rel-pdf" type="button" class="btn btn--outline">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Exportar PDF
+                        </button>
                     </div>
                 </div>
 
-                <div class="painel">
-                    <div class="painel__cabecalho">
-                        <h2>Avarias</h2>
+                <div class="export-card">
+                    <div class="export-card__cabecalho">
+                        <div class="export-card__icone export-card__icone--avaria">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                        </div>
+                        <h3 class="export-card__titulo">Avarias</h3>
                     </div>
-                    <div class="painel__corpo">
-                        <p style="color:var(--cor-texto-suave);font-size:var(--tam-sm);margin-bottom:var(--esp-4);">
-                            Listagem de avarias reportadas e o seu estado de resolucao.
-                        </p>
-                        <div id="kpis-avarias" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
-                            <div class="kpi" style="margin-bottom:0;">
-                                <div class="kpi__rotulo">Abertas</div>
-                                <div class="kpi__valor kpi--alerta" id="kpi-av-abertas">-</div>
-                            </div>
-                            <div class="kpi kpi--ok" style="margin-bottom:0;">
-                                <div class="kpi__rotulo">Resolvidas</div>
-                                <div class="kpi__valor" id="kpi-av-resolvidas">-</div>
-                            </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--esp-3);">
+                        <div class="kpi" style="margin-bottom:0;">
+                            <div class="kpi__rotulo">Abertas</div>
+                            <div class="kpi__valor" id="kpi-av-abertas" style="color:#C2410C;">—</div>
+                        </div>
+                        <div class="kpi kpi--ok" style="margin-bottom:0;">
+                            <div class="kpi__rotulo">Resolvidas</div>
+                            <div class="kpi__valor" id="kpi-av-resolvidas">—</div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
         </main>
@@ -111,6 +170,7 @@
 </div>
 
 <script src="../visuais/js/api.js"></script>
+<script src="../visuais/js/toast.js"></script>
 <script src="js/app.js"></script>
 <script src="js/relatorios.js"></script>
 </body>

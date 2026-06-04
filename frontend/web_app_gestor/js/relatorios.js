@@ -34,19 +34,20 @@
 
     function atualizarDescricaoPeriodo() {
         const { dataInicio, dataFim } = obterPeriodoSelecionado();
+        const inner = periodoDesc.querySelector("span") || periodoDesc;
         if (!dataInicio && !dataFim) {
-            periodoDesc.textContent = "A considerar todos os registos disponiveis.";
+            inner.textContent = "A considerar todos os registos disponíveis";
             return;
         }
         if (dataInicio && dataFim) {
-            periodoDesc.textContent = `Periodo ativo: ${dataInicio} ate ${dataFim}.`;
+            inner.textContent = `Período ativo: ${dataInicio} até ${dataFim}`;
             return;
         }
         if (dataInicio) {
-            periodoDesc.textContent = `Periodo ativo: desde ${dataInicio}.`;
+            inner.textContent = `Período ativo: desde ${dataInicio}`;
             return;
         }
-        periodoDesc.textContent = `Periodo ativo: ate ${dataFim}.`;
+        inner.textContent = `Período ativo: até ${dataFim}`;
     }
 
     function filtrarPagamentos() {
@@ -129,14 +130,15 @@
 
         const { dataInicio, dataFim } = obterPeriodoSelecionado();
         if (dataInicio && dataFim && dataInicio > dataFim) {
-            mostrarErro("A data de inicio nao pode ser posterior a data de fim.");
+            mostrarErro("A data de início não pode ser posterior à data de fim.");
             return;
         }
 
         const botao = document.getElementById(`btn-rel-${formato}`);
         const textoOriginal = botao.textContent;
         botao.disabled = true;
-        botao.textContent = formato === "excel" ? "A exportar..." : "A gerar...";
+        botao.querySelector("svg") && (botao.querySelector("svg").style.display = "none");
+        botao.textContent = formato === "excel" ? "A exportar..." : "A gerar PDF...";
 
         try {
             const resposta = await fetch(`/relatorios/${formato}${montarQueryPeriodo()}`, {
@@ -158,7 +160,7 @@
             a.remove();
             window.URL.revokeObjectURL(url);
         } catch (e) {
-            mostrarErro(e.message || "Nao foi possivel exportar o relatorio.");
+            mostrarErro(e.message || "Não foi possível exportar o relatório.");
         } finally {
             botao.disabled = false;
             botao.textContent = textoOriginal;
@@ -168,7 +170,7 @@
     try {
         pagamentosGestor = await window.api.get("/pagamentos/gestor");
     } catch (e) {
-        mostrarErro(e.message || "Nao foi possivel carregar o resumo financeiro.");
+        mostrarErro(e.message || "Não foi possível carregar o resumo financeiro.");
     }
 
     try {

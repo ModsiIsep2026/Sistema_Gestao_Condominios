@@ -5,6 +5,16 @@
     let filtroEstado   = "ativos";
     let filtroPesquisa = "";
 
+    // Chips de estado
+    document.querySelectorAll("#chips-estado-tec .filtro-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+            document.querySelectorAll("#chips-estado-tec .filtro-chip").forEach((c) => c.classList.remove("ativo"));
+            chip.classList.add("ativo");
+            filtroEstado = chip.dataset.estado;
+            renderizar();
+        });
+    });
+
     function badge(status) {
         return status === 1
             ? `<span class="estado estado--ok">Ativo</span>`
@@ -43,13 +53,13 @@
         tbody.innerHTML = lista.map((t) => {
             const ativo = t.status === 1;
             const btnEstado = ativo
-                ? `<button class="perigo" data-acao="desativar" data-id="${t.id}">Desativar</button>`
+                ? `<button class="perigo" data-acao="desativar" data-id="${t.id}" data-nome="${t.nome}">Desativar</button>`
                 : `<button data-acao="ativar" data-id="${t.id}">Ativar</button>`;
             return `
-                <tr style="${ativo ? "" : "opacity:0.55;"}">
-                    <td><strong>${t.nome}</strong></td>
-                    <td>${t.funcao || "—"}</td>
-                    <td>${t.email}</td>
+                <tr style="${ativo ? "" : "background:#F9FAFB;"}">
+                    <td><strong style="${ativo ? "" : "color:var(--cor-texto-suave);"}">${t.nome}</strong></td>
+                    <td style="${ativo ? "" : "color:var(--cor-texto-suave);"}">${t.funcao || "—"}</td>
+                    <td style="${ativo ? "" : "color:var(--cor-texto-suave);"}">${t.email}</td>
                     <td>${badge(t.status)}</td>
                     <td class="app-tabela__acoes">${btnEstado}</td>
                 </tr>`;
@@ -57,12 +67,16 @@
     }
 
     async function carregar() {
+        const tbody = document.querySelector('[data-tabela="tecnicos"]');
+        const widths = [55, 40, 65, 30, 20];
+        tbody.innerHTML = Array(4).fill(0).map(() =>
+            `<tr>${widths.map(w => `<td><span class="sk-cel" style="width:${w}%"></span></td>`).join("")}</tr>`
+        ).join("");
         try {
             dados = await window.api.get("/tecnicos");
             renderizar();
         } catch (e) {
-            document.querySelector('[data-tabela="tecnicos"]').innerHTML =
-                `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }
 
@@ -70,10 +84,6 @@
 
     document.querySelector("[data-pesquisa]")?.addEventListener("input", (e) => {
         filtroPesquisa = e.target.value.toLowerCase().trim();
-        renderizar();
-    });
-    document.getElementById("filtro-estado")?.addEventListener("change", (e) => {
-        filtroEstado = e.target.value;
         renderizar();
     });
 
@@ -124,13 +134,26 @@
     document.querySelector('[data-tabela="tecnicos"]').addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao]");
         if (!btn) return;
-        const id        = parseInt(btn.dataset.id);
-        const novoStatus = btn.dataset.acao === "ativar" ? 1 : 0;
+        const id         = parseInt(btn.dataset.id);
+        const acao       = btn.dataset.acao;
+        const novoStatus = acao === "ativar" ? 1 : 0;
+
+        if (acao === "desativar") {
+            const ok = await window.confirmar(
+                `Desativar o técnico <strong>${btn.dataset.nome}</strong>? Deixará de aparecer para atribuição de avarias.`,
+                { confirmar: "Desativar" }
+            );
+            if (!ok) return;
+        }
+
         btn.disabled = true;
         try {
             await window.api.put(`/tecnicos/${id}`, { status: novoStatus });
             await carregar();
-        } catch (err) {
+            window.toast?.[acao === "ativar" ? "success" : "info"]?.(
+                acao === "ativar" ? "Técnico ativado." : "Técnico desativado."
+            );
+        } catch {
             btn.disabled = false;
         }
     });

@@ -29,8 +29,12 @@
     function renderizar(lista) {
         if (!lista.length) {
             tbody.innerHTML = `
-                <tr><td colspan="6" class="app-vazio">
-                    <p>Sem pagamentos para os filtros selecionados.</p>
+                <tr><td colspan="6">
+                    <div class="app-vazio">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 12px;display:block;"><path d="M19 6a8 8 0 1 0 0 12"/><line x1="2" y1="10" x2="14" y2="10"/><line x1="2" y1="14" x2="14" y2="14"/></svg>
+                        <h3>Sem quotas</h3>
+                        <p>Não existem quotas para os filtros selecionados.</p>
+                    </div>
                 </td></tr>`;
             return;
         }
@@ -170,10 +174,13 @@
             if (ok > 0)        msg += `${ok} quota(s) gerada(s). `;
             if (jaExistem > 0) msg += `${jaExistem} já existiam. `;
             if (erros > 0)     msg += `${erros} erro(s).`;
-            if (msg) window.toast?.(msg.trim(), erros > 0 ? "erro" : "sucesso");
+            if (msg) {
+                if (erros > 0) window.toast?.error(msg.trim());
+                else window.toast?.success(msg.trim());
+            }
 
         } catch (e) {
-            window.toast?.(e.message || "Erro ao gerar quotas.", "erro");
+            window.toast?.error(e.message || "Erro ao gerar quotas.");
         } finally {
             btnGerar.textContent = "Gerar quota";
             btnGerar.disabled = !selEdificio.value || !inputMes.value;
