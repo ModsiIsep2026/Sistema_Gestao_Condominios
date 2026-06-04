@@ -27,16 +27,16 @@
         {
             titulo: "Principal",
             links: [
-                { url: "index.html",    icone: iconeDashboard(),   nome: "Dashboard" },
-                { url: "quotas.html",   icone: iconeMoeda(),       nome: "As minhas quotas" },
-                { url: "reservas.html", icone: iconeCalendario(),  nome: "Reservar espaço" },
-                { url: "avarias.html",  icone: iconeAlerta(),      nome: "Reportar avaria" },
+                { url: "index.html", icone: iconeDashboard(), nome: "Dashboard" },
+                { url: "quotas.html",   icone: iconeMoeda(),      nome: "As minhas quotas" },
+                { url: "reservas.html", icone: iconeCalendario(), nome: "Reservar espaço" },
+                { url: "avarias.html",  icone: iconeAlerta(),     nome: "Reportar avaria" },
             ],
         },
         {
             titulo: "Conta",
             links: [
-                { url: "perfil.html",   icone: iconeUtilizador(),  nome: "O meu perfil" },
+                { url: "perfil.html", icone: iconeUtilizador(), nome: "O meu perfil" },
             ],
         },
     ];
@@ -57,12 +57,37 @@
         NAV.forEach((s) => {
             html += `<div class="app-sidebar__seccao">${s.titulo}</div>`;
             s.links.forEach((link) => {
-                const ativo = link.url === paginaAtual ? "ativo" : "";
-                html += `
-                    <a href="${link.url}" class="app-sidebar__link ${ativo}">
-                        ${link.icone}
-                        <span>${link.nome}</span>
-                    </a>`;
+                const temSub    = link.sublinks && link.sublinks.length > 0;
+                const ativoPai  = link.url === paginaAtual;
+                const ativoSub  = temSub && link.sublinks.some((sl) => sl.url === paginaAtual);
+                const expandido = ativoPai || ativoSub;
+
+                if (temSub) {
+                    html += `
+                        <div class="app-sidebar__item-com-sub${expandido ? " expandido" : ""}">
+                            <a href="${link.url}" class="app-sidebar__link${ativoPai ? " ativo" : ""}">
+                                ${link.icone}
+                                <span>${link.nome}</span>
+                                <span class="app-sidebar__chevron-wrap"
+                                      onclick="event.preventDefault();event.stopPropagation();this.closest('.app-sidebar__item-com-sub').classList.toggle('expandido')">
+                                    <svg class="app-sidebar__chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </span>
+                            </a>
+                            <div class="app-sidebar__submenu">
+                                ${link.sublinks.map((sl) => `
+                                    <a href="${sl.url}" class="app-sidebar__sublink${sl.url === paginaAtual ? " ativo" : ""}">${sl.nome}</a>
+                                `).join("")}
+                            </div>
+                        </div>`;
+                } else {
+                    html += `
+                        <a href="${link.url}" class="app-sidebar__link${ativoPai ? " ativo" : ""}">
+                            ${link.icone}
+                            <span>${link.nome}</span>
+                        </a>`;
+                }
             });
         });
 

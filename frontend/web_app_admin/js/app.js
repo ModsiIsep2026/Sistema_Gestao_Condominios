@@ -27,23 +27,40 @@
         {
             titulo: "Principal",
             links: [
-                { url: "index.html",       icone: iconeDashboard(),  nome: "Dashboard" },
-                { url: "edificios.html",   icone: iconeEdificio(),   nome: "Edifícios" },
-                { url: "mapa.html",        icone: iconeMapa(),       nome: "Mapa de Edifícios" },
+                {
+                    url: "index.html", icone: iconeDashboard(), nome: "Dashboard",
+                    sublinks: [
+                        { url: "edificios.html", nome: "Edifícios" },
+                        { url: "gestores.html",  nome: "Gestores" },
+                        { url: "parceiros.html", nome: "Parceiros" },
+                        { url: "adesoes.html",   nome: "Adesões" },
+                    ],
+                },
+                { url: "edificios.html", icone: iconeEdificio(),  nome: "Edifícios" },
+                { url: "mapa.html",      icone: iconeMapa(),      nome: "Mapa de Edifícios" },
             ],
         },
         {
             titulo: "Recursos",
             links: [
-                { url: "gestores.html",    icone: iconeGestor(),     nome: "Gestores" },
-                { url: "adesoes.html",     icone: iconeGrafico(),    nome: "Adesões" },
-                { url: "parceiros.html",   icone: iconeFornecedor(), nome: "Parceiros" },
+                {
+                    url: "gestores.html", icone: iconeGestor(), nome: "Gestores",
+                    sublinks: [
+                        { url: "adesoes.html", nome: "Adesões" },
+                    ],
+                },
+                {
+                    url: "parceiros.html", icone: iconeFornecedor(), nome: "Parceiros",
+                    sublinks: [
+                        { url: "fornecedores.html", nome: "Fornecedores" },
+                    ],
+                },
             ],
         },
         {
             titulo: "Conta",
             links: [
-                { url: "perfil.html",      icone: iconeUtilizador(), nome: "A minha conta" },
+                { url: "perfil.html", icone: iconeUtilizador(), nome: "A minha conta" },
             ],
         },
     ];
@@ -68,12 +85,37 @@
         NAV.forEach((s) => {
             html += `<div class="app-sidebar__seccao">${s.titulo}</div>`;
             s.links.forEach((link) => {
-                const ativo = link.url === paginaAtual ? "ativo" : "";
-                html += `
-                    <a href="${link.url}" class="app-sidebar__link ${ativo}">
-                        ${link.icone}
-                        <span>${link.nome}</span>
-                    </a>`;
+                const temSub    = link.sublinks && link.sublinks.length > 0;
+                const ativoPai  = link.url === paginaAtual;
+                const ativoSub  = temSub && link.sublinks.some((sl) => sl.url === paginaAtual);
+                const expandido = ativoPai || ativoSub;
+
+                if (temSub) {
+                    html += `
+                        <div class="app-sidebar__item-com-sub${expandido ? " expandido" : ""}">
+                            <a href="${link.url}" class="app-sidebar__link${ativoPai ? " ativo" : ""}">
+                                ${link.icone}
+                                <span>${link.nome}</span>
+                                <span class="app-sidebar__chevron-wrap"
+                                      onclick="event.preventDefault();event.stopPropagation();this.closest('.app-sidebar__item-com-sub').classList.toggle('expandido')">
+                                    <svg class="app-sidebar__chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </span>
+                            </a>
+                            <div class="app-sidebar__submenu">
+                                ${link.sublinks.map((sl) => `
+                                    <a href="${sl.url}" class="app-sidebar__sublink${sl.url === paginaAtual ? " ativo" : ""}">${sl.nome}</a>
+                                `).join("")}
+                            </div>
+                        </div>`;
+                } else {
+                    html += `
+                        <a href="${link.url}" class="app-sidebar__link${ativoPai ? " ativo" : ""}">
+                            ${link.icone}
+                            <span>${link.nome}</span>
+                        </a>`;
+                }
             });
         });
 
