@@ -1,4 +1,4 @@
-from app.estruturas.auth import Login, Token, AlterarPassword
+from app.estruturas.autenticacao import Login, Token, AlterarPassword
 from app.estruturas.admin import LerAdmin, AtualizarAdmin
 from app.estruturas.licenca import LerLicenca
 from app.estruturas.gestor import CriarGestor, AtualizarGestor, LerGestor

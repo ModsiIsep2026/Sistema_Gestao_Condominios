@@ -2,7 +2,7 @@ from app.configs.config import get_configs
 from app.configs.email import enviar_email
 from app.estruturas.contacto import MensagemContacto
 
-_cfg = get_configs()
+cfg = get_configs()
 
 def enviar_contacto(dados: MensagemContacto) -> None:
 
@@ -41,4 +41,4 @@ def enviar_contacto(dados: MensagemContacto) -> None:
     </div>
     """
 
-    enviar_email(_cfg.SMTP_FROM_EMAIL, f"[Contacto] {dados.nome}", corpo_html)
+    enviar_email(cfg.SMTP_FROM_EMAIL, f"[Contacto] {dados.nome}", corpo_html)

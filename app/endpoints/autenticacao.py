@@ -10,8 +10,8 @@ from app.configs.config import get_configs
 from app.configs.db_connect import get_db
 from app.configs.email import enviar_email
 from app.configs.seguranca import criar_token, token_atual, verificar_pw, pw_encript
-from app.estruturas.auth import Login, Token, AlterarPassword, RecuperarPassword, ResetPassword, ConfirmarNovaPassword
-from app.logica import auth as servico
+from app.estruturas.autenticacao import Login, Token, AlterarPassword, RecuperarPassword, ResetPassword, ConfirmarNovaPassword
+from app.logica import autenticacao as servico
 from app.tabelas_bd.admin import Admin
 from app.tabelas_bd.gestor import Gestor
 from app.tabelas_bd.condomino import Condomino
@@ -20,12 +20,14 @@ from app.tabelas_bd.tecnico import Tecnico
 router = APIRouter(prefix="/auth", tags=["Auth"])
 cfg = get_configs()
 
+
 # (POST) /auth/login - Autenticação e geração de token
 # (GET) /auth/conta - Obter dados da conta do utilizador autenticado
 # (PUT) /auth/alterar-password - Iniciar alteração de password (envia email de confirmação)
 # (POST) /auth/recuperar-password - Solicitar recuperação de password (envia email)
 # (POST) /auth/confirmar-nova-password - Confirmar alteração de password via token
 # (POST) /auth/reset-password - Redefinir password usando token de recuperação
+
 _TABELAS = {
     "admin":     Admin,
     "gestor":    Gestor,
