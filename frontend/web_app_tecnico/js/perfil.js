@@ -7,9 +7,20 @@
     }
     const u = window.utilizadorAtual || {};
 
-    document.getElementById("perfil-nome").value  = u.nome   || "";
-    document.getElementById("perfil-email").value = u.email  || "";
+    document.getElementById("perfil-nome").value   = u.nome   || "";
+    document.getElementById("perfil-email").value  = u.email  || "";
     document.getElementById("perfil-funcao").value = u.funcao || "";
+
+    // Hero
+    const iniciais = (u.nome || "?").split(" ").filter(Boolean).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+    const heroAvatar = document.getElementById("hero-avatar");
+    const heroNome   = document.getElementById("hero-nome");
+    const heroEmail  = document.getElementById("hero-email");
+    const heroRole   = document.getElementById("hero-role");
+    if (heroAvatar) heroAvatar.textContent = iniciais;
+    if (heroNome)   heroNome.textContent   = u.nome  || "—";
+    if (heroEmail)  heroEmail.textContent  = u.email || "";
+    if (heroRole && u.funcao) heroRole.textContent = u.funcao;
 
     const msgPerfil = document.getElementById("msg-perfil");
 
@@ -25,13 +36,13 @@
 
         try {
             await window.api.put("/tecnicos/conta", dados);
-            msgPerfil.textContent   = "Alterações guardadas.";
-            msgPerfil.className     = "login-sucesso";
+            msgPerfil.textContent   = "Alterações guardadas com sucesso.";
+            msgPerfil.className     = "perfil-msg perfil-msg--ok";
             msgPerfil.style.display = "";
             setTimeout(() => { msgPerfil.style.display = "none"; }, 3000);
         } catch (err) {
             msgPerfil.textContent   = err.message || "Não foi possível guardar.";
-            msgPerfil.className     = "login-erro";
+            msgPerfil.className     = "perfil-msg perfil-msg--err";
             msgPerfil.style.display = "";
         }
     });
@@ -62,12 +73,12 @@
         try {
             const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
             msgPw.textContent   = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
-            msgPw.className     = "login-sucesso";
+            msgPw.className     = "perfil-msg perfil-msg--ok";
             msgPw.style.display = "";
             document.getElementById("form-pw").reset();
         } catch (err) {
             msgPw.textContent   = err.message || "Não foi possível alterar a password.";
-            msgPw.className     = "login-erro";
+            msgPw.className     = "perfil-msg perfil-msg--err";
             msgPw.style.display = "";
         }
     });

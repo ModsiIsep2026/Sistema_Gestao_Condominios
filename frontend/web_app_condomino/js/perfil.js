@@ -13,9 +13,18 @@
     const msgPw = document.getElementById("msg-pw");
 
     const telReal = (u.telemovel && !u.telemovel.startsWith("_p")) ? u.telemovel : "";
-    if (inputNome) inputNome.value = u.nome || "";
-    if (inputEmail) inputEmail.value = u.email || "";
+    if (inputNome)      inputNome.value      = u.nome  || "";
+    if (inputEmail)     inputEmail.value     = u.email || "";
     if (inputTelemovel) inputTelemovel.value = telReal;
+
+    // Hero
+    const iniciais = (u.nome || "?").split(" ").filter(Boolean).map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+    const heroAvatar = document.getElementById("hero-avatar");
+    const heroNome   = document.getElementById("hero-nome");
+    const heroEmail  = document.getElementById("hero-email");
+    if (heroAvatar) heroAvatar.textContent = iniciais;
+    if (heroNome)   heroNome.textContent   = u.nome  || "—";
+    if (heroEmail)  heroEmail.textContent  = u.email || "";
 
     document.getElementById("form-perfil")?.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -41,13 +50,13 @@
             if (inputEmail) inputEmail.value = atualizado.email || "";
             if (inputTelemovel) inputTelemovel.value = (atualizado.telemovel && !atualizado.telemovel.startsWith("_p")) ? atualizado.telemovel : "";
 
-            msgPerfil.textContent = "Alteracoes guardadas com sucesso.";
-            msgPerfil.className = "login-sucesso";
+            msgPerfil.textContent = "Alterações guardadas com sucesso.";
+            msgPerfil.className = "perfil-msg perfil-msg--ok";
             msgPerfil.style.display = "";
             setTimeout(() => { msgPerfil.style.display = "none"; }, 3000);
         } catch (err) {
-            msgPerfil.textContent = err.message || "Nao foi possivel guardar as alteracoes.";
-            msgPerfil.className = "login-erro";
+            msgPerfil.textContent = err.message || "Não foi possível guardar as alterações.";
+            msgPerfil.className = "perfil-msg perfil-msg--err";
             msgPerfil.style.display = "";
         }
     });
@@ -76,13 +85,13 @@
 
         try {
             const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
-            msgPw.textContent = res?.mensagem || "Enviamos um email de confirmacao. Clique no link para concluir.";
-            msgPw.className = "login-sucesso";
+            msgPw.textContent = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
+            msgPw.className = "perfil-msg perfil-msg--ok";
             msgPw.style.display = "";
             document.getElementById("form-pw").reset();
         } catch (err) {
-            msgPw.textContent = err.message || "Nao foi possivel alterar a password.";
-            msgPw.className = "login-erro";
+            msgPw.textContent = err.message || "Não foi possível alterar a password.";
+            msgPw.className = "perfil-msg perfil-msg--err";
             msgPw.style.display = "";
         }
     });
