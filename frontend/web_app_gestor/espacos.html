@@ -28,32 +28,34 @@
             </div>
 
      
-            <div class="app-filtros">
-                <select id="sel-edificio" style="min-width:280px;">
-                    <option value="">Selecione um edifício...</option>
-                </select>
-            </div>
+            <div class="espacos-layout" id="espacos-layout">
 
-        
-            <div class="painel" id="painel-espacos" style="display:none">
-                <div class="painel__cabecalho">
-                    <h2 id="titulo-espacos">Espaços</h2>
+                <div class="edificio-picker" id="edificio-picker">
+                    <p class="edificio-picker__rotulo">Selecione um edifício para gerir os seus espaços e materiais</p>
+                    <div class="edificio-picker__grelha" id="edificio-picker-cards"></div>
                 </div>
-                <div class="painel__corpo painel__corpo--sem-pad">
-                    <table class="app-tabela">
-                        <thead>
-                            <tr>
-                                <th>Nome do espaço</th>
-                                <th>Preço/hora</th>
-                                <th>Estado</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody data-tabela="espacos">
-                            <tr><td colspan="4" class="app-vazio"><p>Selecione um edifício.</p></td></tr>
-                        </tbody>
-                    </table>
+
+                <div class="painel espacos-painel" id="painel-espacos" style="display:none">
+                    <div class="painel__cabecalho">
+                        <h2 id="titulo-espacos">Espaços</h2>
+                    </div>
+                    <div class="painel__corpo painel__corpo--sem-pad">
+                        <table class="app-tabela">
+                            <thead>
+                                <tr>
+                                    <th>Nome do espaço</th>
+                                    <th>Preço/hora</th>
+                                    <th>Estado</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody data-tabela="espacos">
+                                <tr><td colspan="4" class="app-vazio"><p>Selecione um edifício.</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
             </div>
 
         </main>

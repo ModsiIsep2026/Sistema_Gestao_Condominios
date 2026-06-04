@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt">
-<head> 
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Condóminos — Gestão de Condomínios</title>
@@ -29,16 +29,37 @@
                 </div>
             </div>
 
-            <!-- Seletor de edifício -->
-            <div class="app-filtros" style="margin-bottom:var(--esp-5);">
-                <select id="sel-edificio" style="min-width:320px;">
-                    <option value="">Selecionar edifício...</option>
-                </select>
-            </div>
+            <div class="espacos-layout" id="cond-layout">
 
-            <!-- Conteúdo -->
-            <div id="condominos-container">
-                <p style="color:var(--cor-texto-secundario);">Seleciona um edifício para ver os condóminos.</p>
+                <div class="edificio-picker" id="edificio-picker">
+                    <p class="edificio-picker__rotulo">Selecione um edifício para ver os condóminos</p>
+                    <div class="edificio-picker__grelha" id="edificio-picker-cards"></div>
+                </div>
+
+                <div id="cond-painel" style="display:none; min-width:0;">
+                    <div class="painel" style="margin-bottom:0;">
+                        <div class="painel__cabecalho">
+                            <h2 id="cond-titulo">Condóminos</h2>
+                        </div>
+                        <div class="painel__corpo painel__corpo--sem-pad">
+                            <table class="app-tabela">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Email</th>
+                                        <th>Telemóvel</th>
+                                        <th>Fração</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cond-tbody">
+                                    <tr><td colspan="5" class="app-vazio"><p>Selecione um edifício.</p></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </main>

@@ -11,16 +11,79 @@
         : "—";
 
 
+    const ICONE_EDIFICIO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20"/><path d="M9 6h.01M15 6h.01M9 10h.01M15 10h.01M9 14h.01M15 14h.01"/><path d="M10 22v-4h4v4"/></svg>`;
+    const ICONE_ESPACO   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
+
     async function carregarEdificios() {
+        const grid = document.getElementById("edificio-picker-cards");
+
+        // Skeletons enquanto carrega
+        grid.innerHTML = Array(3).fill(0).map(() =>
+            `<div class="ed-picker-card ed-picker-card--skeleton"></div>`
+        ).join("");
+
         try {
             edificios = await window.api.get("/edificios");
-            const sel = document.getElementById("sel-edificio");
-            sel.innerHTML = `<option value="">Selecione um edifício...</option>`;
-            edificios.forEach((e) => {
-                sel.innerHTML += `<option value="${e.id}">${e.rua}${e.cidade ? " — " + e.cidade : ""}</option>`;
+
+            if (!edificios.length) {
+                grid.innerHTML = `<div class="app-vazio"><p>Sem edifícios registados.</p></div>`;
+                return;
+            }
+
+            grid.innerHTML = edificios.map((e) => `
+                <button class="ed-picker-card" data-id="${e.id}" type="button">
+                    <span class="ed-picker-card__check">✓</span>
+                    <div class="ed-picker-card__icone">${ICONE_EDIFICIO}</div>
+                    <div>
+                        <div class="ed-picker-card__rua">${e.rua}</div>
+                        <div class="ed-picker-card__cidade">${e.cidade || "—"}</div>
+                    </div>
+                    <span class="ed-picker-card__badge" id="badge-${e.id}">
+                        <span class="skeleton" style="width:52px;height:9px;display:inline-block;border-radius:4px;"></span>
+                    </span>
+                </button>
+            `).join("");
+
+            // Adicionar listeners de clique
+            grid.querySelectorAll(".ed-picker-card").forEach((card) => {
+                card.addEventListener("click", () => selecionarEdificio(parseInt(card.dataset.id)));
             });
+
+            // Carregar contagem de espaços em paralelo (progressive enhancement)
+            Promise.allSettled(edificios.map(async (e) => {
+                const lista  = await window.api.get(`/espacos?id_edificio=${e.id}`);
+                const badge  = document.getElementById(`badge-${e.id}`);
+                if (!badge) return;
+                const n = lista.length;
+                badge.innerHTML = `${ICONE_ESPACO} ${n} espaço${n !== 1 ? "s" : ""}`;
+            }));
+
         } catch (err) {
+            grid.innerHTML = `<div class="app-vazio"><p>Erro ao carregar edifícios.</p></div>`;
         }
+    }
+
+    async function selecionarEdificio(id) {
+        // Destaca o card selecionado
+        document.querySelectorAll(".ed-picker-card").forEach((c) => c.classList.remove("selecionado"));
+        const cardSel = document.querySelector(`.ed-picker-card[data-id="${id}"]`);
+        if (cardSel) {
+            cardSel.classList.add("selecionado");
+        }
+
+        edificioAtual = id;
+        const edif = edificios.find((ed) => ed.id === id);
+        document.getElementById("titulo-espacos").textContent = `Espaços de ${edif?.rua || "edifício"}`;
+
+        const painel  = document.getElementById("painel-espacos");
+        const btnNovo = document.getElementById("btn-novo-espaco");
+        painel.style.display  = "";
+        btnNovo.style.display = "";
+
+        // Ativar layout dividido (edifícios à esquerda, painel à direita)
+        document.getElementById("espacos-layout").classList.add("com-selecao");
+
+        await carregarEspacos(id);
     }
 
 
@@ -67,26 +130,6 @@
     }
 
 
-    document.getElementById("sel-edificio").addEventListener("change", async (e) => {
-        const id = parseInt(e.target.value);
-        const painel = document.getElementById("painel-espacos");
-        const btnNovo = document.getElementById("btn-novo-espaco");
-
-        if (!id) {
-            painel.style.display = "none";
-            btnNovo.style.display = "none";
-            return;
-        }
-
-        edificioAtual = id;
-        const edif = edificios.find((ed) => ed.id === id);
-        document.getElementById("titulo-espacos").textContent =
-            `Espaços de ${edif?.rua || "edifício"}`;
-
-        painel.style.display = "";
-        btnNovo.style.display = "";
-        await carregarEspacos(id);
-    });
 
 
     const modalEspaco = document.getElementById("modal-espaco");
@@ -161,6 +204,11 @@
             abrirModalEspaco(espaco);
         }
         if (acao === "remover") {
+            const ok = await window.confirmar(
+                `Remover o espaço <strong>${espaco?.nome || ""}</strong>? Esta ação é irreversível.`,
+                { confirmar: "Remover" }
+            );
+            if (!ok) return;
             btn.disabled = true;
             try {
                 await window.api.delete(`/espacos/${id}`);
@@ -295,6 +343,11 @@
         }
 
         if (acao === "remover") {
+            const ok = await window.confirmar(
+                `Remover o material <strong>${btn.dataset.nome || ""}</strong>?`,
+                { confirmar: "Remover" }
+            );
+            if (!ok) return;
             btn.disabled = true;
             try {
                 await window.api.delete(`/materiais/${id}`);
