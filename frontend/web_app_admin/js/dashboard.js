@@ -28,7 +28,6 @@
             <div class="painel__corpo" style="display:flex;align-items:center;justify-content:space-between;gap:var(--esp-4);">
                 <div>
                     <div style="font-weight:700;font-size:var(--tam-base);margin-bottom:4px;">Análise de Adesões</div>
-                    <div style="color:var(--cor-texto-suave);font-size:var(--tam-sm);">Veja quantos gestores aderiram por período na página dedicada.</div>
                 </div>
                 <a href="adesoes.html" class="btn btn--primario" style="white-space:nowrap;">Ver análise</a>
             </div>
