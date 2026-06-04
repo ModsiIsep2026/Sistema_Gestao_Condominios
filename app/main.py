@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from pathlib import Path
 
@@ -28,32 +27,33 @@ app = FastAPI(
 )
 
 
-class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        response = await call_next(request)
-        response.headers["X-Content-Type-Options"]  = "nosniff"
-        response.headers["X-Frame-Options"]         = "DENY"
-        response.headers["X-XSS-Protection"]        = "1; mode=block"
-        response.headers["Referrer-Policy"]         = "strict-origin-when-cross-origin"
-        response.headers["Cache-Control"]           = "no-store"
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com https://cdn.jsdelivr.net; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "img-src 'self' data: https:; "
-            "connect-src 'self' https://api.stripe.com; "
-            "frame-src https://js.stripe.com; "
-            "object-src 'none'; "
-            "base-uri 'self';"
-        )
-        response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=(self)"
-        if _configs.APP_ENV == "production":
-            response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        return response
+# Headers de segurança em todas as respostas
+@app.middleware("http")
+async def _security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"]  = "nosniff"                         # Proteção contra MIME sniffing
+    response.headers["X-Frame-Options"]         = "DENY"                            # Proteção contra clickjacking
+    response.headers["X-XSS-Protection"]        = "1; mode=block"                   # Proteção contra XSS
+    response.headers["Referrer-Policy"]         = "strict-origin-when-cross-origin"
+    if not request.url.path.startswith(("/visuais/", "/web_app_", "/website_C")):
+        response.headers["Cache-Control"] = "no-store"                              # Evita cache de dados sensíveis
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://js.stripe.com https://unpkg.com https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "img-src 'self' data: https:; "
+        "connect-src 'self' https://api.stripe.com; "
+        "frame-src https://js.stripe.com; "
+        "object-src 'none'; "
+        "base-uri 'self';"
+    )
+    response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=(), payment=(self)"
+    # HSTS apenas com HTTPS — ativar quando o servidor tiver TLS (trabalho futuro)
+    # response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 
-app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=_configs.APP_SECRET_KEY)
 app.add_middleware(
     CORSMiddleware,

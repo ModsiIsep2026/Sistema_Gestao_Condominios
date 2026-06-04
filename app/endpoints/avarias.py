@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
-from app.configs.seguranca import verificar_g, verificar_c, verificar_t, token_atual
+from app.configs.seguranca import verificar_g, verificar_c, verificar_t, token_atual, verificar_a
+from app.tabelas_bd.resolucao_avaria import ResolucaoAvaria
 from app.estruturas.registo_avaria import CriarRegistoAvaria, AtualizarRegistoAvaria, LerRegistoAvaria
 from app.estruturas.resolucao_avaria import CriarResolucaoAvaria, AtualizarResolucaoAvaria, LerResolucaoAvaria
 from app.logica import acesso_gestor
@@ -33,8 +34,35 @@ def listar_minhas(condomino=Depends(verificar_c), db: Session = Depends(get_db))
     return servico.listar_pcondomino(db, condomino.id)
 
 @router.get("/{id}", response_model=LerRegistoAvaria)
-def obter(id: int, _=Depends(token_atual), db: Session = Depends(get_db)):
-    return servico.obter(db, id)
+def obter(id: int, token: dict = Depends(token_atual), db: Session = Depends(get_db)):
+    avaria = servico.obter(db, id)
+    tipo = token["tipo"]
+    uid  = token["id"]
+
+    if tipo == "admin":
+        return avaria
+
+    if tipo == "gestor":
+        acesso_gestor.obter_edificio(db, avaria.id_edificio, uid)
+        return avaria
+
+    if tipo == "condomino":
+        from app.tabelas_bd.condomino import Condomino
+        cond = db.query(Condomino).filter(Condomino.id == uid, Condomino.status == 1).first()
+        if not cond or not cond.apartamento or cond.apartamento.id_edificio != avaria.id_edificio:
+            raise HTTPException(403, "Sem permissão para aceder a esta avaria.")
+        return avaria
+
+    if tipo == "tecnico":
+        atribuido = db.query(ResolucaoAvaria).filter(
+            ResolucaoAvaria.id_registo_avaria == id,
+            ResolucaoAvaria.id_tecnico == uid,
+        ).first()
+        if not atribuido:
+            raise HTTPException(403, "Sem permissão para aceder a esta avaria.")
+        return avaria
+
+    raise HTTPException(403, "Sem permissão.")
 
 @router.post("", response_model=LerRegistoAvaria, status_code=201)
 def criar(dados: CriarRegistoAvaria, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
@@ -59,8 +87,20 @@ def criar_resolucao(id: int, dados: CriarResolucaoAvaria, gestor=Depends(verific
     return servico.criar_resolucao(db, id, dados.id_tecnico)
 
 @router.put("/{id}/resolucao", response_model=LerResolucaoAvaria)
-def atualizar_resolucao(id: int, dados: AtualizarResolucaoAvaria,token: dict = Depends(token_atual), db: Session = Depends(get_db)):
+def atualizar_resolucao(id: int, dados: AtualizarResolucaoAvaria, token: dict = Depends(token_atual), db: Session = Depends(get_db)):
+    tipo = token["tipo"]
+    uid  = token["id"]
 
-    if token["tipo"] not in ("gestor", "tecnico"): # apenas técnicos e gestores podem atualizar o estado da resolução da avaria
+    if tipo == "gestor":
+        acesso_gestor.obter_avaria(db, id, uid)
+    elif tipo == "tecnico":
+        atribuido = db.query(ResolucaoAvaria).filter(
+            ResolucaoAvaria.id_registo_avaria == id,
+            ResolucaoAvaria.id_tecnico == uid,
+        ).first()
+        if not atribuido:
+            raise HTTPException(403, "Sem permissão para atualizar esta resolução.")
+    else:
         raise HTTPException(403, "Sem permissão.")
+
     return servico.atualizar_resolucao(db, id, dados)

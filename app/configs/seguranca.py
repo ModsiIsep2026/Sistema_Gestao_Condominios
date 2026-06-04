@@ -23,7 +23,7 @@ credenciais_invalidas = HTTPException(status_code=401,
 )
 
 ACESSO_NEGADO = HTTPException(status_code=403, detail="Acesso negado")
-IGNORAR_C = set("0O1lI")  # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
+IGNORAR_C = set("0O1lI")            # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
 
 TABELAS = {
     "admin":     Admin,

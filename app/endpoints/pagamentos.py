@@ -3,14 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_g, verificar_c
-from app.tabelas_bd.edificio import Edificio
-from app.tabelas_bd.apartamento import Apartamento
 from app.tabelas_bd.pagamento import Pagamento
 from app.estruturas.pagamento import CriarPagamento, LerPagamento
 from app.logica import acesso_gestor
 from app.logica import pagamento as servico
 
 router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
+
 
 # (GET)  /pagamentos - Lista os pagamentos de um apartamento (acesso exclusivo do gestor).
 # (GET)  /pagamentos/gestor - Lista todos os pagamentos associados aos edifícios do gestor autenticado.
@@ -19,6 +18,7 @@ router = APIRouter(prefix="/pagamentos", tags=["Pagamentos"])
 # (POST) /pagamentos/{id}/pagar - Regista o pagamento de uma quota por parte do condómino.
 # (POST) /pagamentos/{id}/marcar-pago - Marca um pagamento como feito (acesso exclusivo do gestor)
 
+
 @router.get("", response_model=List[LerPagamento])
 def listar(id_apartamento: int, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     acesso_gestor.obter_apartamento(db, id_apartamento, gestor.id)
@@ -26,16 +26,7 @@ def listar(id_apartamento: int, gestor=Depends(verificar_g), db: Session = Depen
 
 @router.get("/gestor", response_model=List[LerPagamento])
 def listar_gestor(gestor=Depends(verificar_g), db: Session = Depends(get_db)):
-    return (db.query(Pagamento).join(Apartamento, Pagamento.id_apartamento == Apartamento.id)
-        .join(Edificio, Apartamento.id_edificio == Edificio.id)
-        .filter(
-            Edificio.id_gestor == gestor.id,
-            Edificio.status == 1,
-            Apartamento.status == 1,
-            Pagamento.status == 1,
-        )
-        .all()
-    )
+    return servico.listar_pgestor(db, gestor.id)
 
 
 @router.get("/condominio", response_model=List[LerPagamento])
