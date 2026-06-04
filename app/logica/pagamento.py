@@ -3,6 +3,19 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.tabelas_bd.pagamento import Pagamento
 from app.tabelas_bd.apartamento import Apartamento
+from app.tabelas_bd.edificio import Edificio
+
+
+def listar_pgestor(db: Session, id_gestor: int):
+    return (db.query(Pagamento).join(Apartamento, Pagamento.id_apartamento == Apartamento.id).join(Edificio, Apartamento.id_edificio == Edificio.id)
+        .filter(
+            Edificio.id_gestor == id_gestor,
+            Edificio.status == 1,
+            Apartamento.status == 1,
+            Pagamento.status == 1,
+        )
+        .all()
+    )
 
 
 def listar(db: Session, id_apartamento: int):

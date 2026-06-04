@@ -14,11 +14,14 @@ class CriarGestor(Gestor):
     pw: str
 
 
-class AtualizarGestor(BaseModel):
+class AtualizarGestorPerfil(BaseModel):
     nome: Optional[str] = None
     empresa: Optional[str] = None
     telemovel: Optional[str] = None
     email: Optional[EmailStr] = None
+
+
+class AtualizarGestor(AtualizarGestorPerfil):
     status: Optional[int] = None
 
 

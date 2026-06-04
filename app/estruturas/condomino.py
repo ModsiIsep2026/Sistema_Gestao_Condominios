@@ -16,10 +16,13 @@ class CriarCondomino(BaseModel):
     telemovel: Optional[str] = None   # preenchido pelo condómino no perfil
 
 
-class AtualizarCondomino(BaseModel):
+class AtualizarCondominoPerfil(BaseModel):
     nome: Optional[str] = None
     email: Optional[EmailStr] = None
     telemovel: Optional[str] = None
+
+
+class AtualizarCondomino(AtualizarCondominoPerfil):
     id_apartamento: Optional[int] = None
     status: Optional[int] = None
 

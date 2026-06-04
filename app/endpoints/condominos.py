@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_g, verificar_c
-from app.estruturas.condomino import CriarCondomino, AtualizarCondomino, LerCondomino
+from app.estruturas.condomino import CriarCondomino, AtualizarCondomino, AtualizarCondominoPerfil, LerCondomino
 from app.logica import condomino as servico
 
 router = APIRouter(prefix="/condominos", tags=["Condóminos"])
+
 
 # (GET)    /condominos            - Lista todos os condóminos, ou filtra por apartamento.
 # (GET)    /condominos/{id}       - Exibe os dados de um condómino.
@@ -15,13 +16,14 @@ router = APIRouter(prefix="/condominos", tags=["Condóminos"])
 # (PUT)    /condominos/{id}       - Atualiza os dados de um condómino (gestor).
 # (DELETE) /condominos/{id}       - Remove um condómino (gestor).
 
+
 @router.get("", response_model=List[LerCondomino])
 def listar(id_apartamento: Optional[int] = None, _=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.listar_todos(db) if id_apartamento is None else servico.listar(db, id_apartamento)
 
 
 @router.put("/conta", response_model=LerCondomino)
-def atualizar_perfil(dados: AtualizarCondomino, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
+def atualizar_perfil(dados: AtualizarCondominoPerfil, condomino=Depends(verificar_c), db: Session = Depends(get_db)):
     return servico.atualizar(db, condomino.id, dados)
 
 

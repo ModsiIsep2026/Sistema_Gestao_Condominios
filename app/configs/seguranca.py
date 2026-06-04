@@ -23,7 +23,7 @@ credenciais_invalidas = HTTPException(status_code=401,
 )
 
 ACESSO_NEGADO = HTTPException(status_code=403, detail="Acesso negado")
-IGNORAR_C = set("0O1lI")  # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
+IGNORAR_C = set("0O1lI")            # O gestor vai receber uma pw mas vamos ignorar estes valores na construcao da pw
 
 TABELAS = {
     "admin":     Admin,
@@ -32,11 +32,9 @@ TABELAS = {
     "tecnico":   Tecnico,
 }
 
-
 # Recebe a pw e retorna encriptada através da bibilioteca CryptoContext
 def pw_encript(pw: str) -> str:
     return pwd_encriptada.hash(pw)
-
 
 # Verificar se a pw inicial e a cript são "iguais"
 def verificar_pw(pw: str, pw_hash: str) -> bool:

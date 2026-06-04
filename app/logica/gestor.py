@@ -7,9 +7,6 @@ from app.configs.seguranca import pw_encript
 
 
 def listar_todos(db: Session):
-    from app.logica.contrato import v_contrato_expirados
-    v_contrato_expirados(db)
-
     gestores = db.query(Gestor).options(joinedload(Gestor.contrato)).all()
     return [
         {
@@ -48,7 +45,7 @@ def criar(db: Session, dados):
 
 
 def atualizar(db: Session, id: int, dados):
-    gestor = db.query(Gestor).filter(Gestor.id == id).first()
+    gestor = db.query(Gestor).filter(Gestor.id == id, Gestor.status == 1).first()
     if not gestor:
         raise HTTPException(404, "Gestor não encontrado")
 
