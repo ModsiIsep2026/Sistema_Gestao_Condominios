@@ -10,6 +10,15 @@
     document.getElementById("perfil-nome").value  = u.nome  || "";
     document.getElementById("perfil-email").value = u.email || "";
 
+   
+    const iniciais = (u.nome || "AD").split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
+    const heroAvatar = document.getElementById("hero-avatar");
+    const heroNome   = document.getElementById("hero-nome");
+    const heroEmail  = document.getElementById("hero-email");
+    if (heroAvatar) heroAvatar.textContent = iniciais;
+    if (heroNome)   heroNome.textContent   = u.nome  || "Administrador";
+    if (heroEmail)  heroEmail.textContent  = u.email || "";
+
     const msgPerfil = document.getElementById("msg-perfil");
 
     document.getElementById("form-perfil")?.addEventListener("submit", async (e) => {
@@ -71,3 +80,6 @@
     });
 
 })();
+
+
+

@@ -65,26 +65,23 @@
                 </div>
             </div>
 
-            <!-- Seletor de período -->
-            <div class="painel">
-                <div class="painel__cabecalho"><h2>Período</h2></div>
-                <div class="painel__corpo">
-                    <div class="app-filtros" style="margin-bottom:var(--esp-3);">
-                        <input type="date" id="rel-data-inicio">
-                        <input type="date" id="rel-data-fim">
-                        <button type="button" class="btn btn--outline" data-periodo="mes-atual">Mês atual</button>
-                        <button type="button" class="btn btn--outline" data-periodo="30">Últimos 30 dias</button>
-                        <button type="button" class="btn btn--outline" data-periodo="90">Últimos 90 dias</button>
-                        <button type="button" class="btn btn--outline" id="btn-limpar-periodo">Limpar</button>
-                    </div>
-                    <div class="periodo-ativo" id="rel-periodo-desc">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        <span>A considerar todos os registos disponíveis</span>
-                    </div>
+          
+            <div style="display:flex;align-items:center;gap:var(--esp-3);flex-wrap:wrap;margin-bottom:var(--esp-5);">
+                <select id="sel-periodo" style="padding:10px 16px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);cursor:pointer;min-width:220px;">
+                    <option value="personalizado" selected>Período personalizado</option>
+                    <option value="todos">Todos os registos</option>
+                    <option value="mes-atual">Mês atual</option>
+                    <option value="30">Últimos 30 dias</option>
+                    <option value="90">Últimos 90 dias</option>
+                </select>
+                <div id="datas-personalizadas" style="display:flex;align-items:center;gap:var(--esp-2);flex-wrap:wrap;">
+                    <input type="date" id="rel-data-inicio" style="padding:10px 12px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
+                    <span style="color:var(--cor-texto-suave);font-size:var(--tam-sm);">até</span>
+                    <input type="date" id="rel-data-fim" style="padding:10px 12px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
                 </div>
             </div>
 
-            <!-- KPIs financeiros -->
+          
             <div class="kpis" style="grid-template-columns:repeat(4,1fr);">
                 <div class="kpi">
                     <div class="kpi__rotulo">Pagamentos</div>
@@ -108,7 +105,7 @@
                 </div>
             </div>
 
-            <!-- Cards de exportação -->
+ 
             <div class="export-cards">
 
                 <div class="export-card">
@@ -118,11 +115,11 @@
                         </div>
                         <h3 class="export-card__titulo">Financeiro — Excel</h3>
                     </div>
-                    <p class="export-card__desc">Exporta o resumo de pagamentos do período selecionado em formato Excel (.xlsx), compatível com Microsoft Excel e Google Sheets.</p>
+                    <p class="export-card__desc">Exporta o resumo de pagamentos do período selecionado em formato Excel.</p>
                     <div class="export-card__acoes">
-                        <button id="btn-rel-excel" type="button" class="btn btn--primario">
+                        <button id="btn-rel-excel" type="button" class="btn btn--outline">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Exportar Excel
+                            Exportar
                         </button>
                     </div>
                     <div id="rel-erro" class="login-erro" style="display:none;margin-top:var(--esp-2);"></div>
@@ -139,7 +136,7 @@
                     <div class="export-card__acoes">
                         <button id="btn-rel-pdf" type="button" class="btn btn--outline">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                            Exportar PDF
+                            Exportar
                         </button>
                     </div>
                 </div>

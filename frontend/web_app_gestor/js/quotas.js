@@ -20,11 +20,11 @@
     const btnGerar    = document.getElementById("btn-gerar-quota");
     const tbody       = document.querySelector('[data-tabela="quotas"]');
 
-    // mês atual por defeito
+
     const hoje = new Date();
     inputMes.value = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, "0")}`;
 
-    // ── Renderizar tabela ─────────────────────────────────────────────────────
+   
 
     function renderizar(lista) {
         if (!lista.length) {
@@ -100,7 +100,7 @@
 
     await carregar();
 
-    // ── Carregar edifícios ────────────────────────────────────────────────────
+   
 
     try {
         edificios = await window.api.get("/edificios");
@@ -109,7 +109,7 @@
         });
     } catch {}
 
-    // ── Listeners dos filtros ─────────────────────────────────────────────────
+
 
     selEdificio.addEventListener("change", () => {
         // botão "Gerar quota" só ativo quando edifício + mês estão preenchidos
@@ -124,7 +124,7 @@
 
     selEstado.addEventListener("change", aplicarFiltros);
 
-    // ── Marcar paga inline ────────────────────────────────────────────────────
+  
 
     tbody.addEventListener("click", async (e) => {
         const btn = e.target.closest("[data-acao='marcar-pago']");
@@ -136,7 +136,7 @@
         } catch { btn.disabled = false; }
     });
 
-    // ── Gerar quota ───────────────────────────────────────────────────────────
+
 
     btnGerar.addEventListener("click", async () => {
         const idEdif = parseInt(selEdificio.value);
@@ -160,7 +160,8 @@
                     await window.api.post("/pagamentos", { id_apartamento: a.id, mes });
                     ok++;
                 } catch (e) {
-                    if (e.message?.includes("já realizou") || e.message?.includes("já existe")) {
+                    const msg = (e.message || "").toLowerCase();
+                    if (msg.includes("já realizou") || msg.includes("já existe") || msg.includes("ja realizou") || msg.includes("ja existe")) {
                         jaExistem++;
                     } else {
                         erros++;
@@ -170,13 +171,13 @@
 
             await carregar();
 
-            let msg = "";
-            if (ok > 0)        msg += `${ok} quota(s) gerada(s). `;
-            if (jaExistem > 0) msg += `${jaExistem} já existiam. `;
-            if (erros > 0)     msg += `${erros} erro(s).`;
-            if (msg) {
-                if (erros > 0) window.toast?.error(msg.trim());
-                else window.toast?.success(msg.trim());
+            if (erros > 0) {
+                window.toast?.error(`${erros} erro(s) ao gerar quotas.`);
+            } else if (ok > 0) {
+                const extra = jaExistem > 0 ? ` (${jaExistem} já existiam)` : "";
+                window.toast?.success(`${ok} quota(s) gerada(s) com sucesso.${extra}`);
+            } else if (jaExistem > 0) {
+                window.toast?.success(`As quotas de ${fmtMes(mes)} já foram geradas.`);
             }
 
         } catch (e) {

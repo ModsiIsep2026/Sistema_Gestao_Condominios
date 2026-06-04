@@ -15,17 +15,6 @@
 
     const conteudo = document.getElementById("dashboard-conteudo");
     conteudo.innerHTML = `
-        <div style="background:linear-gradient(130deg,#0B2240 0%,#1A3D6B 100%);border-radius:12px;padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;">
-            <div style="position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.05);pointer-events:none;"></div>
-            <div style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,0.12);border:2px solid rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;">
-                ${primeiroNome[0].toUpperCase()}
-            </div>
-            <div style="position:relative;z-index:1;">
-                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,0.5);margin-bottom:4px;">Bem-vindo de volta</div>
-                <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2;">${primeiroNome}</div>
-                ${aptTx || edifTx ? `<div style="font-size:13px;color:rgba(255,255,255,0.55);margin-top:4px;">${[aptTx, edifTx].filter(Boolean).join(" · ")}</div>` : ""}
-            </div>
-        </div>
         <div class="kpis" style="grid-template-columns: repeat(3, 1fr);">
             <div class="kpi">
                 <div class="kpi__rotulo">Quotas em aberto</div>

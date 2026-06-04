@@ -16,7 +16,7 @@ def notificar(email: str, nome: str, pw_temp: str) -> None:
         log.error("Falha ao enviar email para técnico %s: %s", email, exc)
 
 def listar(db: Session, id_gestor: int):
-    return db.query(Tecnico).filter(Tecnico.id_gestor == id_gestor, Tecnico.status == 1).all()
+    return db.query(Tecnico).filter(Tecnico.id_gestor == id_gestor).all()
 
 def obter(db: Session, id: int):
     tecnico = db.query(Tecnico).filter(Tecnico.id == id, Tecnico.status == 1).first()

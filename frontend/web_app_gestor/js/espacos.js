@@ -17,8 +17,12 @@
     async function carregarEdificios() {
         const grid = document.getElementById("edificio-picker-cards");
 
-        // Skeletons enquanto carrega
-        grid.innerHTML = Array(3).fill(0).map(() =>
+      
+        document.getElementById("espacos-layout").classList.add("com-selecao");
+        document.getElementById("painel-espacos").style.display  = "";
+        document.getElementById("btn-novo-espaco").style.display = "";
+
+        grid.innerHTML = Array(4).fill(0).map(() =>
             `<div class="ed-picker-card ed-picker-card--skeleton"></div>`
         ).join("");
 
@@ -44,15 +48,18 @@
                 </button>
             `).join("");
 
-            // Adicionar listeners de clique
+        
             grid.querySelectorAll(".ed-picker-card").forEach((card) => {
                 card.addEventListener("click", () => selecionarEdificio(parseInt(card.dataset.id)));
             });
 
-            // Carregar contagem de espaços em paralelo (progressive enhancement)
+         
+            await selecionarEdificio(edificios[0].id);
+
+         
             Promise.allSettled(edificios.map(async (e) => {
-                const lista  = await window.api.get(`/espacos?id_edificio=${e.id}`);
-                const badge  = document.getElementById(`badge-${e.id}`);
+                const lista = await window.api.get(`/espacos?id_edificio=${e.id}`);
+                const badge = document.getElementById(`badge-${e.id}`);
                 if (!badge) return;
                 const n = lista.length;
                 badge.innerHTML = `${ICONE_ESPACO} ${n} espaço${n !== 1 ? "s" : ""}`;
@@ -80,7 +87,7 @@
         painel.style.display  = "";
         btnNovo.style.display = "";
 
-        // Ativar layout dividido (edifícios à esquerda, painel à direita)
+
         document.getElementById("espacos-layout").classList.add("com-selecao");
 
         await carregarEspacos(id);

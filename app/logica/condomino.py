@@ -17,11 +17,10 @@ def notificar(email: str, nome: str, pw_temp: str) -> None:
 
 
 def listar_todos(db: Session):
-    return db.query(Condomino).filter(Condomino.status == 1).all()
+    return db.query(Condomino).all()
 
 def listar(db: Session, id_apartamento: int):
-    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento, 
-        Condomino.status == 1).all()
+    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento).all()
 
 
 def obter(db: Session, id: int):
@@ -37,7 +36,7 @@ def criar(db: Session, dados, background: BackgroundTasks = None):
         nome=dados.nome,
         email=dados.email,
         pw=pw_encript(pw_temp),
-        telemovel=dados.telemovel or None,
+        telemovel=dados.telemovel or "_pendente",
         id_apartamento=dados.id_apartamento,
     )
     db.add(condomino)

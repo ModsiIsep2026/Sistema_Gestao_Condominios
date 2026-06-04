@@ -9,7 +9,7 @@
     const rotulo   = document.querySelector('[data-rotulo="dashboard"]');
     if (rotulo) rotulo.textContent = "Vista geral dos edifícios que gere.";
 
-    // Skeleton inicial
+ 
     conteudo.innerHTML = `
         <div class="kpis" id="kpis-dash" style="grid-template-columns:repeat(4,1fr);">
             <div class="kpi"><div class="skeleton skeleton-kpi"></div></div>
@@ -57,10 +57,9 @@
             </div>
         </div>`;
 
-    // Aguarda render
+
     await new Promise((r) => requestAnimationFrame(r));
 
-    // Substitui KPIs reais
     document.getElementById("kpis-dash").innerHTML = `
         <a href="edificios.html" class="kpi">
             <div class="kpi__rotulo">Edifícios</div>
@@ -97,7 +96,7 @@
         ? new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(v)
         : "—";
 
-    // Mapa para guardar avarias e pagamentos por edifício (para os cards)
+
     const avPorEdificio = {};
     const pagPorEdificio = {};
 
@@ -135,50 +134,51 @@
             `<tr><td colspan="3"><div class="app-vazio"><p>Sem pagamentos.</p></div></td></tr>`;
     }
 
-    // Carregar avarias do primeiro edifício (tabela recentes) e dados para cards
+   
     try {
         if (todosEdificios.length) {
-            // Avarias do primeiro edifício para a tabela recente
-            const avarias = await window.api.get(`/avarias?id_edificio=${todosEdificios[0].id}`);
-            setKpi("avarias", avarias.length);
-            avPorEdificio[todosEdificios[0].id] = avarias;
+            const aptEdMap = {};
+
+        
+            await Promise.all(todosEdificios.map(async (ed) => {
+                try {
+                    avPorEdificio[ed.id] = await window.api.get(`/avarias?id_edificio=${ed.id}`);
+                } catch { avPorEdificio[ed.id] = []; }
+                try {
+                    const apts = await window.api.get(`/apartamentos?id_edificio=${ed.id}`);
+                    apts.forEach((a) => { aptEdMap[a.id] = ed.id; });
+                } catch {}
+            }));
+
+         
+            const totalAbertas = todosEdificios.reduce((sum, ed) =>
+                sum + (avPorEdificio[ed.id] || []).filter(a => !a.resolucao || a.resolucao.status !== 1).length, 0);
+            setKpi("avarias", totalAbertas);
+
+       
+            const todasAbertas = todosEdificios
+                .flatMap((ed) => (avPorEdificio[ed.id] || []).filter(a => !a.resolucao || a.resolucao.status !== 1))
+                .sort((a, b) => new Date(b.data_registo) - new Date(a.data_registo))
+                .slice(0, 5);
 
             document.querySelector('[data-tabela="avarias-recentes"]').innerHTML =
-                avarias.length
-                    ? avarias.slice(-5).reverse().map((a) => `
+                todasAbertas.length
+                    ? todasAbertas.map((a) => `
                         <tr>
                             <td>${fmtData(a.data_registo)}</td>
                             <td>${a.zona || "—"}</td>
                             <td>${(a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").trim().substring(0, 40) || "—"}</td>
                         </tr>`).join("")
-                    : `<tr><td colspan="3"><div class="app-vazio"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px;display:block;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><p>Sem ocorrências registadas. Bom trabalho!</p></div></td></tr>`;
+                    : `<tr><td colspan="3"><div class="app-vazio"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--cor-texto-suave)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin:0 auto 8px;display:block;"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg><p>Sem ocorrências em aberto. Bom trabalho!</p></div></td></tr>`;
 
-            // Carregar avarias + apartamentos para todos os edifícios em paralelo (para cards de saúde)
-            // Mapa id_apartamento → id_edificio (necessário porque /pagamentos/gestor não inclui id_edificio)
-            const aptEdMap = {};
-
-            await Promise.all(todosEdificios.map(async (ed) => {
-                // Avarias (já carregadas para o primeiro)
-                if (avPorEdificio[ed.id] === undefined) {
-                    try {
-                        avPorEdificio[ed.id] = await window.api.get(`/avarias?id_edificio=${ed.id}`);
-                    } catch { avPorEdificio[ed.id] = []; }
-                }
-                // Apartamentos para construir o mapa apt→edificio
-                try {
-                    const apts = await window.api.get(`/apartamentos?id_edificio=${ed.id}`);
-                    apts.forEach((a) => { aptEdMap[a.id] = ed.id; });
-                } catch { /* continuar mesmo sem apartamentos */ }
-            }));
-
-            // Calcular pagamentos pendentes por edifício usando o mapa de apartamentos
+           
             todosEdificios.forEach((ed) => {
                 pagPorEdificio[ed.id] = todosPagamentos.filter((p) =>
                     aptEdMap[p.id_apartamento] === ed.id && p.estado === 0
                 );
             });
 
-            // Renderizar cards
+     
             const painelCards = document.getElementById("painel-edificios-cards");
             if (painelCards) {
                 painelCards.innerHTML = `<div class="edificios-grid">` +

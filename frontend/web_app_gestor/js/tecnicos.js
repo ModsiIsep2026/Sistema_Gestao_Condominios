@@ -2,10 +2,10 @@
 (async function () {
 
     let dados          = [];
-    let filtroEstado   = "ativos";
+    let filtroEstado   = "todos";
     let filtroPesquisa = "";
 
-    // Chips de estado
+
     document.querySelectorAll("#chips-estado-tec .filtro-chip").forEach((chip) => {
         chip.addEventListener("click", () => {
             document.querySelectorAll("#chips-estado-tec .filtro-chip").forEach((c) => c.classList.remove("ativo"));

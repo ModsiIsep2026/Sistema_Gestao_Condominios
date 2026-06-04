@@ -19,7 +19,7 @@
     border-color: var(--cor-acento);
 }
 
-/* Spinner */
+
 .estado-carregando {
     display: flex;
     align-items: center;
@@ -41,7 +41,7 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Resumo abaixo do gráfico */
+
 .adesoes-resumo {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -68,7 +68,7 @@
     color: var(--cor-texto-suave);
 }
 
-/* Barra de proporção na tabela */
+
 .barra-proporcao {
     display: flex;
     align-items: center;

@@ -17,7 +17,7 @@
         ? new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(v)
         : "—";
 
-    // ── Carregar edifício ─────────────────────────────────────────────────────
+
     try {
         const todos = await window.api.get("/edificios");
         edificio = todos.find((e) => e.id === idEdif);
@@ -29,7 +29,7 @@
         }
     } catch {}
 
-    // ── Tabs ──────────────────────────────────────────────────────────────────
+
     document.querySelectorAll(".tab-btn").forEach((btn) => {
         btn.addEventListener("click", () => {
             document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("ativo"));
@@ -39,7 +39,7 @@
         });
     });
 
-    // ── Render apartamentos (usa arrays já carregados) ────────────────────────
+
     function renderizarApartamentos() {
         const tbody = document.querySelector('[data-tabela="apartamentos"]');
         if (!apartamentos.length) {
@@ -73,7 +73,7 @@
         popularSelectApt();
     }
 
-    // ── Render condóminos (usa arrays já carregados) ──────────────────────────
+
     function renderizarCondominos() {
         const tbody = document.querySelector('[data-tabela="condominos"]');
         if (!condominos.length) {
@@ -103,7 +103,7 @@
         }).join("");
     }
 
-    // ── Fetch apartamentos ────────────────────────────────────────────────────
+  
     async function carregarApartamentos() {
         try {
             apartamentos = await window.api.get(`/apartamentos?id_edificio=${idEdif}`);
@@ -113,7 +113,7 @@
         }
     }
 
-    // ── Fetch condóminos ──────────────────────────────────────────────────────
+
     async function carregarCondominos() {
         try {
             const todos = await window.api.get("/condominos");
@@ -126,7 +126,7 @@
         }
     }
 
-    // ── Actualizar select do modal de condómino (só frações livres) ──────────
+  
     function popularSelectApt() {
         const sel = document.getElementById("cond-apt");
         // IDs de apartamentos já ocupados
@@ -145,7 +145,7 @@
         }
     }
 
-    // ── Reload completo (fetch + render ambas as tabs) ────────────────────────
+  
     async function recarregarTudo() {
         await carregarApartamentos();
         await carregarCondominos();
@@ -153,7 +153,7 @@
         renderizarCondominos();
     }
 
-    // ── Modal apartamento ─────────────────────────────────────────────────────
+    
     const modalApt = document.getElementById("modal-apt");
     const erroApt  = document.getElementById("erro-apt");
 
@@ -226,7 +226,7 @@
         }
     });
 
-    // ── Modal condómino ───────────────────────────────────────────────────────
+
     const modalCond = document.getElementById("modal-cond");
     const erroCond  = document.getElementById("erro-cond");
 
@@ -282,7 +282,6 @@
         }
     });
 
-    // ── Arranque: carregar dados e renderizar ─────────────────────────────────
     await carregarApartamentos();
     await carregarCondominos();
     renderizarApartamentos();

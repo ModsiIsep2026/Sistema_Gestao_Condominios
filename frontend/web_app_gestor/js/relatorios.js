@@ -1,53 +1,44 @@
 (async function () {
     await new Promise((r) => setTimeout(r, 200));
 
-    const erroEl = document.getElementById("rel-erro");
-    const inputInicio = document.getElementById("rel-data-inicio");
-    const inputFim = document.getElementById("rel-data-fim");
-    const periodoDesc = document.getElementById("rel-periodo-desc");
+    const erroEl            = document.getElementById("rel-erro");
+    const selPeriodo        = document.getElementById("sel-periodo");
+    const datasPersonalizadas = document.getElementById("datas-personalizadas");
+    const inputInicio       = document.getElementById("rel-data-inicio");
+    const inputFim          = document.getElementById("rel-data-fim");
 
     let pagamentosGestor = [];
 
-    function mostrarErro(msg) {
-        erroEl.textContent = msg;
-        erroEl.style.display = "";
-    }
-
-    function limparErro() {
-        erroEl.style.display = "none";
-        erroEl.textContent = "";
-    }
+    function mostrarErro(msg) { erroEl.textContent = msg; erroEl.style.display = ""; }
+    function limparErro()     { erroEl.style.display = "none"; erroEl.textContent = ""; }
 
     function fmtEur(valor) {
         return new Intl.NumberFormat("pt-PT", { style: "currency", currency: "EUR" }).format(valor || 0);
     }
 
-    function formatarDataISO(data) {
-        return data.toISOString().slice(0, 10);
+    function formatarDataISO(data) { return data.toISOString().slice(0, 10); }
+
+    function preencherDatasRapidas(tipo) {
+        const hoje = new Date();
+        const fim  = formatarDataISO(hoje);
+
+        if (tipo === "todos") {
+            inputInicio.value = "";
+            inputFim.value    = "";
+        } else if (tipo === "mes-atual") {
+            inputInicio.value = formatarDataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+            inputFim.value    = fim;
+        } else if (tipo !== "personalizado") {
+            const dias = parseInt(tipo, 10);
+            const inicioDate = new Date(hoje);
+            inicioDate.setDate(inicioDate.getDate() - (dias - 1));
+            inputInicio.value = formatarDataISO(inicioDate);
+            inputFim.value    = fim;
+        }
     }
 
     function obterPeriodoSelecionado() {
-        const dataInicio = inputInicio.value || null;
-        const dataFim = inputFim.value || null;
-        return { dataInicio, dataFim };
-    }
-
-    function atualizarDescricaoPeriodo() {
-        const { dataInicio, dataFim } = obterPeriodoSelecionado();
-        const inner = periodoDesc.querySelector("span") || periodoDesc;
-        if (!dataInicio && !dataFim) {
-            inner.textContent = "A considerar todos os registos disponíveis";
-            return;
-        }
-        if (dataInicio && dataFim) {
-            inner.textContent = `Período ativo: ${dataInicio} até ${dataFim}`;
-            return;
-        }
-        if (dataInicio) {
-            inner.textContent = `Período ativo: desde ${dataInicio}`;
-            return;
-        }
-        inner.textContent = `Período ativo: até ${dataFim}`;
+        return { dataInicio: inputInicio.value || null, dataFim: inputFim.value || null };
     }
 
     function filtrarPagamentos() {
@@ -56,55 +47,28 @@
             const dataBase = (p.data_p || p.data_i || "").slice(0, 10);
             if (!dataBase) return !dataInicio && !dataFim;
             if (dataInicio && dataBase < dataInicio) return false;
-            if (dataFim && dataBase > dataFim) return false;
+            if (dataFim   && dataBase > dataFim)    return false;
             return true;
         });
     }
 
     function atualizarKpisFinanceiros() {
-        const lista = filtrarPagamentos();
-        const pagos = lista.filter((p) => p.estado === 1);
+        const lista     = filtrarPagamentos();
+        const pagos     = lista.filter((p) => p.estado === 1);
         const pendentes = lista.filter((p) => p.estado !== 1);
-        const total = lista.reduce((acc, p) => acc + Number(p.valor || 0), 0);
+        const total     = lista.reduce((acc, p) => acc + Number(p.valor || 0), 0);
 
-        document.getElementById("kpi-pag-total").textContent = String(lista.length);
-        document.getElementById("kpi-pag-pagos").textContent = String(pagos.length);
+        document.getElementById("kpi-pag-total").textContent     = String(lista.length);
+        document.getElementById("kpi-pag-pagos").textContent     = String(pagos.length);
         document.getElementById("kpi-pag-pendentes").textContent = String(pendentes.length);
-        document.getElementById("kpi-pag-montante").textContent = fmtEur(total);
-    }
-
-    function aplicarPeriodoRapido(tipo) {
-        const hoje = new Date();
-        const fim = formatarDataISO(hoje);
-        let inicio = null;
-
-        if (tipo === "mes-atual") {
-            inicio = formatarDataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
-        } else {
-            const dias = parseInt(tipo, 10);
-            const inicioDate = new Date(hoje);
-            inicioDate.setDate(inicioDate.getDate() - (dias - 1));
-            inicio = formatarDataISO(inicioDate);
-        }
-
-        inputInicio.value = inicio;
-        inputFim.value = fim;
-        atualizarDescricaoPeriodo();
-        atualizarKpisFinanceiros();
-    }
-
-    function limparPeriodo() {
-        inputInicio.value = "";
-        inputFim.value = "";
-        atualizarDescricaoPeriodo();
-        atualizarKpisFinanceiros();
+        document.getElementById("kpi-pag-montante").textContent  = fmtEur(total);
     }
 
     function montarQueryPeriodo() {
         const { dataInicio, dataFim } = obterPeriodoSelecionado();
         const params = new URLSearchParams();
         if (dataInicio) params.set("data_inicio", dataInicio);
-        if (dataFim) params.set("data_fim", dataFim);
+        if (dataFim)    params.set("data_fim", dataFim);
         const query = params.toString();
         return query ? `?${query}` : "";
     }
@@ -182,23 +146,16 @@
         }
     } catch {}
 
-    inputInicio?.addEventListener("change", () => {
-        atualizarDescricaoPeriodo();
-        atualizarKpisFinanceiros();
-    });
-    inputFim?.addEventListener("change", () => {
-        atualizarDescricaoPeriodo();
+    selPeriodo.addEventListener("change", () => {
+        preencherDatasRapidas(selPeriodo.value);
         atualizarKpisFinanceiros();
     });
 
-    document.querySelectorAll("[data-periodo]").forEach((btn) => {
-        btn.addEventListener("click", () => aplicarPeriodoRapido(btn.dataset.periodo));
-    });
-    document.getElementById("btn-limpar-periodo")?.addEventListener("click", limparPeriodo);
+    inputInicio.addEventListener("change", atualizarKpisFinanceiros);
+    inputFim.addEventListener("change",    atualizarKpisFinanceiros);
 
     document.getElementById("btn-rel-excel")?.addEventListener("click", () => descarregarRelatorio("excel"));
-    document.getElementById("btn-rel-pdf")?.addEventListener("click", () => descarregarRelatorio("pdf"));
+    document.getElementById("btn-rel-pdf")?.addEventListener("click",   () => descarregarRelatorio("pdf"));
 
-    atualizarDescricaoPeriodo();
     atualizarKpisFinanceiros();
 })();

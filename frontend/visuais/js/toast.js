@@ -1,6 +1,4 @@
-/**
- * Sistema de Toasts — API global: window.toast.success(msg), .error(msg), .info(msg)
- */
+
 (function () {
     const MAX_TOASTS = 4;
     const DURACAO    = 3500;
@@ -26,7 +24,7 @@
     function mostrar(tipo, mensagem) {
         const cont = obterContainer();
 
-        // Se já há MAX_TOASTS visíveis, remove o mais antigo
+   
         if (fila.length >= MAX_TOASTS) {
             remover(fila[0]);
         }
@@ -62,7 +60,7 @@
             if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, { once: true });
 
-        // Fallback se animationend não disparar
+      
         setTimeout(() => {
             if (toast.parentNode) toast.parentNode.removeChild(toast);
         }, 500);
@@ -77,7 +75,7 @@
 
 
 /**
- * Count-up — anima um elemento de 0 até targetValue em duration ms
+ * 
  * @param {HTMLElement} element
  * @param {number} targetValue
  * @param {number} duration  (ms, default 600)
@@ -104,9 +102,7 @@ function countUp(element, targetValue, duration) {
 
 window.countUp = countUp;
 
-/**
- * Caixa de confirmação — window.confirmar(mensagem, opcoes) → Promise<boolean>
- */
+
 window.confirmar = function (mensagem, opcoes) {
     return new Promise((resolve) => {
         const existing = document.getElementById("_confirmar-overlay");
