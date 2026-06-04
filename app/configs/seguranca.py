@@ -15,7 +15,7 @@ from app.tabelas_bd.condomino import Condomino
 from app.tabelas_bd.tecnico import Tecnico
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-pwd_encriptada = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_encriptada = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__ident="2b")
 
 credenciais_invalidas = HTTPException(status_code=401,
     detail="Token inválido",
