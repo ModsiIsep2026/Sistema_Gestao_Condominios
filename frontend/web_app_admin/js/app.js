@@ -27,34 +27,17 @@
         {
             titulo: "Principal",
             links: [
-                {
-                    url: "index.html", icone: iconeDashboard(), nome: "Dashboard",
-                    sublinks: [
-                        { url: "edificios.html", nome: "Edifícios" },
-                        { url: "gestores.html",  nome: "Gestores" },
-                        { url: "parceiros.html", nome: "Parceiros" },
-                        { url: "adesoes.html",   nome: "Adesões" },
-                    ],
-                },
-                { url: "edificios.html", icone: iconeEdificio(),  nome: "Edifícios" },
-                { url: "mapa.html",      icone: iconeMapa(),      nome: "Mapa de Edifícios" },
+                { url: "index.html",    icone: iconeDashboard(), nome: "Dashboard" },
+                { url: "mapa.html",     icone: iconeMapa(),      nome: "Mapa de Edifícios" },
             ],
         },
         {
-            titulo: "Recursos",
+            titulo: "Gestão",
             links: [
-                {
-                    url: "gestores.html", icone: iconeGestor(), nome: "Gestores",
-                    sublinks: [
-                        { url: "adesoes.html", nome: "Adesões" },
-                    ],
-                },
-                {
-                    url: "parceiros.html", icone: iconeFornecedor(), nome: "Parceiros",
-                    sublinks: [
-                        { url: "fornecedores.html", nome: "Fornecedores" },
-                    ],
-                },
+                { url: "edificios.html", icone: iconeEdificio(),   nome: "Edifícios" },
+                { url: "gestores.html",  icone: iconeGestor(),     nome: "Gestores" },
+                { url: "adesoes.html",   icone: iconeAdesao(),     nome: "Adesões" },
+                { url: "parceiros.html", icone: iconeFornecedor(), nome: "Parceiros" },
             ],
         },
         {
@@ -188,8 +171,9 @@
     function iconeEdificio()   { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><path d="M10 22v-4h4v4"/></svg>'; }
     function iconeMapa()       { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>'; }
     function iconeGestor()     { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>'; }
+    function iconeAdesao()     { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>'; }
     function iconeGrafico()    { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>'; }
-    function iconeFornecedor() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16h6v6H16z"/><path d="M2 2h6v6H2z"/><path d="M16 2h6v6h-6z"/><path d="M2 16h6v6H2z"/><line x1="11" y1="11" x2="11" y2="11"/></svg>'; }
+    function iconeFornecedor() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 0-3 3l2 2"/><path d="m2 12 3 3 3-3-3-3-3 3z"/><path d="m22 12-3 3-3-3 3-3 3 3z"/></svg>'; }
     function iconeUtilizador() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; }
 
 })();

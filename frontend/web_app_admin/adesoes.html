@@ -30,7 +30,7 @@
             </div>
 
             
-            <div class="kpis" style="grid-template-columns: repeat(3,1fr); margin-bottom: var(--esp-5);">
+            <div class="kpis" style="grid-template-columns: repeat(4,1fr); margin-bottom: var(--esp-5); gap: var(--esp-3);">
                 <div class="kpi kpi--ok">
                     <div class="kpi__rotulo">No período selecionado</div>
                     <div class="kpi__valor">{{ totalPeriodo }}</div>
@@ -40,6 +40,11 @@
                     <div class="kpi__rotulo">Hoje</div>
                     <div class="kpi__valor">{{ totalHoje }}</div>
                     <div class="kpi__sub">Novas adesões</div>
+                </div>
+                <div class="kpi">
+                    <div class="kpi__rotulo">Média diária</div>
+                    <div class="kpi__valor">{{ mediaDia }}</div>
+                    <div class="kpi__sub">por dia</div>
                 </div>
                 <div class="kpi kpi--alerta">
                     <div class="kpi__rotulo">Total na plataforma</div>
@@ -71,7 +76,7 @@
                         <h3>Sem adesões</h3>
                         <p>Não houve novas adesões {{ labelPeriodo.toLowerCase() }}.</p>
                     </div>
-                    <div ng-if="!carregando" style="position:relative; height:320px;">
+                    <div ng-if="!carregando" style="position:relative; height:360px;">
                         <canvas id="grafico-adesoes"></canvas>
                     </div>
                 </div>

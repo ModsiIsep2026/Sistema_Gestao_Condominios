@@ -23,16 +23,22 @@
         $scope.totalPeriodo  = 0;
         $scope.totalHoje     = 0;
         $scope.totalGeral    = 0;
+        $scope.mediaDia      = 0;
+        $scope.acumuladoFinal = 0;
+        $scope.maiorDia      = { total: 0, dataFormatada: "—" };
+        $scope.diasComAdesoes = 0;
         $scope.periodoAtivo  = 30;
         $scope.labelPeriodo  = "nos últimos 30 dias";
         $scope.linhasTabela  = [];
         $scope.maxDia        = 1;
 
         $scope.periodos = [
-            { dias: 1,  label: "Hoje"    },
-            { dias: 7,  label: "7 dias"  },
-            { dias: 15, label: "15 dias" },
-            { dias: 30, label: "30 dias" },
+            { dias: 1,   label: "Hoje"    },
+            { dias: 7,   label: "7 dias"  },
+            { dias: 15,  label: "15 dias" },
+            { dias: 30,  label: "30 dias" },
+            { dias: 180, label: "6 meses" },
+            { dias: 365, label: "1 ano"   },
         ];
 
         var grafico = null;
@@ -81,11 +87,14 @@
                         var hoje = dados[dados.length - 1];
                         if (dias === 1 && hoje) $scope.totalHoje = hoje.total;
 
+                        var valores = dados.map(function (r) { return r.total; });
+
+                        $scope.mediaDia       = dias > 0 ? (total / dias).toFixed(1) : "0";
+
                         /* Gráfico */
                         var labels = dados.map(function (r) {
                             return dias === 1 ? "Hoje" : formatarData(r.data, true);
                         });
-                        var valores = dados.map(function (r) { return r.total; });
 
                         $timeout(function () { renderizarGrafico(labels, valores, dias); }, 0);
                     });
@@ -116,10 +125,10 @@
             var canvas = document.getElementById("grafico-adesoes");
             if (!canvas) return;
 
-            var corPrimaria = "#F08A24";
+            var corPrimaria  = "#F08A24";
 
             if (grafico) {
-                grafico.data.labels           = labels;
+                grafico.data.labels = labels;
                 grafico.data.datasets[0].data = valores;
                 grafico.update();
                 return;
@@ -129,18 +138,20 @@
                 type: "bar",
                 data: {
                     labels: labels,
-                    datasets: [{
-                        label:           "Adesões",
-                        data:            valores,
-                        backgroundColor: "rgba(240,138,36,0.7)",
-                        borderColor:     corPrimaria,
-                        borderWidth:     1,
-                        borderRadius:    5,
-                        hoverBackgroundColor: corPrimaria,
-                    }],
+                    datasets: [
+                        {
+                            label: "Adesões",
+                            data: valores,
+                            backgroundColor: "rgba(240,138,36,0.7)",
+                            borderColor: corPrimaria,
+                            borderWidth: 1,
+                            borderRadius: 5,
+                            hoverBackgroundColor: corPrimaria,
+                        },
+                    ],
                 },
                 options: {
-                    responsive:          true,
+                    responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { display: false },
@@ -148,7 +159,7 @@
                             callbacks: {
                                 label: function (ctx) {
                                     var v = ctx.parsed.y;
-                                    return "  " + v + " gestor" + (v !== 1 ? "es" : "");
+                                    return "Adesões: " + v + " gestor" + (v !== 1 ? "es" : "");
                                 },
                             },
                         },
@@ -156,14 +167,16 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks:       { stepSize: 1, precision: 0 },
-                            grid:        { color: "rgba(0,0,0,.06)" },
+                            ticks: { stepSize: 1, precision: 0 },
+                            grid: { color: "rgba(0,0,0,.06)" },
+                            title: { display: true, text: "Adesões/dia" },
                         },
                         x: {
                             grid: { display: false },
                             ticks: {
                                 maxTicksLimit: dias <= 15 ? dias : 15,
-                                maxRotation:   45,
+                                maxRotation: 45,
+                                color: "var(--cor-texto-suave)",
                             },
                         },
                     },

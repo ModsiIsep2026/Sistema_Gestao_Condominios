@@ -11,7 +11,7 @@ def listar_todos(db: Session):
     return [
         {
             "id":        g.id,
-            "nome":      g.nome,
+            "nome":      g.nome.replace("Gestor ", "").strip(),
             "empresa":   g.empresa,
             "telemovel": g.telemovel,
             "email":     g.email,

@@ -30,15 +30,9 @@ class Settings(BaseSettings):
     STRIPE_SECRET_KEY: str = ""
     STRIPE_PUBLISHABLE_KEY: str = ""
     STRIPE_PRECO_CENTIMOS: int = 5000
-
     CORS_ORIGINS: list = ["http://localhost:8080"]
-
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
-    GITHUB_CLIENT_ID: str = ""
-    GITHUB_CLIENT_SECRET: str = ""
-    MICROSOFT_CLIENT_ID: str = ""
-    MICROSOFT_CLIENT_SECRET: str = ""
     OAUTH_REDIRECT_BASE: str = "http://localhost:8080"
 
     @property

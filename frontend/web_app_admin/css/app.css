@@ -98,6 +98,36 @@ body.app-body {
     color: rgba(255, 255, 255, 0.4);
 }
 
+/* Sublinks adaptados à sidebar escura (navy) */
+.app-sidebar .app-sidebar__submenu {
+    background-color: rgba(0, 0, 0, 0.18);
+}
+
+.app-sidebar .app-sidebar__sublink {
+    color: rgba(255, 255, 255, 0.55);
+    border-left-color: transparent;
+}
+
+.app-sidebar .app-sidebar__sublink::before {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.app-sidebar .app-sidebar__sublink:hover {
+    color: #FFFFFF;
+    background-color: rgba(255, 255, 255, 0.07);
+}
+
+.app-sidebar .app-sidebar__sublink.ativo {
+    color: #FFFFFF;
+    font-weight: 600;
+    border-left-color: var(--cor-acento);
+    background-color: rgba(240, 138, 36, 0.18);
+}
+
+.app-sidebar .app-sidebar__chevron-wrap:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 
 .app-topbar {
     background-color: #FFFFFF;
@@ -218,7 +248,7 @@ body.app-body {
     letter-spacing: 0.04em;
 }
 
-/* Dropdown do user */
+
 .app-topbar__dropdown {
     position: relative;
 }
@@ -483,7 +513,7 @@ body.app-body {
     border: 1px solid var(--cor-borda);
     background-color: #FFFFFF;
     font-size: var(--tam-sm);
-    min-width: 240px;
+    min-width: 500px;
 }
 
 .app-filtros input:focus,
@@ -594,7 +624,7 @@ body.app-body {
 }
 
 
-/* ── Botões de período no gráfico ── */
+
 .btn-periodo {
     font-size: var(--tam-xs);
     padding: 4px 12px;
