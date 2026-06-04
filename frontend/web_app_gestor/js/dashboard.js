@@ -62,22 +62,22 @@
 
     // Substitui KPIs reais
     document.getElementById("kpis-dash").innerHTML = `
-        <div class="kpi">
+        <a href="edificios.html" class="kpi">
             <div class="kpi__rotulo">Edifícios</div>
             <div class="kpi__valor" data-kpi="edificios">—</div>
-        </div>
-        <div class="kpi kpi--ok">
+        </a>
+        <a href="quotas.html" class="kpi kpi--ok">
             <div class="kpi__rotulo">Pagamentos realizados</div>
             <div class="kpi__valor" data-kpi="pagamentos-pagos">—</div>
-        </div>
-        <div class="kpi kpi--alerta">
+        </a>
+        <a href="quotas.html" class="kpi kpi--alerta">
             <div class="kpi__rotulo">Pagamentos pendentes</div>
             <div class="kpi__valor" data-kpi="pagamentos-pendentes">—</div>
-        </div>
-        <div class="kpi kpi--erro">
+        </a>
+        <a href="avarias.html" class="kpi kpi--erro">
             <div class="kpi__rotulo">Avarias abertas</div>
             <div class="kpi__valor" data-kpi="avarias">—</div>
-        </div>`;
+        </a>`;
 
     const setKpi = (n, v) => {
         const el = document.querySelector(`[data-kpi="${n}"]`);

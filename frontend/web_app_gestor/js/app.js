@@ -183,6 +183,7 @@
         }
 
         renderizarSidebar(paginaAtual);
+        carregarBadgeSidebar();
 
         try {
             const utilizador = await window.api.me();
@@ -194,6 +195,25 @@
             window.tipoAtual = "gestor";
         }
     });
+
+    async function carregarBadgeSidebar() {
+        try {
+            const edificios = await window.api.get("/edificios").catch(() => []);
+            const listas    = await Promise.all(
+                edificios.map((e) => window.api.get(`/avarias?id_edificio=${e.id}`).catch(() => []))
+            );
+            const abertas = listas.flat().filter((a) => !a.resolucao || a.resolucao.status !== 1).length;
+            if (abertas > 0) {
+                const linkAv = document.querySelector('.app-sidebar__link[href="avarias.html"]');
+                if (linkAv) {
+                    const badge = document.createElement("span");
+                    badge.className   = "app-sidebar__badge";
+                    badge.textContent = abertas > 99 ? "99+" : String(abertas);
+                    linkAv.appendChild(badge);
+                }
+            }
+        } catch { /* falha silenciosa */ }
+    }
 
     function iconeDashboard()  { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>'; }
     function iconeEdificio()   { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20"/><line x1="9" y1="6" x2="9" y2="6"/><line x1="15" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/><line x1="9" y1="14" x2="9" y2="14"/><line x1="15" y1="14" x2="15" y2="14"/><path d="M10 22v-4h4v4"/></svg>'; }

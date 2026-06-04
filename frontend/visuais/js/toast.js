@@ -103,3 +103,40 @@ function countUp(element, targetValue, duration) {
 }
 
 window.countUp = countUp;
+
+/**
+ * Caixa de confirmação — window.confirmar(mensagem, opcoes) → Promise<boolean>
+ */
+window.confirmar = function (mensagem, opcoes) {
+    return new Promise((resolve) => {
+        const existing = document.getElementById("_confirmar-overlay");
+        if (existing) existing.remove();
+
+        const opt = Object.assign({ confirmar: "Confirmar", cancelar: "Cancelar", perigo: true }, opcoes || {});
+
+        const overlay = document.createElement("div");
+        overlay.id        = "_confirmar-overlay";
+        overlay.className = "modal-overlay";
+        overlay.innerHTML = `
+            <div class="modal" style="max-width:420px;">
+                <div class="modal__cabecalho">
+                    <h3>Confirmação</h3>
+                    <button type="button" class="modal__fechar" id="_conf-x">&times;</button>
+                </div>
+                <div class="modal__corpo">
+                    <p style="font-size:14px;line-height:1.65;">${mensagem}</p>
+                </div>
+                <div class="modal__rodape">
+                    <button type="button" class="btn btn--outline" id="_conf-nao">${opt.cancelar}</button>
+                    <button type="button" class="btn ${opt.perigo ? "btn--perigo" : "btn--primario"}" id="_conf-sim">${opt.confirmar}</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+
+        const fechar = (res) => { overlay.remove(); resolve(res); };
+        document.getElementById("_conf-sim").addEventListener("click", () => fechar(true));
+        document.getElementById("_conf-nao").addEventListener("click", () => fechar(false));
+        document.getElementById("_conf-x").addEventListener("click",   () => fechar(false));
+        overlay.addEventListener("click", (e) => { if (e.target === overlay) fechar(false); });
+    });
+};

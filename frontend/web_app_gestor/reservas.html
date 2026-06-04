@@ -26,13 +26,11 @@
 
                 <div class="app-filtros">
                     <input type="search" placeholder="Procurar..." data-pesquisa>
-                    <select id="filtro-estado">
-                        <option value="">Todos os estados</option>
-                        <option value="pendente">Pendentes</option>
-                        <option value="aprovada">Aprovadas</option>
-                        <option value="rejeitada">Rejeitadas</option>
-                        <option value="cancelada">Canceladas</option>
-                    </select>
+                </div>
+                <div class="filtro-chips" id="chips-estado">
+                    <button class="filtro-chip ativo" data-estado="">Todas</button>
+                    <button class="filtro-chip" data-estado="ativa">Ativas</button>
+                    <button class="filtro-chip" data-estado="cancelada">Canceladas</button>
                 </div>
 
                 <div class="painel">

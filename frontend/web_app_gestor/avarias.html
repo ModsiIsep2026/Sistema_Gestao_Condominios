@@ -49,13 +49,13 @@
                     <option value="">— Selecione um edifício —</option>
                 </select>
                 <input type="search" placeholder="Procurar por zona ou descrição..." data-pesquisa>
-                <select id="filtro-estado">
-                    <option value="">Todos os estados</option>
-                    <option value="nova">Abertas</option>
-                    <option value="prog">Em progresso</option>
-                    <option value="ext">Serviço externo</option>
-                    <option value="ok">Resolvidas</option>
-                </select>
+            </div>
+            <div class="filtro-chips" id="chips-estado">
+                <button class="filtro-chip ativo" data-estado="">Todas</button>
+                <button class="filtro-chip" data-estado="nova">Abertas</button>
+                <button class="filtro-chip" data-estado="prog">Em progresso</button>
+                <button class="filtro-chip" data-estado="ext">Serviço externo</button>
+                <button class="filtro-chip" data-estado="ok">Resolvidas</button>
             </div>
 
             <div class="painel">

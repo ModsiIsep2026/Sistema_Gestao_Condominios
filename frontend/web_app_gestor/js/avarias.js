@@ -13,7 +13,17 @@
 
     const tbody    = document.querySelector('[data-tabela="avarias"]');
     const selectEd = document.getElementById("filtro-edificio");
-    const filtroEst = document.getElementById("filtro-estado");
+
+    const estadoChipAtivo = () =>
+        document.querySelector("#chips-estado .filtro-chip.ativo")?.dataset.estado || "";
+
+    document.querySelectorAll("#chips-estado .filtro-chip").forEach((chip) => {
+        chip.addEventListener("click", () => {
+            document.querySelectorAll("#chips-estado .filtro-chip").forEach((c) => c.classList.remove("ativo"));
+            chip.classList.add("ativo");
+            filtrarERenderizar();
+        });
+    });
 
     const fmtData = (iso) => iso
         ? new Date(iso).toLocaleDateString("pt-PT", { day: "2-digit", month: "short", year: "numeric" })
@@ -68,6 +78,11 @@
             const descLimpa   = (a.descricao || "").replace(/\[Externo:[^\]]*\]/g, "").replace(/\nNota:.*$/s, "").trim();
             const descExibir  = descLimpa.length > 55 ? descLimpa.substring(0, 55) + "…" : (descLimpa || "—");
 
+            let clsLinha = "tr--nova";
+            if (resolvida)   clsLinha = "tr--ok";
+            else if (emProgresso)  clsLinha = "tr--prog";
+            else if (temExterno)   clsLinha = "tr--ext";
+
             let acoes = "";
             if (!resolvida) {
                 const labelBtn = (emProgresso || temExterno) ? "Reatribuir" : "Alocar";
@@ -76,7 +91,7 @@
             acoes += `<button data-acao="detalhe" data-id="${a.id}" style="font-size:12px;background:transparent;border:1px solid var(--cor-borda);color:var(--cor-texto-secundario);">Ver</button>`;
 
             return `
-                <tr>
+                <tr class="${clsLinha}">
                     <td style="white-space:nowrap;">${fmtData(a.data_registo)}</td>
                     <td><strong>${a.zona || "—"}</strong></td>
                     <td style="color:var(--cor-texto-secundario);font-size:13px;">${descExibir}</td>
@@ -91,7 +106,7 @@
     function filtrarERenderizar() {
         let lista = [...dados];
         const pesquisa = (document.querySelector("[data-pesquisa]")?.value || "").toLowerCase().trim();
-        const estado   = filtroEst?.value || "";
+        const estado   = estadoChipAtivo();
 
         if (pesquisa) lista = lista.filter((a) =>
             (a.zona || "").toLowerCase().includes(pesquisa) ||
@@ -105,16 +120,26 @@
         renderizar(lista);
     }
 
+    function skeletonTabela(cols, linhas) {
+        const widths = [55, 40, 70, 75, 35, 50, 25];
+        return Array(linhas).fill(0).map(() =>
+            `<tr>${Array(cols).fill(0).map((_, i) =>
+                `<td><span class="sk-cel" style="width:${widths[i] || 60}%;"></span></td>`
+            ).join("")}</tr>`
+        ).join("");
+    }
+
     async function carregar() {
         if (!idEdificio) {
-            tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Selecione um edifício.</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="app-vazio"><p>Selecione um edifício.</p></td></tr>`;
             return;
         }
+        tbody.innerHTML = skeletonTabela(7, 5);
         try {
             dados = await window.api.get(`/avarias?id_edificio=${idEdificio}`);
             filtrarERenderizar();
         } catch (e) {
-            tbody.innerHTML = `<tr><td colspan="6" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="app-vazio"><p>Erro: ${e.message}</p></td></tr>`;
         }
     }
 
@@ -181,7 +206,6 @@
     }
 
     document.querySelector("[data-pesquisa]")?.addEventListener("input", filtrarERenderizar);
-    filtroEst?.addEventListener("change", filtrarERenderizar);
 
     const modalAlocar  = document.getElementById("modal-alocar");
     const erroAlocar   = document.getElementById("erro-alocar");
