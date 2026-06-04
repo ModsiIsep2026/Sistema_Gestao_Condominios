@@ -32,11 +32,9 @@ TABELAS = {
     "tecnico":   Tecnico,
 }
 
-
 # Recebe a pw e retorna encriptada através da bibilioteca CryptoContext
 def pw_encript(pw: str) -> str:
     return pwd_encriptada.hash(pw)
-
 
 # Verificar se a pw inicial e a cript são "iguais"
 def verificar_pw(pw: str, pw_hash: str) -> bool:
