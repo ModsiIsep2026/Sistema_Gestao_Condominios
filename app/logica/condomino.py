@@ -1,5 +1,4 @@
 import logging
-import time
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, BackgroundTasks
 from app.tabelas_bd.condomino import Condomino
@@ -34,12 +33,11 @@ def obter(db: Session, id: int):
 
 def criar(db: Session, dados, background: BackgroundTasks = None):
     pw_temp = random_pw()
-    tel = dados.telemovel if dados.telemovel else f"_p{int(time.time() * 1000)}"
     condomino = Condomino(
         nome=dados.nome,
         email=dados.email,
         pw=pw_encript(pw_temp),
-        telemovel=tel,
+        telemovel=dados.telemovel or None,
         id_apartamento=dados.id_apartamento,
     )
     db.add(condomino)
@@ -55,7 +53,7 @@ def criar(db: Session, dados, background: BackgroundTasks = None):
 
 
 def atualizar(db: Session, id: int, dados):
-    condomino = db.query(Condomino).filter(Condomino.id == id).first()
+    condomino = db.query(Condomino).filter(Condomino.id == id, Condomino.status == 1).first()
     if not condomino:
         raise HTTPException(404, "Condómino não encontrado")
 

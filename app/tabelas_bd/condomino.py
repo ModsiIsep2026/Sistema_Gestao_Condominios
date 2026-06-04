@@ -14,7 +14,7 @@ class Condomino(Base):
 
     pw = Column(String(255), nullable=False)
 
-    telemovel = Column(String(150), nullable=False, unique=True)
+    telemovel = Column(String(150), nullable=True, unique=True)
 
     id_apartamento = Column(Integer, ForeignKey("apartamento.id"), nullable=False)
 

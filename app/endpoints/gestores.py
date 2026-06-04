@@ -3,8 +3,9 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.configs.db_connect import get_db
 from app.configs.seguranca import verificar_a, verificar_g
-from app.estruturas.gestor import CriarGestor, AtualizarGestor, LerGestor
+from app.estruturas.gestor import CriarGestor, AtualizarGestor, AtualizarGestorPerfil, LerGestor
 from app.logica import gestor as servico
+from app.logica.contrato import ver_contrato_expirados
 
 router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
@@ -19,10 +20,11 @@ router = APIRouter(prefix="/gestores", tags=["Gestores"])
 
 @router.get("", response_model=List[LerGestor])
 def listar(_=Depends(verificar_a), db: Session = Depends(get_db)):
+    ver_contrato_expirados(db)
     return servico.listar_todos(db)
 
 @router.put("/conta", response_model=LerGestor)
-def atualizar_pperfil(dados: AtualizarGestor, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
+def atualizar_perfil(dados: AtualizarGestorPerfil, gestor=Depends(verificar_g), db: Session = Depends(get_db)):
     return servico.atualizar(db, gestor.id, dados)
 
 @router.get("/adesoes")

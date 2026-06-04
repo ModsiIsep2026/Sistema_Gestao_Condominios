@@ -2,11 +2,11 @@ fastapi==0.115.0                # Framework de Python
 uvicorn[standard]==0.32.0     
 sqlalchemy==2.0.36              # ORM para comunicar com a base de dados
 pymysql==1.1.1               
-cryptography==43.0.3          # Funcoes criptograficas usadas por outras libs (teste)
+cryptography==43.0.3          # Funcoes criptograficas usadas por outras libs
 pydantic==2.13.4             
-pydantic-settings==2.6.1      # Leitura de configuracoes e variaveis de ambiente
+pydantic-settings==2.6.1            # Leitura de configuracoes e variaveis de ambiente
 python-jose[cryptography]==3.3.0  # Criacao e validacao de tokens Json Web Token
-passlib[bcrypt]==1.7.4        # Hash e verificacao de pw
+passlib[bcrypt]==1.7.4              # Hash e verificacao de pw
 python-multipart==0.0.17      
 jinja2==3.1.4                 # Templates HTML, usado para gerar emails e paginas dinamicas
 python-dotenv==1.0.1          # Carrega variaveis do ficheiro .env
