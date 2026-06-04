@@ -11,7 +11,7 @@ from pathlib import Path
 
 from app.configs.config import get_configs
 from app.endpoints import (
-    auth, oauth, admin, licencas, gestores, contratos,
+    autenticacao, mfa, admin, licencas, gestores, contratos,
     edificios, apartamentos, condominos, tecnicos,
     parceiros, espacos, materiais,
     alugueres_espaco, alugueres_material,
@@ -63,8 +63,8 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-app.include_router(auth.router)
-app.include_router(oauth.router)
+app.include_router(autenticacao.router)
+app.include_router(mfa.router)
 app.include_router(licencas.router)
 app.include_router(parceiros.router)
 app.include_router(admin.router)
