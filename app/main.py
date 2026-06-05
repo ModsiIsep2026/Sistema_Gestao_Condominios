@@ -44,7 +44,7 @@ async def _security_headers(request: Request, call_next):
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: https:; "
         "connect-src 'self' https://api.stripe.com; "
-        "frame-src https://js.stripe.com; "
+        "frame-src https://js.stripe.com https://www.youtube.com https://www.youtube-nocookie.com; "
         "object-src 'none'; "
         "base-uri 'self';"
     )
