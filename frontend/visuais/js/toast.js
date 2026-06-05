@@ -39,7 +39,7 @@
         cont.appendChild(toast);
         fila.push(toast);
 
-        // Força reflow para activar animação
+
         void toast.offsetWidth;
         toast.classList.add("toast--visivel");
 

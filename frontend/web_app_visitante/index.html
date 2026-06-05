@@ -101,6 +101,14 @@
             position: relative; z-index: 1;
             padding: 80px 24px 96px; max-width: 1120px; margin: 0 auto; width: 100%;
         }
+        .sobre__video {
+            position: relative; padding-top: 56.25%;
+            margin-top: 28px;
+        }
+        .sobre__video iframe {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; border: 0;
+        }
         .hero__etiqueta {
             display: inline-block;
             font-size: 14px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
@@ -108,10 +116,9 @@
         }
         .hero__titulo {
             font-family: 'DM Serif Display', serif;
-            font-size: clamp(44px, 7vw, 88px);
+            font-size: clamp(32px, 4vw, 64px);
             font-weight: 400; line-height: 1.05;
             color: #fff; margin-bottom: 24px;
-            max-width: 700px;
         }
         .hero__titulo em { font-style: italic; color: var(--acento); }
         .hero__sub {
@@ -438,6 +445,13 @@
             <p class="sobre__p">
                 Os condóminos gerem quotas, reservas e avarias, enquanto os gestores controlam as finanças e coordenam técnicos.
             </p>
+            <div class="sobre__video">
+                <iframe
+                    src="https://www.youtube.com/embed/VPBLxYF1l7c?rel=0&controls=1&autoplay=1&mute=1&vq=hd1080"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
         </div>
     </section>
 
@@ -640,6 +654,7 @@
 
     <script src="../visuais/js/api.js"></script>
     <script src="../visuais/js/toast.js"></script>
+    <script src="../visuais/js/video-embed.js"></script>
     <script src="js/contacto.js"></script>
 </body>
 </html>
