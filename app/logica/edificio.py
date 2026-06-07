@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from app.tabelas_bd.edificio import Edificio
 from app.tabelas_bd.contrato import Contrato
@@ -33,7 +34,11 @@ def criar(db: Session, dados, id_gestor: int):
 
     edificio = Edificio(**dados.model_dump(), id_gestor=id_gestor)
     db.add(edificio)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(400, "Já existe um edifício com este IBAN.")
     db.refresh(edificio)
     return edificio
 
@@ -44,7 +49,11 @@ def atualizar(db: Session, id: int, dados):
     for campo, valor in dados.model_dump(exclude_unset=True).items():
         setattr(edificio, campo, valor)
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(400, "Já existe um edifício com este IBAN.")
     db.refresh(edificio)
     return edificio
 

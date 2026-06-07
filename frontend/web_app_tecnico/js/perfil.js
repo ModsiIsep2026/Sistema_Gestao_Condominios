@@ -1,4 +1,4 @@
-
+﻿
 (async function () {
 
     for (let i = 0; i < 30; i++) {
@@ -38,12 +38,12 @@
             await window.api.put("/tecnicos/conta", dados);
             msgPerfil.textContent   = "Alterações guardadas com sucesso.";
             msgPerfil.className     = "perfil-msg perfil-msg--ok";
-            msgPerfil.style.display = "";
+            msgPerfil.style.display = "block";
             setTimeout(() => { msgPerfil.style.display = "none"; }, 3000);
         } catch (err) {
             msgPerfil.textContent   = err.message || "Não foi possível guardar.";
             msgPerfil.className     = "perfil-msg perfil-msg--err";
-            msgPerfil.style.display = "";
+            msgPerfil.style.display = "block";
         }
     });
 
@@ -60,13 +60,13 @@
         if (pwNova.length < 8 || !/[A-Z]/.test(pwNova) || !/\d/.test(pwNova)) {
             msgPw.textContent   = "A nova password precisa de ter pelo menos 8 caracteres, uma maiúscula e um número.";
             msgPw.className     = "login-erro";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
             return;
         }
         if (pwNova !== pwConf) {
             msgPw.textContent   = "As passwords não coincidem.";
             msgPw.className     = "login-erro";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
             return;
         }
 
@@ -74,12 +74,12 @@
             const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
             msgPw.textContent   = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
             msgPw.className     = "perfil-msg perfil-msg--ok";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
             document.getElementById("form-pw").reset();
         } catch (err) {
             msgPw.textContent   = err.message || "Não foi possível alterar a password.";
             msgPw.className     = "perfil-msg perfil-msg--err";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
         }
     });
 

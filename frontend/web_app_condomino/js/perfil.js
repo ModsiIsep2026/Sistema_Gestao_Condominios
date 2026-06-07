@@ -52,12 +52,12 @@
 
             msgPerfil.textContent = "Alterações guardadas com sucesso.";
             msgPerfil.className = "perfil-msg perfil-msg--ok";
-            msgPerfil.style.display = "";
+            msgPerfil.style.display = "block";
             setTimeout(() => { msgPerfil.style.display = "none"; }, 3000);
         } catch (err) {
             msgPerfil.textContent = err.message || "Não foi possível guardar as alterações.";
             msgPerfil.className = "perfil-msg perfil-msg--err";
-            msgPerfil.style.display = "";
+            msgPerfil.style.display = "block";
         }
     });
 
@@ -87,12 +87,12 @@
             const res = await window.api.put("/auth/alterar-password", { pw_atual: pwAtual, pw_nova: pwNova });
             msgPw.textContent = res?.mensagem || "Enviámos um email de confirmação. Clique no link para concluir.";
             msgPw.className = "perfil-msg perfil-msg--ok";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
             document.getElementById("form-pw").reset();
         } catch (err) {
             msgPw.textContent = err.message || "Não foi possível alterar a password.";
             msgPw.className = "perfil-msg perfil-msg--err";
-            msgPw.style.display = "";
+            msgPw.style.display = "block";
         }
     });
 

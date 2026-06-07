@@ -14,10 +14,6 @@ class Edificio(Base):
 
     cidade = Column(String(80), nullable=True)
 
-    lat = Column(Numeric(10, 7), nullable=True)
-
-    lng = Column(Numeric(10, 7), nullable=True)
-
     iban = Column(String(100), nullable=True, unique=True)
 
     valor_base_mensal = Column(Numeric(10, 2), nullable=True)

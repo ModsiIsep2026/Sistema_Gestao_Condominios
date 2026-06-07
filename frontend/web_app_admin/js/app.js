@@ -43,7 +43,8 @@
         {
             titulo: "Conta",
             links: [
-                { url: "perfil.html", icone: iconeUtilizador(), nome: "A minha conta" },
+                { url: "perfil.html",   icone: iconeUtilizador(), nome: "A minha conta" },
+                { url: "suporte.html",  icone: iconeSuporte(),    nome: "Suporte" },
             ],
         },
     ];
@@ -51,7 +52,7 @@
     const PAGINAS_PERMITIDAS = [
         "index.html", "edificios.html", "mapa.html",
         "gestores.html", "gestores_ver.html", "adesoes.html",
-        "parceiros.html", "fornecedores.html", "perfil.html",
+        "parceiros.html", "fornecedores.html", "perfil.html", "suporte.html",
     ];
 
     function renderizarSidebar(paginaAtual) {
@@ -175,5 +176,6 @@
     function iconeGrafico()    { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>'; }
     function iconeFornecedor() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3"/><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 0-3 3l2 2"/><path d="m2 12 3 3 3-3-3-3-3 3z"/><path d="m22 12-3 3-3-3 3-3 3 3z"/></svg>'; }
     function iconeUtilizador() { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; }
+    function iconeSuporte()    { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'; }
 
 })();

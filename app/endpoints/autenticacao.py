@@ -114,7 +114,7 @@ def dados_pessoais(dados: dict = Depends(token_atual), db: Session = Depends(get
 
 
 @router.put("/alterar-password")
-def alterar_pw(dados: AlterarPassword, background: BackgroundTasks,token: dict = Depends(token_atual), db: Session = Depends(get_db)):
+def alterar_pw(dados: AlterarPassword, background: BackgroundTasks, token: dict = Depends(token_atual), db: Session = Depends(get_db)):
     tipo = token["tipo"]
     uid  = token["id"]
 

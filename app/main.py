@@ -14,7 +14,7 @@ from app.endpoints import (
     edificios, apartamentos, condominos, tecnicos,
     parceiros, espacos, materiais,
     alugueres_espaco, alugueres_material,
-    pagamentos, avarias, relatorios, contacto,
+    pagamentos, avarias, relatorios, contacto, suporte,
 )
 
 _configs = get_configs()
@@ -43,7 +43,7 @@ async def _security_headers(request: Request, call_next):
         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdn.jsdelivr.net; "
         "font-src 'self' https://fonts.gstatic.com; "
         "img-src 'self' data: https:; "
-        "connect-src 'self' https://api.stripe.com; "
+        "connect-src 'self' https://api.stripe.com https://nominatim.openstreetmap.org; "
         "frame-src https://js.stripe.com https://www.youtube.com https://www.youtube-nocookie.com; "
         "object-src 'none'; "
         "base-uri 'self';"
@@ -82,6 +82,7 @@ app.include_router(pagamentos.router)
 app.include_router(avarias.router)
 app.include_router(relatorios.router)
 app.include_router(contacto.router)
+app.include_router(suporte.router)
 
 
 _frontend = Path(__file__).resolve().parent.parent / "frontend"

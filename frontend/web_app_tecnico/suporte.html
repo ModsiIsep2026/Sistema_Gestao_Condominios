@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suporte — Gestão de Condomínios</title>
+    <link rel="stylesheet" href="../visuais/css/tokens.css">
+    <link rel="stylesheet" href="../visuais/css/base.css">
+    <link rel="stylesheet" href="../visuais/css/componentes.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body class="app-body">
+
+    <div class="app-shell">
+        <aside class="app-sidebar"></aside>
+
+        <div>
+            <header class="app-topbar"></header>
+            <main class="app-main">
+
+                <div class="app-cabecalho">
+                    <div class="app-cabecalho__titulo">
+                        <h1>Suporte</h1>
+                        <p>Envie mensagens ao seu gestor.</p>
+                    </div>
+                    <div class="app-cabecalho__acoes">
+                        <button type="button" class="btn btn--primario" id="btn-nova">Nova mensagem</button>
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:8px;margin-bottom:16px;">
+                    <button type="button" class="btn btn--outline" id="tab-recebidas">Recebidas <span class="badge-tab" id="badge-recebidas" style="display:none"></span></button>
+                    <button type="button" class="btn btn--outline" id="tab-enviadas">Enviadas</button>
+                </div>
+
+                <div class="painel" id="painel-recebidas">
+                    <table class="app-tabela">
+                        <thead>
+                            <tr>
+                                <th>De</th>
+                                <th>Assunto</th>
+                                <th>Data</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-recebidas">
+                            <tr><td colspan="4" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="painel" id="painel-enviadas" style="display:none">
+                    <table class="app-tabela">
+                        <thead>
+                            <tr>
+                                <th>Assunto</th>
+                                <th>Data</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-enviadas">
+                            <tr><td colspan="3" class="app-vazio"><p>A carregar...</p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal nova mensagem -->
+    <div class="modal-overlay" id="modal-nova" hidden>
+        <div class="modal">
+            <div class="modal__cabecalho">
+                <h3>Mensagem ao gestor</h3>
+                <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+            </div>
+            <div class="modal__corpo">
+                <div id="erro-nova" class="login-erro" style="display:none"></div>
+                <form id="form-nova">
+                    <div class="campo">
+                        <label for="s-assunto">Assunto</label>
+                        <input type="text" id="s-assunto" required placeholder="Descreva brevemente o assunto">
+                    </div>
+                    <div class="campo">
+                        <label for="s-mensagem">Mensagem</label>
+                        <textarea id="s-mensagem" rows="5" required placeholder="Escreva a sua mensagem..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal__rodape">
+                <button type="button" class="btn btn--outline" data-fechar-modal>Cancelar</button>
+                <button type="button" class="btn btn--primario" id="btn-enviar">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal ver mensagem -->
+    <div class="modal-overlay" id="modal-ver" hidden>
+        <div class="modal">
+            <div class="modal__cabecalho">
+                <h3 id="ver-assunto"></h3>
+                <button type="button" class="modal__fechar" data-fechar-modal>&times;</button>
+            </div>
+            <div class="modal__corpo">
+                <p style="font-size:13px;color:var(--cor-texto-secundario);margin-bottom:12px;">
+                    De: <strong id="ver-de"></strong> &nbsp;·&nbsp; <span id="ver-data"></span>
+                </p>
+                <p id="ver-mensagem" style="white-space:pre-wrap;line-height:1.6;"></p>
+            </div>
+            <div class="modal__rodape">
+                <button type="button" class="btn btn--outline" data-fechar-modal>Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../visuais/js/api.js"></script>
+    <script src="../visuais/js/toast.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/suporte.js"></script>
+</body>
+</html>

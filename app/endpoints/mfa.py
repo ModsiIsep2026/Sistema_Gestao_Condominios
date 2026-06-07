@@ -7,16 +7,19 @@ from sqlalchemy.orm import Session
 from app.configs.config import get_configs
 from app.configs.db_connect import get_db
 from app.configs.seguranca import criar_token
+from app.tabelas_bd.condomino import Condomino
 from app.tabelas_bd.gestor import Gestor
+from app.tabelas_bd.tecnico import Tecnico
 
 router = APIRouter(prefix="/auth", tags=["Gmail"])
 cfg    = get_configs()
 
-# (GET) /auth/gmail/inicio - Inicia o login através do Gmail
-# (GET) /auth/gmail/callback - Finaliza o login do Gmail
+# (GET) /auth/google/inicio  - Inicia o login através do Google
+# (GET) /auth/google/callback - Finaliza o login do Google
 
-
-SERVICES = {"gmail"}
+# "google" é o nome público; o cliente OAuth está registado como "gmail"
+SERVICES = {"gmail", "google"}
+_OAUTH_CLIENT = "gmail"
 
 
 try:
@@ -63,31 +66,36 @@ def get_user(db: Session, email: str):
     user = db.query(Gestor).filter_by(email=email, status=1).first()
     if user:
         return user, "gestor"
+    user = db.query(Condomino).filter_by(email=email, status=1).first()
+    if user:
+        return user, "condomino"
+    user = db.query(Tecnico).filter_by(email=email, status=1).first()
+    if user:
+        return user, "tecnico"
     return None, None
 
 
 @router.get("/{service}/inicio")
 async def login(service: str, request: Request):
-    if service != "gmail":
+    if service not in SERVICES:
         return redirect_error("Serviço inválido")
-    if not oauth_enabled or service not in active_services:
+    if not oauth_enabled or _OAUTH_CLIENT not in active_services:
         return redirect_error("OAuth indisponível")
-    return await oauth.create_client("gmail").authorize_redirect(request, callback_url(service))
+    return await oauth.create_client(_OAUTH_CLIENT).authorize_redirect(request, callback_url("google"))
 
 @router.get("/{service}/callback")
 async def callback(service: str, request: Request, db: Session = Depends(get_db)):
-    if service != "gmail":
+    if service not in SERVICES:
         return redirect_error("Serviço inválido")
     if not oauth_enabled:
-        return redirect_error("Gmail indisponível")
+        return redirect_error("OAuth indisponível")
 
     try:
-        token = await oauth.create_client("gmail").authorize_access_token(request)
+        token = await oauth.create_client(_OAUTH_CLIENT).authorize_access_token(request)
     except OAuthError:
-        return redirect_error("Falha no login")
+        return redirect_error("Falha no login Google")
 
-    # Obter email do Gmail
-    client = oauth.create_client("gmail")
+    client = oauth.create_client(_OAUTH_CLIENT)
     info = token.get("userinfo") or await client.userinfo(token=token)
     email = info.get("email")
 
@@ -96,6 +104,6 @@ async def callback(service: str, request: Request, db: Session = Depends(get_db)
 
     user, role = get_user(db, email)
     if not user:
-        return redirect_register(email, "Conta não existe")
+        return redirect_error("Conta não encontrada. Contacte o seu gestor.")
 
     return redirect_login(criar_token(user.id, role))

@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "assunto": "aaaaaaaaaaaaa",
+    "mensagem": "aaaa",
+    "data_envio": "2026-06-07T17:29:23",
+    "lida": true,
+    "tipo_remetente": "tecnico",
+    "id_remetente": 1,
+    "nome_remetente": "Gustavo Jesus",
+    "id_destinatario": 3
+  },
+  {
+    "id": 2,
+    "assunto": "Re: aaaaaaaaaaaaa",
+    "mensagem": "teste",
+    "data_envio": "2026-06-07T17:29:32",
+    "lida": false,
+    "tipo_remetente": "gestor",
+    "id_remetente": 3,
+    "nome_remetente": "Gustavo Olveira",
+    "id_destinatario": null
+  },
+  {
+    "id": 3,
+    "assunto": "Re: aaaaaaaaaaaaa",
+    "mensagem": "aaaaaa",
+    "data_envio": "2026-06-07T17:29:44",
+    "lida": false,
+    "tipo_remetente": "gestor",
+    "id_remetente": 3,
+    "nome_remetente": "Gustavo Olveira",
+    "id_destinatario": null
+  }
+]

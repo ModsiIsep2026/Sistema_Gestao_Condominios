@@ -37,29 +37,33 @@
     });
 
     try {
-   
+
         for (let i = 0; i < 30 && window.tipoAtual == null; i++) {
             await new Promise((r) => setTimeout(r, 50));
         }
         const endpoint = window.tipoAtual === "admin" ? "/edificios/todos" : "/edificios";
         const edificios = await window.api.get(endpoint);
 
-        const comCoords = edificios.filter((e) => e.lat != null && e.lng != null);
-        const semCoords = edificios.filter((e) => e.lat == null  || e.lng == null);
-
         const markers = [];
-        comCoords.forEach((e) => {
-            const streetViewUrl = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${e.lat},${e.lng}`;
-            const marker = L.marker([parseFloat(e.lat), parseFloat(e.lng)], { icon: iconeEdificio })
+        let semCoords = 0;
+
+        for (const e of edificios) {
+            const coords = await window.geocodificarMorada(e.rua, e.cp, e.cidade);
+            if (!coords) { semCoords++; continue; }
+
+            const { latitude: lat, longitude: lng } = coords;
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.rua, e.cp, e.cidade].filter(Boolean).join(", "))}`;
+
+            const marker = L.marker([lat, lng], { icon: iconeEdificio })
                 .addTo(mapa)
                 .bindPopup(`
                     <div style="font-family:Inter,sans-serif;min-width:220px;">
                         <strong style="color:#0B2240;font-size:14px;">${e.rua}</strong><br>
                         ${e.cidade ? `<span style="color:#5A5A5A;font-size:12px;">${e.cidade}</span><br>` : ""}
                         <div style="margin-top:10px;display:flex;gap:8px;flex-direction:column;">
-                            <a href="${streetViewUrl}" target="_blank" rel="noopener noreferrer"
+                            <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer"
                                style="color:#F08A24;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;">
-                                Street View ↗
+                                Ver no mapa ↗
                             </a>
                             <a href="edificios.html?id=${e.id}"
                                style="color:#0B2240;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;text-decoration:none;">
@@ -68,20 +72,20 @@
                         </div>
                     </div>`);
             markers.push(marker);
-        });
+        }
 
         if (markers.length > 0) {
             const grupo = L.featureGroup(markers);
             mapa.fitBounds(grupo.getBounds(), { padding: [60, 60], maxZoom: 11 });
         }
 
-        if (semCoords.length > 0) {
+        if (semCoords > 0) {
             const aviso = L.control({ position: "bottomleft" });
             aviso.onAdd = function () {
                 const div = L.DomUtil.create("div");
                 div.style.cssText = `background:#FFF;border:1px solid #D4D4D4;border-left:3px solid #F08A24;
                                      padding:8px 14px;font-family:Inter,sans-serif;font-size:12px;color:#1A1A1A;max-width:300px;`;
-                div.innerHTML = `<strong>${semCoords.length}</strong> edifício(s) sem coordenadas. Edite-os para geocodificar.`;
+                div.innerHTML = `<strong>${semCoords}</strong> edifício(s) sem localização encontrada.`;
                 return div;
             };
             aviso.addTo(mapa);

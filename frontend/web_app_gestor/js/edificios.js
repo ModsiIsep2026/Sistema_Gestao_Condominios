@@ -23,11 +23,8 @@
             return;
         }
         tbody.innerHTML = lista.map((e) => {
-            const temCoords = e.lat != null && e.lng != null;
-            const streetView = temCoords
-                ? `<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${e.lat},${e.lng}"
-                       target="_blank" rel="noopener noreferrer" style="margin-right:6px;">Street View ↗</a>`
-                : "";
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([e.rua, e.cp, e.cidade].filter(Boolean).join(", "))}`;
+            const streetView = `<a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" style="margin-right:6px;">Ver no mapa ↗</a>`;
 
             const acoes = eAdmin
                 ? (streetView || "—")
@@ -94,8 +91,6 @@
             document.getElementById("e-rua").value             = edificio.rua || "";
             document.getElementById("e-cp").value              = edificio.cp  || "";
             document.getElementById("e-cidade").value          = edificio.cidade || "";
-            document.getElementById("e-lat").value             = edificio.lat ?? "";
-            document.getElementById("e-lng").value             = edificio.lng ?? "";
             document.getElementById("e-iban").value            = edificio.iban || "";
             document.getElementById("e-valor-base").value      = edificio.valor_base_mensal ?? "";
         } else {
@@ -121,18 +116,11 @@
         const rua       = document.getElementById("e-rua").value.trim();
         const cp        = document.getElementById("e-cp").value.trim()     || null;
         const cidade    = document.getElementById("e-cidade").value.trim() || null;
-        const lat       = parseFloat(document.getElementById("e-lat").value);
-        const lng       = parseFloat(document.getElementById("e-lng").value);
         const iban      = document.getElementById("e-iban").value.trim();
         const valorBase = parseFloat(document.getElementById("e-valor-base").value);
 
         if (!rua) {
             erro.textContent = "Indique a morada do edifício.";
-            erro.style.display = "";
-            return;
-        }
-        if (isNaN(lat) || isNaN(lng)) {
-            erro.textContent = "Indique a latitude e longitude do edifício.";
             erro.style.display = "";
             return;
         }
@@ -151,7 +139,7 @@
         btn.disabled    = true;
         btn.textContent = id ? "A guardar..." : "A adicionar...";
 
-        const dados = { rua, cp, cidade, lat, lng, iban, valor_base_mensal: valorBase };
+        const dados = { rua, cp, cidade, iban, valor_base_mensal: valorBase };
 
         try {
             if (id) {
