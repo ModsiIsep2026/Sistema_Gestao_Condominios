@@ -78,7 +78,7 @@ def criar(db: Session, dados):
 def atualizar(db: Session, gestor_id: int, dados):
     contrato = get_contrato(db, gestor_id)
     
-    # Isso percorre os campos enviados em dados que não estão 
+    # Isto percorre os campos enviados em dados que não estão 
     # vazios e atualiza o objeto contrato atribuindo a 
     # cada campo (k) o respetivo valor (v).
     for k, v in dados.model_dump(exclude_unset=True).items():
