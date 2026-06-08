@@ -19,3 +19,4 @@ httpx==0.27.2                 # Cliente HTTP para chamadas externas e testes
 openpyxl==3.1.5               # Criar ficheiros Excel
 reportlab==4.2.5              # Criar PDFs
 stripe==15.1.0                # Integracao do Stripe para pagamentos
+email-validator
