@@ -46,18 +46,21 @@ except ImportError:
 
 
 
+def _base() -> str:
+    return cfg.FRONTEND_BASE or ""
+
 def redirect_login(token: str) -> RedirectResponse:
-    return RedirectResponse(f"/web_app_visitante/login.html#token={token}")
+    return RedirectResponse(f"{_base()}/web_app_visitante/login.html#token={token}")
 
 
 def redirect_register(email: str, msg: str = "") -> RedirectResponse:
-    url = f"/web_app_visitante/registo_gestor.html?email={quote(email)}"
+    url = f"{_base()}/web_app_visitante/registo_gestor.html?email={quote(email)}"
     if msg:
         url += f"&aviso={quote(msg)}"
     return RedirectResponse(url)
 
 def redirect_error(msg: str) -> RedirectResponse:
-    return RedirectResponse(f"/web_app_visitante/login.html?erro={quote(msg)}")
+    return RedirectResponse(f"{_base()}/web_app_visitante/login.html?erro={quote(msg)}")
 
 def callback_url(service: str) -> str:
     return f"{cfg.OAUTH_REDIRECT_BASE}/auth/{service}/callback"

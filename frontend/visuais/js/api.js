@@ -1,5 +1,5 @@
 
-const API_BASE = "";
+const API_BASE = "/~1211405/modsi/Sistema_Gestao_Condominios/frontend/proxy.php?path=";
 const CHAVE_TOKEN = "condo_token";
 
 function obterToken() {

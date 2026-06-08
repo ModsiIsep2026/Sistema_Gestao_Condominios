@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = ""
     GOOGLE_CLIENT_SECRET: str = ""
     OAUTH_REDIRECT_BASE: str = "http://localhost:8080"
+    FRONTEND_BASE: str = ""
 
     @property
     def DB_connect(self) -> str:

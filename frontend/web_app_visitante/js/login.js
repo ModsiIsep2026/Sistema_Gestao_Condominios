@@ -78,7 +78,7 @@
     document.querySelectorAll(".btn-oauth").forEach((btn) => {
         btn.addEventListener("click", () => {
             const servico = btn.dataset.provider === "outlook" ? "microsoft" : btn.dataset.provider;
-            window.location.href = `/auth/${servico}/inicio`;
+            window.location.href = `/~1211405/modsi/Sistema_Gestao_Condominios/frontend/proxy.php?path=/auth/${servico}/inicio`;
         });
     });
 
