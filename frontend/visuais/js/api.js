@@ -19,10 +19,19 @@ async function pedido(metodo, endpoint, corpo = null) {
     const token = obterToken();
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    const opcoes = { method: metodo, headers };
+    // Method tunneling: DELETE/PUT/PATCH enviados como POST com _method
+    const metodosNativos = ["GET", "POST"];
+    let metodoHttp = metodo;
+    let urlExtra = "";
+    if (!metodosNativos.includes(metodo.toUpperCase())) {
+        metodoHttp = "POST";
+        urlExtra = `&_method=${metodo}`;
+    }
+
+    const opcoes = { method: metodoHttp, headers };
     if (corpo) opcoes.body = JSON.stringify(corpo);
 
-    const resposta = await fetch(`${API_BASE}${endpoint}`, opcoes);
+    const resposta = await fetch(`${API_BASE}${endpoint}${urlExtra}`, opcoes);
 
     if (resposta.status === 401) {
         limparToken();

@@ -71,6 +71,11 @@ def exportar_excel(db: Session, id_gestor: int, data_inicio: Optional[date], dat
 
     ws.append(["", "", "TOTAL", round(total, 2), "", ""])
 
+    # Ajustar largura das colunas automaticamente
+    larguras = {"A": 40, "B": 12, "C": 14, "D": 14, "E": 14, "F": 20}
+    for col, largura in larguras.items():
+        ws.column_dimensions[col].width = largura
+
     buffer = io.BytesIO()
     wb.save(buffer)
     buffer.seek(0)

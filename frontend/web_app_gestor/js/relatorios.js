@@ -105,7 +105,9 @@
         botao.textContent = formato === "excel" ? "A exportar..." : "A gerar PDF...";
 
         try {
-            const resposta = await fetch(`/relatorios/${formato}${montarQueryPeriodo()}`, {
+            const proxyBase = "/~1211405/modsi/Sistema_Gestao_Condominios/frontend/proxy.php";
+            const periodo = montarQueryPeriodo().replace(/^\?/, "&");
+            const resposta = await fetch(`${proxyBase}?path=/relatorios/${formato}${periodo}`, {
                 headers: { "Authorization": `Bearer ${token}` },
             });
 

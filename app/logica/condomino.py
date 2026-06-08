@@ -20,7 +20,7 @@ def listar_todos(db: Session):
     return db.query(Condomino).all()
 
 def listar(db: Session, id_apartamento: int):
-    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento).all()
+    return db.query(Condomino).filter(Condomino.id_apartamento == id_apartamento, Condomino.status == 1).all()
 
 
 def obter(db: Session, id: int):
@@ -36,7 +36,7 @@ def criar(db: Session, dados, background: BackgroundTasks = None):
         nome=dados.nome,
         email=dados.email,
         pw=pw_encript(pw_temp),
-        telemovel=dados.telemovel or "_pendente",
+        telemovel=dados.telemovel or f"_pendente_{dados.email}",
         id_apartamento=dados.id_apartamento,
     )
     db.add(condomino)

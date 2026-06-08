@@ -1,13 +1,13 @@
 <?php
 $path = isset($_GET['path']) ? $_GET['path'] : '/';
 
-// Reencaminhar todos os query params exceto 'path'
 $other_params = array_filter($_GET, fn($k) => $k !== 'path', ARRAY_FILTER_USE_KEY);
 $query_string = !empty($other_params) ? '?' . http_build_query($other_params) : '';
 
 $url = 'http://localhost:8080' . $path . $query_string;
 
-$method = $_SERVER['REQUEST_METHOD'];
+
+$method = isset($_GET['_method']) ? strtoupper($_GET['_method']) : $_SERVER['REQUEST_METHOD'];
 $body = file_get_contents('php://input');
 
 $response_headers = [];
@@ -15,9 +15,9 @@ $response_headers = [];
 $ch = curl_init($url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // Não seguir redirects
+curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
 
-// Capturar headers da resposta
+
 curl_setopt($ch, CURLOPT_HEADERFUNCTION, function($ch, $header) use (&$response_headers) {
     $response_headers[] = trim($header);
     return strlen($header);
@@ -42,7 +42,6 @@ curl_close($ch);
 
 http_response_code($httpCode);
 
-// Repassar headers de redirect e cookies ao browser
 foreach ($response_headers as $header) {
     if (stripos($header, 'Location:') === 0 || stripos($header, 'Set-Cookie:') === 0) {
         header($header, false);
