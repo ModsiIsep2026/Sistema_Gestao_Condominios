@@ -43,12 +43,28 @@
 
         var grafico = null;
 
+        var MESES = ["Jan","Fev","Mar","Abr","Mai","Jun",
+                     "Jul","Ago","Set","Out","Nov","Dez"];
+
         function formatarData(iso, curto) {
             var partes = iso.split("-");
             if (curto) return partes[2] + "/" + partes[1];
-            var meses  = ["Jan","Fev","Mar","Abr","Mai","Jun",
-                          "Jul","Ago","Set","Out","Nov","Dez"];
-            return partes[2] + " " + meses[parseInt(partes[1], 10) - 1] + " " + partes[0];
+            return partes[2] + " " + MESES[parseInt(partes[1], 10) - 1] + " " + partes[0];
+        }
+
+        function agruparPorMes(dados) {
+            var mapa = {}, ordem = [];
+            dados.forEach(function (r) {
+                var partes = r.data.split("-");
+                var chave  = partes[0] + "-" + partes[1];
+                var label  = MESES[parseInt(partes[1], 10) - 1] + "/" + partes[0].slice(2);
+                if (!mapa[chave]) {
+                    mapa[chave] = { label: label, total: 0 };
+                    ordem.push(chave);
+                }
+                mapa[chave].total += r.total;
+            });
+            return ordem.map(function (k) { return mapa[k]; });
         }
 
         function labelPeriodoTexto(dias) {
@@ -92,11 +108,19 @@
                         $scope.mediaDia       = dias > 0 ? (total / dias).toFixed(1) : "0";
 
                         /* Gráfico */
-                        var labels = dados.map(function (r) {
-                            return dias === 1 ? "Hoje" : formatarData(r.data, true);
-                        });
+                        var labels, valoresGrafico;
+                        if (dias >= 180) {
+                            var porMes     = agruparPorMes(dados);
+                            labels         = porMes.map(function (m) { return m.label; });
+                            valoresGrafico = porMes.map(function (m) { return m.total; });
+                        } else {
+                            labels         = dados.map(function (r) {
+                                return dias === 1 ? "Hoje" : formatarData(r.data, true);
+                            });
+                            valoresGrafico = valores;
+                        }
 
-                        $timeout(function () { renderizarGrafico(labels, valores, dias); }, 0);
+                        $timeout(function () { renderizarGrafico(labels, valoresGrafico, dias); }, 0);
                     });
                 })
                 .catch(function () {

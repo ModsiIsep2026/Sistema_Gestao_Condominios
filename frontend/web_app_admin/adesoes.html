@@ -56,7 +56,7 @@
             
             <div class="painel">
                 <div class="painel__cabecalho" style="flex-wrap:wrap; gap:var(--esp-3);">
-                    <h2>Adesões por dia</h2>
+                    <h2>Adesões {{ periodoAtivo >= 180 ? 'por mês' : 'por dia' }}</h2>
                     <div class="periodo-btns">
                         <button
                             ng-repeat="p in periodos"
