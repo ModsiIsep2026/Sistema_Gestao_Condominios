@@ -49,6 +49,14 @@
     border-radius: 6px; padding: 6px 12px; margin-top: var(--esp-3);
 }
 .periodo-ativo span { color: var(--cor-primaria); font-weight: 600; }
+[data-tema="escuro"] .export-card { background: #363740; border-color: var(--cor-borda); }
+[data-tema="escuro"] .export-card__titulo { color: var(--cor-texto); }
+[data-tema="escuro"] .export-card__desc { color: var(--cor-texto-suave); }
+[data-tema="escuro"] .export-card__icone--excel  { background: #1A3A20; color: #6EBF95; }
+[data-tema="escuro"] .export-card__icone--pdf    { background: #3A1A1A; color: #F48A8A; }
+[data-tema="escuro"] .export-card__icone--avaria { background: #3A2A10; color: #F0A050; }
+[data-tema="escuro"] .periodo-ativo { background: var(--cor-fundo-alt); border-color: var(--cor-borda); color: var(--cor-texto-suave); }
+[data-tema="escuro"] .periodo-ativo span { color: var(--cor-acento); }
 </style>
 </head>
 <body class="app-body">
@@ -67,7 +75,7 @@
 
           
             <div style="display:flex;align-items:center;gap:var(--esp-3);flex-wrap:wrap;margin-bottom:var(--esp-5);">
-                <select id="sel-periodo" style="padding:10px 16px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);cursor:pointer;min-width:220px;">
+                <select id="sel-periodo" style="padding:10px 16px;border:1px solid var(--cor-borda);background:var(--cor-fundo);font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);cursor:pointer;min-width:220px;color-scheme:dark;">
                     <option value="personalizado" selected>Período personalizado</option>
                     <option value="todos">Todos os registos</option>
                     <option value="mes-atual">Mês atual</option>
@@ -75,9 +83,9 @@
                     <option value="90">Últimos 90 dias</option>
                 </select>
                 <div id="datas-personalizadas" style="display:flex;align-items:center;gap:var(--esp-2);flex-wrap:wrap;">
-                    <input type="date" id="rel-data-inicio" style="padding:10px 12px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
+                    <input type="date" id="rel-data-inicio" style="padding:10px 12px;border:1px solid var(--cor-borda);background:var(--cor-fundo);font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
                     <span style="color:var(--cor-texto-suave);font-size:var(--tam-sm);">até</span>
-                    <input type="date" id="rel-data-fim" style="padding:10px 12px;border:1px solid var(--cor-borda);background:#fff;font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
+                    <input type="date" id="rel-data-fim" style="padding:10px 12px;border:1px solid var(--cor-borda);background:var(--cor-fundo);font-size:var(--tam-sm);font-family:inherit;color:var(--cor-texto);">
                 </div>
             </div>
 

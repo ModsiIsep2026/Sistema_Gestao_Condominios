@@ -117,6 +117,8 @@
         topbar.innerHTML = `
             <div class="app-topbar__esquerda"></div>
             <div class="app-topbar__direita">
+                <button class="app-topbar__notif" type="button" data-btn-tema="1"
+                    title="${window.tema?.titulo()}">${window.tema?.icone() ?? ""}</button>
                 <div class="app-topbar__dropdown">
                     <button class="app-topbar__user" type="button" id="botao-user">
                         <span class="app-topbar__avatar">${iniciais}</span>
@@ -131,6 +133,8 @@
                     </div>
                 </div>
             </div>`;
+
+        topbar.querySelector("[data-btn-tema]")?.addEventListener("click", () => window.tema?.toggle());
 
         document.getElementById("botao-user").addEventListener("click", (e) => {
             e.stopPropagation();

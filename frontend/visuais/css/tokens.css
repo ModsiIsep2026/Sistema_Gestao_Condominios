@@ -51,3 +51,19 @@
     --sombra-suave: 0 2px 6px rgba(11, 34, 64, 0.08);
     --sombra-media: 0 4px 12px rgba(11, 34, 64, 0.12);
 }
+
+/* === MODO ESCURO === */
+[data-tema="escuro"] {
+    --cor-texto:            #E8E9EE;
+    --cor-texto-suave:      #9698A9;
+    --cor-texto-secundario: #9698A9;
+    --cor-borda:            #4A4B58;
+    --cor-fundo:            #2C2D35;
+    --cor-fundo-alt:        #363740;
+    --cor-fundo-escuro:     #1E1F24;
+    --cor-sucesso:          #3A9B5E;
+    --cor-aviso:            #D49A20;
+    --cor-erro:             #C74040;
+    --sombra-suave:         0 2px 6px rgba(0, 0, 0, 0.3);
+    --sombra-media:         0 4px 12px rgba(0, 0, 0, 0.4);
+}

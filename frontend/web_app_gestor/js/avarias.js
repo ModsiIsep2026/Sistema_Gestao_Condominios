@@ -193,7 +193,7 @@
                 const site = opt?.dataset.site;
                 if (opt?.value && site) {
                     divSite.innerHTML = `<a href="${site}" target="_blank" rel="noopener"
-                        style="color:var(--cor-primaria);text-decoration:underline;">🔗 ${site}</a>`;
+                        style="text-decoration:underline;">🔗 ${site}</a>`;
                     divSite.style.display = "";
                 } else {
                     divSite.innerHTML  = "";

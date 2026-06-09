@@ -158,6 +158,10 @@
                 return;
             }
 
+            var escuro = document.documentElement.getAttribute("data-tema") === "escuro";
+            var corTick = escuro ? "#9698A9" : "#6B7280";
+            var corGrid = escuro ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.06)";
+
             grafico = new Chart(canvas.getContext("2d"), {
                 type: "bar",
                 data: {
@@ -191,16 +195,16 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1, precision: 0 },
-                            grid: { color: "rgba(0,0,0,.06)" },
-                            title: { display: true, text: "Adesões/dia" },
+                            ticks: { stepSize: 1, precision: 0, color: corTick },
+                            grid: { color: corGrid },
+                            title: { display: true, text: "Adesões/dia", color: corTick },
                         },
                         x: {
                             grid: { display: false },
                             ticks: {
                                 maxTicksLimit: dias <= 15 ? dias : 15,
                                 maxRotation: 45,
-                                color: "var(--cor-texto-suave)",
+                                color: corTick,
                             },
                         },
                     },

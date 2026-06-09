@@ -46,7 +46,7 @@
             const ativo = p.status === 1;
             const site = p.site
                 ? `<a href="${p.site.startsWith("http") ? p.site : "https://" + p.site}"
-                       target="_blank" rel="noopener noreferrer" style="color:var(--cor-primaria);">
+                       target="_blank" rel="noopener noreferrer">
                        ${p.site.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")}
                    </a>`
                 : "—";
