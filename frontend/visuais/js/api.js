@@ -1,6 +1,10 @@
 
-const API_BASE = "/~1211405/modsi/Sistema_Gestao_Condominios/frontend/proxy.php?path=";
+const _LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+const API_BASE = _LOCAL
+    ? ""
+    : "/~1211405/modsi/Sistema_Gestao_Condominios/frontend/proxy.php?path=";
 const CHAVE_TOKEN = "condo_token";
+
 
 function obterToken() {
     return sessionStorage.getItem(CHAVE_TOKEN);
@@ -19,11 +23,11 @@ async function pedido(metodo, endpoint, corpo = null) {
     const token = obterToken();
     if (token) headers["Authorization"] = `Bearer ${token}`;
 
-    // Method tunneling: DELETE/PUT/PATCH enviados como POST com _method
+
     const metodosNativos = ["GET", "POST"];
     let metodoHttp = metodo;
     let urlExtra = "";
-    if (!metodosNativos.includes(metodo.toUpperCase())) {
+    if (!_LOCAL && !metodosNativos.includes(metodo.toUpperCase())) {
         metodoHttp = "POST";
         urlExtra = `&_method=${metodo}`;
     }

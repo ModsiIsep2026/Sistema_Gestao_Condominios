@@ -54,11 +54,7 @@
                     ? '<span class="estado estado--ok">Paga</span>'
                     : '<span class="estado estado--alerta">Pendente</span>'}</td>
                 <td>${p.data_p ? new Date(p.data_p).toLocaleDateString("pt-PT") : "—"}</td>
-                <td class="app-tabela__acoes">
-                    ${p.estado !== 1
-                        ? `<button data-acao="marcar-pago" data-id="${p.id}">Marcar paga</button>`
-                        : ""}
-                </td>
+                <td></td>
             </tr>`;
         }).join("");
     }
