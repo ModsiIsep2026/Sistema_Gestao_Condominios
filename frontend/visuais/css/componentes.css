@@ -1154,11 +1154,10 @@ body.app-body {
 [data-tema="escuro"] .av-pipeline__passo--feito .av-pipeline__rotulo,
 [data-tema="escuro"] .av-pipeline__passo--ativo .av-pipeline__rotulo { color: var(--cor-texto); }
 
-/* Botões de tipo interno/externo em avarias */
+
 [data-tema="escuro"] .av-tipo-btn { background: #43444F; border-color: var(--cor-borda); color: var(--cor-texto); }
 [data-tema="escuro"] .av-tipo-btn.ativo { background: var(--cor-acento); border-color: var(--cor-acento); color: #fff; }
 
-/* Select — color-scheme para o browser renderizar dropdown no tema escuro */
 [data-tema="escuro"] select,
 [data-tema="escuro"] .campo select { color-scheme: dark; }
 
@@ -1178,7 +1177,7 @@ body.app-body {
 [data-tema="escuro"] .app-tabela a:hover,
 [data-tema="escuro"] .tabela a:hover                 { color: var(--cor-acento); }
 
-/* Perfil painel */
+
 [data-tema="escuro"] .perfil-painel                  { background: #363740; border-color: var(--cor-borda); }
 [data-tema="escuro"] .perfil-painel__cabecalho       { border-bottom-color: var(--cor-borda); }
 [data-tema="escuro"] .perfil-painel__titulo          { color: var(--cor-texto); }

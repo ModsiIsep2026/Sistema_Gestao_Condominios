@@ -1,5 +1,5 @@
 
-// === SISTEMA DE TEMA ===
+
 (function () {
     const CHAVE = "condo_tema";
     const t = localStorage.getItem(CHAVE) || "claro";
@@ -25,9 +25,113 @@
         titulo: () => _escuro ? "Modo claro" : "Modo escuro",
     };
 
-    // CSS para páginas visitante (usam vars próprias, não carregam tokens.css)
+
+    (function () {
+
+        function _getCookie(nome) {
+            var m = document.cookie.match("(?:^|;)\\s*" + nome + "=([^;]*)");
+            return m ? decodeURIComponent(m[1]) : null;
+        }
+        function _setCookie(v) {
+            document.cookie = "googtrans=" + v + "; path=/; SameSite=Lax";
+            document.cookie = "condo_idioma=" + (v === "/pt/en" ? "en" : "pt") + "; path=/; SameSite=Lax";
+        }
+        function _delCookie() {
+            document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+            document.cookie = "condo_idioma=pt; path=/; SameSite=Lax";
+        }
+
+    
+        var _cookieLang = _getCookie("condo_idioma");
+        var _lang = _cookieLang || localStorage.getItem("condo_idioma") || "pt";
+
+ 
+        if (_lang === "en") {
+            _setCookie("/pt/en");
+            localStorage.setItem("condo_idioma", "en");
+        } else {
+            _delCookie();
+            localStorage.setItem("condo_idioma", "pt");
+        }
+
+        window.idioma = {
+            atual: function () { return _lang; },
+            mudar: function (lang) {
+                if (lang === _lang) return;
+                if (lang === "en") { _setCookie("/pt/en"); } else { _delCookie(); }
+                localStorage.setItem("condo_idioma", lang);
+                window.location.reload();
+            },
+            html: function () {
+                const en = _lang === "en";
+                return '<div class="lang-switcher">' +
+                    '<button type="button" onclick="window.idioma.mudar(\'pt\')" class="lang-btn' + (en ? "" : " lang-ativo") + '">PT</button>' +
+                    '<span class="lang-sep">|</span>' +
+                    '<button type="button" onclick="window.idioma.mudar(\'en\')" class="lang-btn' + (en ? " lang-ativo" : "") + '">EN</button>' +
+                    '</div>';
+            },
+        };
+
+        var _gtDiv = document.createElement("div");
+        _gtDiv.id = "_gt_hidden";
+        document.body.appendChild(_gtDiv);
+
+        window.googleTranslateElementInit = function () {
+            if (typeof google === "undefined" || !google.translate) return;
+            new google.translate.TranslateElement(
+                { pageLanguage: "pt", includedLanguages: "en" },
+                "_gt_hidden"
+            );
+
+            if (_lang === "en") {
+                var tentativas = 0;
+                var iv = setInterval(function () {
+                    var sel = document.querySelector(".goog-te-combo");
+                    if (sel) {
+                        clearInterval(iv);
+                        sel.value = "en";
+                        if (sel.fireEvent) {
+                            sel.fireEvent("onchange");
+                        } else {
+                            var evt = document.createEvent("HTMLEvents");
+                            evt.initEvent("change", true, true);
+                            sel.dispatchEvent(evt);
+                        }
+                    } else if (++tentativas > 100) {
+                        clearInterval(iv);
+                    }
+                }, 100);
+            }
+        };
+        const _gtScript = document.createElement("script");
+        _gtScript.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+        _gtScript.async = true;
+        document.head.appendChild(_gtScript);
+    })();
+
+
     const _styleVisitante = document.createElement("style");
     _styleVisitante.textContent = `
+        .goog-te-banner-frame { visibility:hidden !important; height:0 !important; }
+        .skiptranslate { display:none !important; }
+        body { top:0 !important; }
+        /* _gt_hidden fora do ecrã mas não display:none — o GT precisa de renderizar o select interno */
+        #_gt_hidden {
+            position:absolute !important; top:-9999px !important; left:-9999px !important;
+            width:1px !important; height:1px !important; overflow:hidden !important;
+        }
+        .lang-switcher { display:flex; align-items:center; gap:2px; }
+        .lang-btn { background:none; border:none; cursor:pointer; font-size:12px; font-weight:600;
+                    padding:3px 6px; border-radius:4px; color:inherit; transition:color .15s; line-height:1; }
+        .lang-btn:hover { color:#F08A24; }
+        .lang-ativo { color:#F08A24 !important; }
+        .lang-sep { font-size:11px; opacity:.35; color:inherit; user-select:none; }
+
+        
+        [data-tema="escuro"] #_condo_pill { background:rgba(44,45,53,0.95) !important; border-color:#4A4B58 !important; color:#E8E9EE !important; }
+        [data-tema="escuro"] #_condo_pill .lang-sep { background:rgba(255,255,255,0.15) !important; }
+
+      
         [data-tema="escuro"] {
             --azul:  #E8E9EE;
             --azul2: #C8C9D0;
@@ -39,13 +143,12 @@
             --erro:  #C74040;
             --ok:    #3A9B5E;
         }
-        /* body/page background */
+    
         [data-tema="escuro"] body { background: #2C2D35 !important; color: #E8E9EE !important; }
 
-        /* navbar */
+       
         [data-tema="escuro"] .navbar { background: rgba(44,45,53,0.97) !important; border-bottom-color: #4A4B58 !important; }
 
-        /* botões primários — eram var(--azul), agora laranja */
         [data-tema="escuro"] .btn--primario        { background: #F08A24 !important; border-color: #F08A24 !important; color: #fff !important; }
         [data-tema="escuro"] .btn--primario:hover  { background: #D4711A !important; border-color: #D4711A !important; }
         [data-tema="escuro"] .btn--outline         { border-color: #E8E9EE !important; color: #E8E9EE !important; }
@@ -55,30 +158,30 @@
         [data-tema="escuro"] .btn-enviar,
         [data-tema="escuro"] .btn-submit           { background: #F08A24 !important; color: #fff !important; }
 
-        /* secções com fundo azul-marinho — manter escuras */
+     
         [data-tema="escuro"] .perfis   { background: #0F2744 !important; }
         [data-tema="escuro"] .footer   { background: #0F2744 !important; }
         [data-tema="escuro"] .numeros  { background: #0F2744 !important; }
 
-        /* cards de serviços */
+    
         [data-tema="escuro"] .card-func             { background: #363740 !important; border-color: #4A4B58 !important; }
         [data-tema="escuro"] .card-func:hover       { background: #43444F !important; }
         [data-tema="escuro"] .card-func.ativo       { background: #F08A24 !important; }
 
-        /* formulário de contacto */
+      
         [data-tema="escuro"] .contactos            { background: #363740 !important; }
         [data-tema="escuro"] .campo-c input,
         [data-tema="escuro"] .campo-c textarea     { background: #2C2D35 !important; color: #E8E9EE !important; border-color: #4A4B58 !important; }
         [data-tema="escuro"] .campo-c label        { color: #9698A9 !important; }
 
-        /* parceiros/marquee */
+     
         [data-tema="escuro"] .marquee-wrap { background: #363740 !important; border-color: #4A4B58 !important; }
         [data-tema="escuro"] .marquee-wrap::before { background: linear-gradient(to right, #363740, transparent) !important; }
         [data-tema="escuro"] .marquee-wrap::after  { background: linear-gradient(to left,  #363740, transparent) !important; }
         [data-tema="escuro"] .parceiro-logo        { filter: none !important; opacity: 0.8 !important; }
         [data-tema="escuro"] .parceiro-logo:hover  { opacity: 1 !important; }
 
-        /* formulários login/registo */
+
         [data-tema="escuro"] .painel-form          { background: #363740 !important; }
         [data-tema="escuro"] .campo input,
         [data-tema="escuro"] .campo select         { background: #525252; color: #E8E9EE; border-color: #4A4B58; }
@@ -97,30 +200,49 @@
     `;
     document.head.appendChild(_styleVisitante);
 
-    // Botão flutuante para páginas públicas (sem .app-topbar)
+   
     document.addEventListener("DOMContentLoaded", function () {
         if (document.querySelector(".app-topbar")) return;
+
+        const pill = document.createElement("div");
+        pill.id = "_condo_pill";
+        Object.assign(pill.style, {
+            position: "fixed", top: "12px", right: "12px", zIndex: "9999",
+            display: "flex", alignItems: "center", gap: "4px",
+            background: "rgba(255,255,255,0.92)", backdropFilter: "blur(8px)",
+            border: "1.5px solid rgba(11,34,64,0.15)", borderRadius: "24px",
+            padding: "4px 10px", boxShadow: "0 2px 10px rgba(0,0,0,0.12)",
+            color: "#0B2240",
+        });
+
+        const langWrap = document.createElement("div");
+        langWrap.innerHTML = window.idioma?.html() ?? "";
+        pill.appendChild(langWrap);
+
+        const sep = document.createElement("span");
+        sep.style.cssText = "width:1px;height:16px;background:rgba(11,34,64,0.15);display:inline-block;flex-shrink:0;";
+        pill.appendChild(sep);
+
         const btn = document.createElement("button");
         btn.setAttribute("data-btn-tema", "1");
         btn.type = "button";
         btn.title = _escuro ? "Modo claro" : "Modo escuro";
         btn.innerHTML = _escuro ? _sol() : _lua();
         Object.assign(btn.style, {
-            position: "fixed", top: "16px", right: "16px", zIndex: "9999",
-            width: "40px", height: "40px", borderRadius: "50%",
-            border: "1.5px solid rgba(11,34,64,0.18)",
-            background: "rgba(255,255,255,0.90)", backdropFilter: "blur(6px)",
-            color: "#0B2240", display: "flex", alignItems: "center",
+            width: "32px", height: "32px", borderRadius: "50%",
+            border: "none", background: "transparent",
+            color: "inherit", display: "flex", alignItems: "center",
             justifyContent: "center", cursor: "pointer",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.14)", transition: "transform 0.15s ease",
+            transition: "transform 0.15s ease", flexShrink: "0",
         });
         btn.addEventListener("mouseenter", () => { btn.style.transform = "scale(1.1)"; });
         btn.addEventListener("mouseleave", () => { btn.style.transform = ""; });
         btn.addEventListener("click", toggle);
-        document.body.appendChild(btn);
+        pill.appendChild(btn);
+
+        document.body.appendChild(pill);
     });
 })();
-// === FIM SISTEMA DE TEMA ===
 
 const _LOCAL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const API_BASE = _LOCAL
@@ -164,7 +286,7 @@ async function pedido(metodo, endpoint, corpo = null) {
         limparToken();
     }
 
-   
+
     if (resposta.status === 204) return null;
 
     const tipo = resposta.headers.get("content-type") || "";

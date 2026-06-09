@@ -52,7 +52,7 @@
     --sombra-media: 0 4px 12px rgba(11, 34, 64, 0.12);
 }
 
-/* === MODO ESCURO === */
+
 [data-tema="escuro"] {
     --cor-texto:            #E8E9EE;
     --cor-texto-suave:      #9698A9;

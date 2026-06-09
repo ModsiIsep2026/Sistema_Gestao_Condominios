@@ -106,6 +106,7 @@
         topbar.innerHTML = `
             <div class="app-topbar__esquerda"></div>
             <div class="app-topbar__direita">
+                ${window.idioma?.html() ?? ""}
                 <button class="app-topbar__notif" type="button" data-btn-tema="1"
                     title="${window.tema?.titulo()}">${window.tema?.icone() ?? ""}</button>
                 <div class="app-topbar__dropdown">

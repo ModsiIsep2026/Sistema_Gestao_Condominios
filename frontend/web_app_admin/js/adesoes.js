@@ -90,7 +90,7 @@
                         $scope.maxDia       = max;
                         $scope.carregando   = false;
 
-                        /* Tabela só com dias que tiveram adesões */
+            
                         $scope.linhasTabela = comAdes.map(function (r) {
                             return {
                                 data:         r.data,
@@ -107,7 +107,7 @@
 
                         $scope.mediaDia       = dias > 0 ? (total / dias).toFixed(1) : "0";
 
-                        /* Gráfico */
+                 
                         var labels, valoresGrafico;
                         if (dias >= 180) {
                             var porMes     = agruparPorMes(dados);
