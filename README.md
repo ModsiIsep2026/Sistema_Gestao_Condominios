@@ -30,7 +30,7 @@ Aplicação web para gestão de condomínios, desenvolvida no âmbito da unidade
 ## Deploy (ISEP AVE)
 
 A aplicação está disponível em:
-[http://ave.dee.isep.ipp.pt/~1211405/modsi/Sistema_Gestao_Condominios/frontend/web_app_visitante/login.html]
+[http://ave.dee.isep.ipp.pt/~1211405/modsi/Sistema_Gestao_Condominios/frontend/web_app_visitante/index.html]
 
 
 ## Soft Delete
