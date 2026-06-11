@@ -102,7 +102,7 @@
         limparErro();
 
         try {
-            const resp = await fetch("/contratos/iniciar", {
+            const resp = await fetch(`${API_BASE}/contratos/iniciar`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -230,7 +230,7 @@
                 return;
             }
 
-            const resp = await fetch("/contratos/concluir", {
+            const resp = await fetch(`${API_BASE}/contratos/concluir`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
