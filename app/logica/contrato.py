@@ -179,7 +179,7 @@ def _enviar_boas_vindas(email, nome, pw, edificios, meses):
       </div>
       <div style="background:#F4F3F1;padding:32px;">
         <p style="font-size:14px;color:#1A1A1A;margin:0 0 8px;">
-          O seu plano inclui <strong>{edificios} edifício(s)</strong> durante <strong>{meses} mês(es)</strong>.
+          O seu plano inclui <strong>{edificios} edifício(s)</strong> durante <strong>{meses} meses</strong>.
         </p>
         <p style="font-size:13px;color:#6B6860;margin:0;">
           Pode gerir os seus edifícios a partir do painel de gestor assim que fizer o primeiro acesso.
